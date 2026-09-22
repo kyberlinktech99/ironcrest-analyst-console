@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ironcrest Analyst Console</title>
+<link rel="stylesheet" href="css/ironcrest.css">
+</head>
+<body>
+<div id="briefing" class="briefing">
+  <div class="brief-card">
+    <div class="eyebrow">IRONCREST CYBER PARTNERS // SECURITY OPERATIONS CENTER</div>
+    <h1>Assigned Case <span>U1-001</span></h1>
+    <div class="priority">PRIORITY: HIGH</div>
+    <h2>Possible Account Compromise</h2>
+    <p>A client believes an employee account may have been compromised. Review the available telemetry, request evidence strategically, and prepare an evidence-based assessment for the SOC briefing.</p>
+    <div class="brief-grid">
+      <div><b>Mission</b><br>Identify suspicious activity and reconstruct what happened.</div>
+      <div><b>Resources</b><br>3 investigation credits. Additional evidence has a cost.</div>
+      <div><b>Standard</b><br>Separate what the evidence proves, supports, and what you still need.</div>
+    </div>
+    <label>Analyst team
+      <select id="roleSelect">
+        <option>Authentication Team</option><option>Activity Team</option><option>Threat Hunt Team</option>
+      </select>
+    </label>
+    <button id="acceptCase" class="primary">ACCEPT CASE</button>
+  </div>
+</div>
+
+<div id="console" class="app hidden">
+<header>
+  <div><strong>IRONCREST</strong><span> CYBER PARTNERS</span></div>
+  <div class="status"><span class="pulse"></span>SOC // ANALYST CONSOLE</div>
+</header>
+<aside>
+  <div class="caseblock"><small>ACTIVE CASE</small><b>U1-001</b><span>Possible Account Compromise</span><em>HIGH</em></div>
+  <nav>
+    <button data-view="logs" class="active">▦ Log Explorer</button>
+    <button data-view="evidence">◇ Evidence Locker</button>
+    <button data-view="timeline">⌁ Timeline</button>
+    <button data-view="notes">▤ Case Notes</button>
+    <button data-view="assessment">✓ Assessment</button>
+  </nav>
+  <div class="credits"><small>INVESTIGATION CREDITS</small><div id="creditDots">● ● ●</div></div>
+  <div class="team"><small>ANALYST TEAM</small><div id="teamName"></div></div>
+</aside>
+<main>
+<section id="logs" class="view active">
+  <div class="viewhead"><div><small>CASE U1-001</small><h2>Log Explorer</h2></div><span id="eventCount"></span></div>
+  <div class="filters">
+    <input id="search" placeholder="Search user, IP, device, resource, details…">
+    <select id="eventFilter"><option value="">All event types</option></select>
+    <select id="resultFilter"><option value="">All results</option><option>SUCCESS</option><option>FAILURE</option><option>INFO</option></select>
+    <button id="clearFilters">Clear</button>
+  </div>
+  <div class="tablewrap"><table><thead><tr><th>TIME</th><th>USER</th><th>SOURCE IP</th><th>EVENT</th><th>RESULT</th><th>RESOURCE / DEVICE</th></tr></thead><tbody id="logRows"></tbody></table></div>
+  <p class="hint">Select an event to inspect its full record. Suspicious does not automatically mean malicious.</p>
+</section>
+
+<section id="evidence" class="view">
+ <div class="viewhead"><div><small>REQUEST ADDITIONAL CONTEXT</small><h2>Evidence Locker</h2></div><span>Each request costs 1 credit</span></div>
+ <p class="lead">Choose evidence because it answers an investigative question—not because you want to reveal everything.</p>
+ <div id="evidenceCards" class="cards"></div>
+</section>
+
+<section id="timeline" class="view">
+ <div class="viewhead"><div><small>ANALYST WORKSPACE</small><h2>Investigation Timeline</h2></div></div>
+ <p class="lead">Record only events or observations you believe matter to the case.</p>
+ <form id="timelineForm" class="inlineform"><input id="timelineTime" placeholder="Time / sequence"><input id="timelineText" placeholder="Observation"><button>Add</button></form>
+ <div id="timelineList" class="entries"></div>
+</section>
+
+<section id="notes" class="view">
+ <div class="viewhead"><div><small>ANALYST WORKSPACE</small><h2>Case Notes</h2></div></div>
+ <p class="lead">Capture hypotheses, questions, and evidence to discuss with your team.</p>
+ <textarea id="caseNotes" rows="18" placeholder="What do you notice? What could explain it? What evidence would change your assessment?"></textarea>
+ <div class="saveflag" id="saveFlag">Saved locally in this browser.</div>
+</section>
+
+<section id="assessment" class="view">
+ <div class="viewhead"><div><small>CASE DISPOSITION</small><h2>Analyst Assessment</h2></div></div>
+ <p class="lead">The console will record your assessment. It will not tell you whether you are right. Be ready to defend it in the SOC briefing.</p>
+ <form id="assessmentForm" class="assessment">
+   <label>Disposition<select id="disposition" required><option value="">Select…</option><option>FALSE POSITIVE</option><option>MONITOR / INVESTIGATE FURTHER</option><option>ESCALATE</option></select></label>
+   <label>Account of concern<input id="account" required placeholder="username"></label>
+   <label>Strongest evidence<textarea id="strongest" required></textarea></label>
+   <label>What happened? <textarea id="happened" required></textarea></label>
+   <div class="triple"><label>PROVES<textarea id="proves" required></textarea></label><label>SUPPORTS<textarea id="supports" required></textarea></label><label>NEED<textarea id="need" required></textarea></label></div>
+   <button class="primary">RECORD ASSESSMENT</button>
+ </form>
+ <div id="submitted" class="submitted hidden"><h3>ASSESSMENT RECORDED</h3><p>Do not close the case. Prepare to brief the SOC and defend your conclusion with specific evidence.</p></div>
+</section>
+</main>
+</div>
+
+<div id="drawer" class="drawer hidden"><button id="closeDrawer">×</button><small>EVENT DETAIL</small><h3 id="drawerTitle"></h3><div id="drawerBody"></div><button id="pinEvent">+ Add observation to timeline</button></div>
+<div id="modal" class="modal hidden"><div class="modalcard"><button id="closeModal">×</button><div id="modalBody"></div></div></div>
+
+<script src="js/cases.js"></script><script src="js/app.js"></script>
+</body></html>
