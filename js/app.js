@@ -20,4 +20,41 @@ function renderTimeline(){const items=sortTimeline(state.timeline);$("#timelineL
 $("#caseNotes").value=state.notes;$("#caseNotes").oninput=e=>{state.notes=e.target.value;save();$("#saveFlag").textContent="Saved.";renderAssessment()};
 function renderAssessment(){if(!$("#statusTimeline"))return;$("#statusTimeline").textContent=state.timeline.length;$("#statusEvidence").textContent=state.unlocked.length+" / 3";$("#statusNotes").textContent=state.notes.trim()?"SAVED":"NONE";$("#assessmentFindings").innerHTML=state.timeline.length?'<small>CASE FILE FINDINGS</small>'+sortTimeline(state.timeline).map(x=>'<div class="mini-finding"><b>'+esc(x.time)+" · "+esc(x.title)+'</b><span>'+esc(x.observation)+'</span></div>').join(""):'<p class="hint">Your case file has no findings yet. Return to the investigation before making a disposition.</p>'}
 $("#assessmentForm").onsubmit=e=>{e.preventDefault();state.assessment={disposition:$("#disposition").value,account:$("#account").value,happened:$("#happened").value,strongest:$("#strongest").value,proves:$("#proves").value,supports:$("#supports").value,need:$("#need").value,nextAction:$("#nextAction").value};save();$("#assessmentForm").classList.add("hidden");$("#submitted").classList.remove("hidden")};
+
+// Robust delegated handlers for dynamic modal controls.
+// These run in capture phase so dynamically-created buttons work consistently
+// across Chrome/Chromebook/Safari and do not depend on per-modal onclick binding.
+document.addEventListener("input",e=>{
+  const id=e.target&&e.target.id;
+  if(id==="eventReason"){const b=$("#confirmPin");if(b)b.disabled=!e.target.value.trim()}
+  if(id==="evidenceQuestion"){const b=$("#confirmSpend");if(b)b.disabled=!e.target.value.trim()}
+  if(id==="evidenceReason"){const b=$("#confirmEvidence");if(b)b.disabled=!e.target.value.trim()}
+},true);
+
+document.addEventListener("click",e=>{
+  const b=e.target&&e.target.closest?e.target.closest("button"):null;
+  if(!b)return;
+  if(b.id==="confirmPin"){
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    const t=$("#eventReason");if(!t||!t.value.trim()||!selected)return;
+    state.timeline.push({type:"log",time:selected.time,title:selected.id+" — "+selected.event,source:selected.user+" · "+selected.ip+" · "+selected.resource,observation:t.value.trim()});
+    save();renderTimeline();$("#modal").classList.add("hidden");$("#drawer").classList.add("hidden");return;
+  }
+  if(b.id==="confirmSpend"){
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    const t=$("#evidenceQuestion");if(!t||!t.value.trim()||!pendingEvidence||state.credits<=0)return;
+    if(!state.unlocked.includes(pendingEvidence.id)){state.credits--;state.unlocked.push(pendingEvidence.id)}
+    state.evidenceQuestions[pendingEvidence.id]=t.value.trim();save();renderEvidence();showEvidence(pendingEvidence);return;
+  }
+  if(b.id==="confirmEvidence"){
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    const t=$("#evidenceReason");if(!t||!t.value.trim()||!pendingEvidence)return;
+    if(!state.evidenceAdded.includes(pendingEvidence.id)){
+      state.evidenceAdded.push(pendingEvidence.id);
+      state.timeline.push({type:"evidence",time:"EVIDENCE",title:pendingEvidence.title,source:"Evidence Locker",observation:t.value.trim()});
+    }
+    save();renderEvidence();renderTimeline();$("#modal").classList.add("hidden");return;
+  }
+},true);
+
 function render(){renderLogs();renderEvidence();renderTimeline();renderAssessment()}render()})();
