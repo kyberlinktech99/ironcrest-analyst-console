@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ironcrest Analyst Console</title><link rel="stylesheet" href="css/ironcrest.css"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ironcrest Analyst Console</title><link rel="stylesheet" href="css/ironcrest.css?v=20260926-v3b"></head><body>
 <div id="briefing" class="briefing"><div class="queue-shell workspace-shell">
 <div class="workspace-topbar"><div><div class="eyebrow">IRONCREST CYBER PARTNERS // SOC WORKSPACE</div><h1>Junior Cyber Analyst Workspace</h1><p class="queue-lead">Operate cases, use analyst tools, review intelligence, and build your investigation record.</p></div><div class="analyst-badge"><small>ROLE</small><b>JUNIOR CYBER ANALYST</b><span><i></i> WORKSPACE ONLINE</span></div></div>
 <div id="queueView">
@@ -25,15 +25,23 @@
 </section>
 <section id="workspace-intel" class="workspace-panel">
 <div class="section-head"><div><small>THREAT INTELLIGENCE DESK</small><h2>Intelligence</h2></div><span>Context informs an investigation; it does not replace evidence.</span></div>
-<div class="empty-workspace"><b>INTELLIGENCE DESK // INITIALIZING</b><p>Future CTI flashes will connect campaigns, indicators, adversary behavior, and client cases. No intelligence reports are assigned yet.</p></div>
+<div class="intel-grid">
+<article class="intel-card"><div><small>IC-001 // HUMAN LAYER</small><span class="intel-tag">ACTIVE</span></div><h3>Credential Harvesting Patterns</h3><p>Common observations involving urgency, impersonation, cloned sign-in pages, and subsequent identity activity.</p><button data-intel="human">OPEN INTEL FLASH</button></article>
+<article class="intel-card"><div><small>IC-002 // IDENTITY</small><span class="intel-tag">REFERENCE</span></div><h3>Suspicious Authentication Activity</h3><p>Analyst cues for separating failed attempts, credential exposure, successful access, and post-login behavior.</p><button data-intel="identity">OPEN INTEL FLASH</button></article>
+<article class="intel-card"><div><small>IC-003 // WIRELESS</small><span class="intel-tag">REFERENCE</span></div><h3>Public Network Threats</h3><p>Field notes for rogue wireless infrastructure, availability disruption, reconnaissance, and protective controls.</p><button data-intel="wireless">OPEN INTEL FLASH</button></article>
+</div>
 </section>
 <section id="workspace-training" class="workspace-panel">
 <div class="section-head"><div><small>SKILL DEVELOPMENT</small><h2>Training Center</h2></div><span>Short drills will reinforce skills without becoming a second LMS.</span></div>
-<div class="training-grid"><div><small>CORE ROUTINE</small><b>Evidence Before Conclusion</b><p>Observe → question → correlate → decide.</p></div><div><small>ANALYST ROUTINE</small><b>Proves / Supports / Need</b><p>Separate facts, inference, and missing evidence.</p></div><div><small>STATUS</small><b>Drill Library Coming Next</b><p>Schoology remains the system of record for graded work.</p></div></div>
+<div class="training-grid">
+<div><small>DRILL 01 // EVIDENCE</small><b>Proves or Supports?</b><p>Practice separating direct evidence from a defensible inference.</p><button data-drill="psn">LAUNCH DRILL</button></div>
+<div><small>DRILL 02 // IDENTITY</small><b>Authentication Triage</b><p>Decide what a short sequence of login activity actually establishes.</p><button data-drill="auth">LAUNCH DRILL</button></div>
+<div><small>DRILL 03 // WIRELESS</small><b>Name the Mechanism</b><p>Distinguish an evil twin, jamming, and war-driving observation.</p><button data-drill="wireless">LAUNCH DRILL</button></div>
+</div>
 </section>
 <section id="workspace-mywork" class="workspace-panel">
 <div class="section-head"><div><small>LOCAL ANALYST RECORD</small><h2>My Work</h2></div><span>Stored only in this browser. No student account is required.</span></div>
-<div id="myWorkCards" class="case-cards"></div>
+<div class="mywork-summary"><div><small>CASES TOUCHED</small><b id="myCasesTouched">0</b></div><div><small>CASE FILE FINDINGS</small><b id="myFindings">0</b></div><div><small>EVIDENCE REQUESTS</small><b id="myEvidence">0</b></div><div><small>ASSESSMENTS RECORDED</small><b id="myAssessments">0</b></div></div><div id="myWorkCards" class="case-cards"></div>
 </section>
 </div><div id="caseBrief" class="hidden"><button id="backQueue" class="back-link">← CASE QUEUE</button><h1>Assigned Case <span id="briefId"></span></h1><div class="priority" id="briefPriority"></div><h2 id="briefTitle"></h2><p id="briefText"></p><div class="brief-grid"><div><b>Mission</b><br><span id="briefMission"></span></div><div><b>Resources</b><br><span id="briefResources"></span></div><div><b>Standard</b><br><span id="briefStandard"></span></div></div><label>Analyst team <select id="roleSelect"></select></label><button id="acceptCase" class="primary">ACCEPT CASE</button></div></div></div>
 <div id="console" class="app hidden"><header><div><strong>IRONCREST</strong><span> CYBER PARTNERS</span></div><div class="status"><span class="pulse"></span>SOC // ANALYST CONSOLE</div></header><aside><div class="caseblock"><small>ACTIVE CASE</small><b id="activeCaseId"></b><span id="activeCaseTitle"></span><em id="activePriority"></em></div><nav><button data-view="logs" class="active">▦ <span id="telemetryNav">Telemetry</span></button><button data-view="evidence">◇ Evidence Locker</button><button data-view="timeline">⌁ Case File</button><button data-view="notes">▤ Case Notes</button><button data-view="assessment">✓ Assessment</button></nav><button id="consoleToolkit" class="console-toolkit">⊕ Analyst Toolkit</button><div class="credits"><small>INVESTIGATION CREDITS</small><div id="creditDots"></div></div><div class="team"><small>ANALYST TEAM</small><div id="teamName"></div></div><button id="caseQueue" class="queue-button">← Case Queue</button><button id="resetCase" class="reset-case">↻ Reset Case</button></aside><main>
@@ -45,4 +53,4 @@
 </main></div>
 <div id="drawer" class="drawer hidden"><button id="closeDrawer">×</button><small id="drawerLabel">RECORD DETAIL</small><h3 id="drawerTitle"></h3><div id="drawerBody"></div><button id="pinEvent">+ Add to case file</button></div>
 <div id="modal" class="modal hidden"><div class="modalcard"><button id="closeModal">×</button><div id="modalBody"></div></div></div>
-<script src="js/cases.js?v=20260925-v3"></script><script src="js/app.js?v=20260925-v3"></script></body></html>
+<script src="js/cases.js?v=20260926-v3b"></script><script src="js/app.js?v=20260926-v3b"></script></body></html>
