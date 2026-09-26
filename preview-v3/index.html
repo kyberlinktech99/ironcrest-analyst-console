@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ironcrest Analyst Console</title><link rel="stylesheet" href="css/ironcrest.css?v=20260926-v3b"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ironcrest Analyst Console</title><link rel="stylesheet" href="css/ironcrest.css?v=20260926-v3c"></head><body>
 <div id="briefing" class="briefing"><div class="queue-shell workspace-shell">
 <div class="workspace-topbar"><div><div class="eyebrow">IRONCREST CYBER PARTNERS // SOC WORKSPACE</div><h1>Junior Cyber Analyst Workspace</h1><p class="queue-lead">Operate cases, use analyst tools, review intelligence, and build your investigation record.</p></div><div class="analyst-badge"><small>ROLE</small><b>JUNIOR CYBER ANALYST</b><span><i></i> WORKSPACE ONLINE</span></div></div>
 <div id="queueView">
@@ -7,6 +7,7 @@
 <button class="workspace-tab" data-workspace="toolkit">ANALYST TOOLKIT</button>
 <button class="workspace-tab" data-workspace="intel">INTELLIGENCE</button>
 <button class="workspace-tab" data-workspace="training">TRAINING</button>
+<button class="workspace-tab" data-workspace="gateway">LAB GATEWAY</button>
 <button class="workspace-tab" data-workspace="mywork">MY WORK</button>
 </nav>
 <section id="workspace-operations" class="workspace-panel active">
@@ -39,6 +40,27 @@
 <div><small>DRILL 03 // WIRELESS</small><b>Name the Mechanism</b><p>Distinguish an evil twin, jamming, and war-driving observation.</p><button data-drill="wireless">LAUNCH DRILL</button></div>
 </div>
 </section>
+
+<section id="workspace-gateway" class="workspace-panel">
+<div class="section-head"><div><small>AUTHORIZED TRAINING ENVIRONMENTS</small><h2>Lab Gateway</h2></div><span>Launch the environment assigned by your SOC lead.</span></div>
+<div class="gateway-banner"><b>LAB SAFETY STANDARD</b><span>Use attack techniques only in authorized training environments and only within the scope of the assigned activity.</span></div>
+<div class="gateway-section"><div class="gateway-heading"><div><small>PRIMARY ENVIRONMENTS</small><h3>Course Labs</h3></div><span>Use these first when assigned.</span></div>
+<div class="gateway-grid">
+<a class="gateway-card primary-lab" href="https://www.netacad.com/" target="_blank" rel="noopener noreferrer"><div><span class="lab-code">CISCO</span><span class="lab-status">PRIMARY</span></div><h3>Networking Academy</h3><p>Technical learning, networking, operating-system work, Packet Tracer, and mapped course labs.</p><b>LAUNCH ENVIRONMENT ↗</b></a>
+<a class="gateway-card primary-lab" href="https://portal.cyber.org/" target="_blank" rel="noopener noreferrer"><div><span class="lab-code">RANGE</span><span class="lab-status">PRIMARY</span></div><h3>CYBER.ORG Range</h3><p>Browser-based virtual machines and isolated hands-on cybersecurity lab environments.</p><b>LAUNCH ENVIRONMENT ↗</b></a>
+<a class="gateway-card primary-lab" href="https://www.apcsexamprep.com/pages/cyber-command-center" target="_blank" rel="noopener noreferrer"><div><span class="lab-code">APCX</span><span class="lab-status">COURSE</span></div><h3>AP Cyber Command Center</h3><p>Course reinforcement, AP-aligned practice, and browser-based activities selected by your instructor.</p><b>OPEN COMMAND CENTER ↗</b></a>
+</div></div>
+<div class="gateway-section"><div class="gateway-heading"><div><small>CHALLENGE ENVIRONMENTS</small><h3>Practice & Skill Building</h3></div><span>Open only the platform assigned for today's operation.</span></div>
+<div class="gateway-grid compact">
+<a class="gateway-card" href="https://learn.cylabacademy.org/" target="_blank" rel="noopener noreferrer"><div><span class="lab-code">CYLAB</span><span class="lab-status">CTF</span></div><h3>CyLab Security Academy</h3><p>CTF challenges, learning paths, and classroom practice from Carnegie Mellon.</p><b>OPEN CHALLENGES ↗</b></a>
+<a class="gateway-card" href="https://tryhackme.com/" target="_blank" rel="noopener noreferrer"><div><span class="lab-code">THM</span><span class="lab-status">PRACTICE</span></div><h3>TryHackMe</h3><p>Guided cybersecurity rooms and targeted hands-on practice when assigned.</p><b>OPEN PLATFORM ↗</b></a>
+<a class="gateway-card" href="https://overthewire.org/wargames/" target="_blank" rel="noopener noreferrer"><div><span class="lab-code">OTW</span><span class="lab-status">WARGAME</span></div><h3>OverTheWire</h3><p>Command-line and security fundamentals through focused wargame challenges.</p><b>OPEN WARGAMES ↗</b></a>
+<a class="gateway-card" href="https://portswigger.net/web-security" target="_blank" rel="noopener noreferrer"><div><span class="lab-code">WEB</span><span class="lab-status">ACADEMY</span></div><h3>Web Security Academy</h3><p>Purpose-built web-security learning and labs for later course investigations.</p><b>OPEN ACADEMY ↗</b></a>
+<a class="gateway-card" href="https://juice-shop.github.io/juice-shop/" target="_blank" rel="noopener noreferrer"><div><span class="lab-code">JUICE</span><span class="lab-status">TARGET</span></div><h3>OWASP Juice Shop</h3><p>Intentionally vulnerable web application used only in an authorized lab environment.</p><b>OPEN PROJECT ↗</b></a>
+</div></div>
+<div class="gateway-footer"><div><small>ACCESS ISSUE?</small><b>Do not work around school filtering.</b><span>Record the platform and error, then notify your SOC lead so the approved access path can be fixed.</span></div><div><small>REMEMBER</small><b>Schoology is still headquarters.</b><span>Assignments, due dates, submission instructions, and grades remain in Schoology.</span></div></div>
+</section>
+
 <section id="workspace-mywork" class="workspace-panel">
 <div class="section-head"><div><small>LOCAL ANALYST RECORD</small><h2>My Work</h2></div><span>Stored only in this browser. No student account is required.</span></div>
 <div class="mywork-summary"><div><small>CASES TOUCHED</small><b id="myCasesTouched">0</b></div><div><small>CASE FILE FINDINGS</small><b id="myFindings">0</b></div><div><small>EVIDENCE REQUESTS</small><b id="myEvidence">0</b></div><div><small>ASSESSMENTS RECORDED</small><b id="myAssessments">0</b></div></div><div id="myWorkCards" class="case-cards"></div>
@@ -53,4 +75,4 @@
 </main></div>
 <div id="drawer" class="drawer hidden"><button id="closeDrawer">×</button><small id="drawerLabel">RECORD DETAIL</small><h3 id="drawerTitle"></h3><div id="drawerBody"></div><button id="pinEvent">+ Add to case file</button></div>
 <div id="modal" class="modal hidden"><div class="modalcard"><button id="closeModal">×</button><div id="modalBody"></div></div></div>
-<script src="js/cases.js?v=20260926-v3b"></script><script src="js/app.js?v=20260926-v3b"></script></body></html>
+<script src="js/cases.js?v=20260926-v3c"></script><script src="js/app.js?v=20260926-v3c"></script></body></html>
