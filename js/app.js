@@ -13,6 +13,11 @@ function renderWorkspace(){
  $("#caseCards").innerHTML=cases.map(c=>'<article class="queue-card '+(c.queueStatus==="ASSIGNED"?"assigned":"")+'"><div class="queue-card-top"><small>'+esc(c.id)+'</small><span class="priority-mini">'+esc(c.priority)+'</span></div><h2>'+esc(c.title)+'</h2><p>'+esc(c.topic)+'</p><div class="queue-meta"><span>'+esc(c.queueStatus)+'</span><span>'+esc(c.records.length)+' TELEMETRY RECORDS</span><span>'+esc(c.credits)+' CREDITS</span></div><button data-case="'+esc(c.id)+'" class="'+(c.queueStatus==="ASSIGNED"?"primary":"")+'">OPEN CASE</button></article>').join("");
  $("#myWorkCards").innerHTML=cases.map(c=>{const s=caseState(c),complete=!!s.assessment,findings=(s.timeline||[]).length,evidence=(s.unlocked||[]).length;return '<article class="queue-card"><div class="queue-card-top"><small>'+esc(c.id)+'</small><span class="'+(complete?"mywork-status":"mywork-open")+'">'+(complete?"ASSESSMENT RECORDED":"IN PROGRESS")+'</span></div><h2>'+esc(c.title)+'</h2><p>'+findings+' case-file findings · '+evidence+' evidence requests</p><div class="queue-meta"><span>'+esc(s.team||"UNASSIGNED")+'</span><span>LOCAL BROWSER RECORD</span></div><button data-case="'+esc(c.id)+'">OPEN CASE</button></article>'}).join("");
 }
+
+const MISSION_KEY="ironcrest-lab-mission-progress";
+function loadMissionProgress(){let p={};try{p=JSON.parse(localStorage.getItem(MISSION_KEY)||"{}")}catch(e){};["Access","Complete","Ready"].forEach(k=>{const el=$("#mission"+k);if(el)el.checked=!!p[k.toLowerCase()]})}
+function saveMissionProgress(){const p={access:$("#missionAccess").checked,complete:$("#missionComplete").checked,ready:$("#missionReady").checked};localStorage.setItem(MISSION_KEY,JSON.stringify(p));$("#missionSave").textContent="Saved.";setTimeout(()=>$("#missionSave").textContent="Progress saves in this browser.",1800)}
+
 function switchWorkspace(name){document.querySelectorAll(".workspace-tab").forEach(b=>b.classList.toggle("active",b.dataset.workspace===name));document.querySelectorAll(".workspace-panel").forEach(p=>p.classList.toggle("active",p.id==="workspace-"+name))}
 function queue(){C=null;$("#console").classList.add("hidden");$("#briefing").classList.remove("hidden");$("#caseBrief").classList.add("hidden");$("#queueView").classList.remove("hidden");switchWorkspace("operations");renderWorkspace()}
 function openBrief(id){C=CASES[id];if(!C)return;loadState();$("#queueView").classList.add("hidden");$("#caseBrief").classList.remove("hidden");$("#briefId").textContent=C.id;$("#briefPriority").textContent="PRIORITY: "+C.priority;$("#briefTitle").textContent=C.title;$("#briefText").textContent=C.brief;$("#briefMission").textContent=C.mission;$("#briefResources").textContent=C.credits+" investigation credits. Additional evidence has a cost.";$("#briefStandard").textContent=C.standard;$("#roleSelect").innerHTML=C.roles.map(r=>'<option>'+esc(r)+'</option>').join("");$("#roleSelect").value=state.team||C.roles[0]}
@@ -32,6 +37,11 @@ const drillContent={
  wireless:'<h2>DRILL 03 // Name the Mechanism</h2><p class="lead">A venue advertises “HarborCenter-Guest.” A second access point named “HarborCenter_Guest” appears nearby and presents a sign-in portal.</p><p><b>Which mechanism is most directly supported?</b></p><button class="drill-choice" data-answer="wireless-evil">Evil twin</button><button class="drill-choice" data-answer="wireless-jam">Jamming</button><button class="drill-choice" data-answer="wireless-war">War driving</button><div id="drillFeedback" class="drill-feedback"></div>'
 };
 document.querySelectorAll("[data-drill]").forEach(b=>b.onclick=()=>showModal(drillContent[b.dataset.drill]));
+
+
+["missionAccess","missionComplete","missionReady"].forEach(id=>{const el=$("#"+id);if(el)el.onchange=saveMissionProgress});
+$("#missionBrief").onclick=()=>showModal('<h2>TODAY’S ASSIGNMENT // CISCO 2.4</h2><p class="lead">Your goal is not to finish an entire Cisco module. Learn the technical concepts you need to explain the wireless evidence from the Bellweather Financial operation.</p><div class="mission-brief-grid"><div><b>FOCUS</b><span>Wireless and mobile-device attack mechanisms.</span></div><div><b>CONNECT</b><span>Relate the technical explanation back to Signal Lost.</span></div><div><b>BE READY TO EXPLAIN</b><span>What evidence would distinguish an evil twin, jamming, and wireless reconnaissance?</span></div></div><p><b>Analyst standard:</b> Mechanism first. Then connect the mechanism to observable evidence.</p>');
+loadMissionProgress();
 
 document.querySelectorAll("[data-tool]").forEach(b=>b.onclick=()=>{
  const tool=b.dataset.tool;
