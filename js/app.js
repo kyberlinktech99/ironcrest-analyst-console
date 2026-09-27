@@ -40,8 +40,10 @@ function renderRange(){
  const s=RANGE_STEPS[rangeStep];
  $("#stageKicker").textContent=s.kicker;$("#stageTitle").textContent=s.title;$("#decisionQuestion").textContent=s.question;$("#decisionHelp").textContent=s.help;
  document.querySelectorAll(".ribbon-step").forEach((x,i)=>{x.classList.toggle("active",i===rangeStep);x.classList.toggle("done",i<rangeStep)});
- $("#rangeBack").disabled=rangeStep===0;$("#rangeNext").disabled=rangeStep===RANGE_STEPS.length-1;
- $("#rangeNext").textContent=rangeStep===0?"BEGIN EXERCISE →":rangeStep===RANGE_STEPS.length-2?"DEFENDER REPLAY →":rangeStep===RANGE_STEPS.length-1?"REPLAY ACTIVE":"CONTINUE →";
+ $("#rangeBack").disabled=rangeStep===0;
+ const interactionGate=(rangeStep===2||rangeStep===3&&!portalSubmitted);
+ $("#rangeNext").disabled=rangeStep===RANGE_STEPS.length-1||interactionGate;
+ $("#rangeNext").textContent=rangeStep===2?"SELECT A NETWORK ON THE EMPLOYEE LAPTOP":rangeStep===3&&!portalSubmitted?"USE THE CAPTIVE PORTAL":rangeStep===0?"BEGIN EXERCISE →":rangeStep===RANGE_STEPS.length-2?"DEFENDER REPLAY →":rangeStep===RANGE_STEPS.length-1?"REPLAY ACTIVE":"CONTINUE →";
  $("#decisionChoices").innerHTML=s.choices.map(c=>'<button data-range-choice="'+c[0]+'">'+esc(c[1])+'</button>').join("");
  $("#decisionFeedback").textContent="";$("#decisionFeedback").className="decision-feedback";
  $("#attackerState").textContent=rangeStep>=1?"ACTIVE":"STANDBY";
