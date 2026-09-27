@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=__dirname+'/../',ctx={window:{}};vm.createContext(ctx);
-for(const name of ['cases','frq','unit1'])vm.runInContext(fs.readFileSync(root+'js/'+name+'.js','utf8'),ctx);
+for(const name of ['config','cases','learning','frq','unit1'])vm.runInContext(fs.readFileSync(root+'js/'+name+'.js','utf8'),ctx);
 const api=ctx.window.IRONCREST_UNIT1,cases=ctx.window.IRONCREST_CASES;
 assert.equal(api.catalog.length,Object.keys(cases).length);
 const keys=new Set();

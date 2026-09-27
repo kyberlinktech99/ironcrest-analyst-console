@@ -1,6 +1,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=__dirname+'/../';
 const context={window:{}};vm.createContext(context);
+vm.runInContext(fs.readFileSync(root+'js/config.js','utf8'),context);
 vm.runInContext(fs.readFileSync(root+'js/cases.js','utf8'),context);
 vm.runInContext(fs.readFileSync(root+'js/frq.js','utf8'),context);
 const api=context.window.IRONCREST_FRQ,c=context.window.IRONCREST_CASES['U1-002'];
