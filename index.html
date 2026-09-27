@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ironcrest Analyst Console</title><link rel="stylesheet" href="css/ironcrest.css?v=20260926-v6"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ironcrest Analyst Console</title><link rel="stylesheet" href="css/ironcrest.css?v=20260927-evil2"></head><body>
 <div id="briefing" class="briefing"><div class="queue-shell workspace-shell">
 <div class="workspace-topbar"><div><div class="eyebrow">IRONCREST CYBER PARTNERS // SOC WORKSPACE</div><h1>Junior Cyber Analyst Workspace</h1><p class="queue-lead">Operate cases, use analyst tools, review intelligence, and build your investigation record.</p></div><div class="analyst-badge"><small>ROLE</small><b>JUNIOR CYBER ANALYST</b><span><i></i> WORKSPACE ONLINE</span></div></div>
 <div id="queueView" class="range-home">
@@ -23,8 +23,9 @@
   <div class="stage-actions"><button id="rangeReset">↻ RESET</button><button id="rangeBack">← BACK</button><button id="rangeNext" class="primary">BEGIN EXERCISE →</button></div>
  </div>
 
- <div class="screen-deck">
-  <article class="screen-window attacker-screen" id="attackerScreen">
+ <div class="focus-cue" id="focusCue"><span>FOCUS</span><b id="focusLabel">EMPLOYEE + SOC</b><small id="focusInstruction">Establish the normal baseline before the attack begins.</small></div>
+ <div class="screen-deck focus-overview" id="screenDeck">
+  <article class="screen-window attacker-screen" id="attackerScreen" data-perspective="attacker">
    <div class="window-bar"><span><i></i><i></i><i></i></span><b>ATTACKER WORKSTATION // TRAINING VIEW</b><em id="attackerState">STANDBY</em></div>
    <div class="terminal" id="attackerTerminal">
     <div class="term-line muted">ironcrest-range:~$ <span>wireless observation console</span></div>
@@ -32,7 +33,7 @@
    </div>
   </article>
 
-  <article class="screen-window employee-screen" id="employeeScreen">
+  <article class="screen-window employee-screen" id="employeeScreen" data-perspective="employee">
    <div class="window-bar employee-bar"><span><i></i><i></i><i></i></span><b>EMPLOYEE LAPTOP // BW-LT-22</b><em id="employeeState">CONNECTED</em></div>
    <div class="desktop">
     <div class="desktop-wallpaper"><div class="bellweather-mark">B</div><b>BELLWEATHER FINANCIAL</b><span>Remote Workstation</span></div>
@@ -55,7 +56,7 @@
    </div>
   </article>
 
-  <article class="screen-window soc-screen" id="socScreen">
+  <article class="screen-window soc-screen" id="socScreen" data-perspective="soc">
    <div class="window-bar soc-bar"><span><i></i><i></i><i></i></span><b>IRONCREST SOC // DEFENDER VIEW</b><em id="socState">MONITORING</em></div>
    <div class="soc-dashboard">
     <div class="soc-metrics"><div><small>WIRELESS</small><b id="metricWireless">NORMAL</b></div><div><small>IDENTITY</small><b id="metricIdentity">NORMAL</b></div><div><small>OPEN ALERTS</small><b id="metricAlerts">0</b></div></div>
@@ -106,4 +107,4 @@
 </main></div>
 <div id="drawer" class="drawer hidden"><button id="closeDrawer">×</button><small id="drawerLabel">RECORD DETAIL</small><h3 id="drawerTitle"></h3><div id="drawerBody"></div><button id="pinEvent">+ Add to case file</button></div>
 <div id="modal" class="modal hidden"><div class="modalcard"><button id="closeModal">×</button><div id="modalBody"></div></div></div>
-<script src="js/cases.js?v=20260927-evil1"></script><script src="js/app.js?v=20260927-evil1"></script></body></html>
+<script src="js/cases.js?v=20260927-evil2"></script><script src="js/app.js?v=20260927-evil2"></script></body></html>
