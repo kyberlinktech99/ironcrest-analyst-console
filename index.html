@@ -1,79 +1,60 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ironcrest Analyst Console</title><link rel="stylesheet" href="css/ironcrest.css?v=20260926-v6"></head><body>
 <div id="briefing" class="briefing"><div class="queue-shell workspace-shell">
 <div class="workspace-topbar"><div><div class="eyebrow">IRONCREST CYBER PARTNERS // SOC WORKSPACE</div><h1>Junior Cyber Analyst Workspace</h1><p class="queue-lead">Operate cases, use analyst tools, review intelligence, and build your investigation record.</p></div><div class="analyst-badge"><small>ROLE</small><b>JUNIOR CYBER ANALYST</b><span><i></i> WORKSPACE ONLINE</span></div></div>
-<div id="queueView" class="soc-home">
-<section class="external-brief">
-  <div class="brief-signal"><span class="signal-dot"></span><b>EXTERNAL THREAT INTELLIGENCE</b><span>TLP:CLEAR</span><span>31 JUL 2026</span></div>
-  <div class="brief-hero">
-    <div class="brief-copy">
-      <small>MICROSOFT THREAT INTELLIGENCE // CAPTIVECRUNCH</small>
-      <h2>Travelers targeted through compromised public Wi-Fi networks</h2>
-      <p>Microsoft reported that Storm-2945 manipulated DNS and HTTP traffic on hospitality networks served by captive portals, redirecting travelers through actor-controlled infrastructure for phishing, credential theft, and malware delivery.</p>
-      <div class="brief-actions">
-        <a href="https://www.microsoft.com/en-us/security/blog/2026/07/31/captivecrunch-midnight-blizzard-targets-travelers-worldwide-for-malware-delivery-and-credential-theft/" target="_blank" rel="noopener noreferrer">READ ORIGINAL REPORT ↗</a>
-        <button id="openIncidentRecap">INCIDENT RECAP</button>
-      </div>
-    </div>
-    <div class="brief-facts">
-      <div><small>ENVIRONMENT</small><b>Hotels / shared venues</b></div>
-      <div><small>OBSERVED</small><b>Captive-portal traffic manipulation</b></div>
-      <div><small>AT RISK</small><b>Credentials, sessions, endpoints</b></div>
-      <div><small>ANALYST CAUTION</small><b>Real campaign ≠ proof of our simulated case</b></div>
-    </div>
-  </div>
+<div id="queueView" class="attack-home">
+<section class="attack-intel-banner">
+  <div class="intel-tag"><span class="signal-dot"></span>REAL-WORLD THREAT INTELLIGENCE</div>
+  <div class="intel-copy"><b>CAPTIVECRUNCH // PUBLIC WI-FI TARGETING</b><span>Microsoft Threat Intelligence reported attackers manipulating captive-portal network traffic to redirect travelers toward actor-controlled infrastructure for credential theft and malware delivery.</span></div>
+  <a href="https://www.microsoft.com/en-us/security/blog/2026/07/31/captivecrunch-midnight-blizzard-targets-travelers-worldwide-for-malware-delivery-and-credential-theft/" target="_blank" rel="noopener noreferrer">READ SOURCE ↗</a>
 </section>
 
-<section class="translation-strip">
-  <div class="translation-head">
-    <div><small>INCIDENT → AP TRANSLATION</small><h2>Why this matters for the AP exam</h2></div>
-    <span class="ap-topic">TOPIC 1.3</span>
-  </div>
-  <div class="ap-objectives">
-    <article><b>1.3.A</b><span>Identify the type of adversary conducting a cyberattack.</span></article>
-    <article><b>1.3.B</b><span>Identify types of wireless cyberattacks.</span></article>
-    <article><b>1.3.C</b><span>Describe actions to increase protection of sensitive data on the internet or Wi-Fi.</span></article>
-  </div>
-  <div class="evidence-boundary">
-    <div><small>THIS REPORT ESTABLISHES</small><p>Compromised captive-portal networks, manipulated DNS/HTTP traffic, actor-controlled infrastructure, phishing and credential/session theft activity.</p></div>
-    <div><small>RELATED AP CONCEPTS</small><p><b>Evil twin · Jamming · War driving · adversary skill · public-network protections · VPN</b></p></div>
-    <div><small>DO NOT OVERCLAIM</small><p>This reporting does <b>not</b> establish that every public Wi-Fi attack is an evil twin, that jamming occurred, or that war driving occurred. Classify from evidence.</p></div>
-  </div>
-  <button id="openExamLens" class="exam-lens-btn">OPEN AP EXAM LENS →</button>
+<section class="attack-lab-head">
+ <div><small>IRONCREST TRAINING SIMULATION // TOPIC 1.3</small><h1>Watch the Attack Happen</h1><p>Follow a wireless attack sequence from the adversary and defender perspectives. Your job is to notice <b>what changes</b> before Ironcrest gives you the AP terminology.</p></div>
+ <div class="lab-objectives"><small>AP CYBERSECURITY</small><b>1.3.A</b><span>Identify adversary type</span><b>1.3.B</b><span>Identify wireless attacks</span><b>1.3.C</b><span>Protect sensitive data</span></div>
 </section>
 
-<section class="reinforcement-card">
-  <div class="reinforcement-label"><span>TECHNICAL REINFORCEMENT</span><small>ASSIGNED BY SOC LEAD</small></div>
-  <div class="reinforcement-body">
-    <div><small>CISCO NETWORKING ACADEMY</small><h3>Module 2 → 2.4 Wireless and Mobile Device Attacks</h3><p>Focus on attack mechanisms, observable characteristics, and defensive considerations. Then return to Ironcrest and apply the concepts to evidence.</p></div>
-    <div class="reinforcement-actions"><span>~15 MIN</span><a href="https://www.netacad.com/" target="_blank" rel="noopener noreferrer">BEGIN TECHNICAL BRIEFING ↗</a></div>
-  </div>
+<section class="attack-simulator">
+ <div class="sim-toolbar">
+   <div><small>SIMULATION</small><b>Harborview Transit Center // Guest Wi-Fi</b></div>
+   <div class="sim-controls"><button id="simReset">↻ RESET</button><button id="simPrev">← PREVIOUS</button><button id="simNext" class="primary">NEXT EVENT →</button><button id="simAuto">▶ RUN ATTACK</button></div>
+ </div>
+ <div class="sim-body">
+   <div class="network-scene" id="networkScene">
+     <div class="scene-status"><span id="simClock">08:00:00</span><b id="simPhase">NORMAL BASELINE</b></div>
+     <div class="rf-field" id="rfField"><i></i><i></i><i></i><i></i></div>
+     <div class="scene-node legit-ap" id="legitAp"><span class="node-icon">◉</span><b>Harborview-Guest</b><small>APPROVED AP</small></div>
+     <div class="scene-node client" id="victim"><span class="node-icon">▣</span><b>TRAVELER-LT</b><small id="clientStatus">CONNECTED: Harborview-Guest</small></div>
+     <div class="scene-node attacker" id="attacker"><span class="node-icon">◆</span><b>UNKNOWN VEHICLE</b><small id="attackerStatus">NO ACTIVITY</small></div>
+     <div class="scene-node rogue-ap" id="rogueAp"><span class="node-icon">◉</span><b>Harborview_Guest</b><small>UNAPPROVED AP</small></div>
+     <div class="portal-card" id="portalCard"><small>NETWORK SIGN-IN</small><b>Harborview Guest Access</b><span>Enter work email and password to continue.</span><em>Session expires in 2:00</em></div>
+     <div class="identity-alert" id="identityAlert"><small>IDENTITY PROVIDER</small><b>LOGIN_SUCCESS</b><span>Unknown browser // external source</span></div>
+     <div class="jam-overlay" id="jamOverlay"><b>RF INTERFERENCE</b><span>Legitimate wireless availability degraded</span></div>
+   </div>
+   <aside class="event-stream">
+     <div class="stream-head"><small>DEFENDER VIEW</small><b>Observable Event Stream</b></div>
+     <div id="simEvents" class="sim-events"></div>
+   </aside>
+ </div>
 </section>
 
-<section class="operations-board">
-  <div class="section-head"><div><small>IRONCREST OPERATIONS</small><h2>Incoming Alert Queue</h2></div><span>Alerts are observations—not incidents. Inspect, correlate, then decide what deserves escalation.</span></div>
-  <div class="shift-stats">
-    <div><small>NEW ALERTS</small><b id="statAlerts">0</b></div>
-    <div><small>WORKING SET</small><b id="statWorking">0</b></div>
-    <div><small>ACTIVE INCIDENTS</small><b id="statCases">0</b></div>
-    <div><small>ANALYST STANDARD</small><b>PROVES / SUPPORTS / NEED</b></div>
-  </div>
+<section class="concept-debrief">
+ <div class="concept-title"><div><small>AP CONCEPT REVEAL</small><h2 id="conceptName">Baseline first.</h2></div><span id="conceptCode">OBSERVE</span></div>
+ <div class="concept-grid">
+   <div><small>WHAT YOU JUST SAW</small><p id="conceptObserved">A legitimate access point and client operating normally. Establishing normal behavior gives you something to compare later observations against.</p></div>
+   <div><small>AP MECHANISM</small><p id="conceptMechanism">No attack has occurred yet. Do not classify normal activity as malicious.</p></div>
+   <div><small>EVIDENCE BOUNDARY</small><p id="conceptBoundary">An unfamiliar observation may deserve investigation, but unfamiliar does not automatically mean malicious.</p></div>
+   <div><small>DEFENSIVE CONNECTION</small><p id="conceptDefense">Know the approved network name and expected infrastructure before deciding something is abnormal.</p></div>
+ </div>
+</section>
 
-  <div class="queue-toolbar">
-    <div><small>CORRELATION DESK</small><b>Which alerts might belong to the same incident?</b><p>Inspect an alert before adding it to your working set. Similar timing or a shared user can support correlation, but does not prove causation.</p></div>
-    <button id="createIncident" disabled>CREATE INCIDENT (0)</button>
-  </div>
+<section class="attack-path">
+ <div class="section-head"><div><small>ATTACK RECONSTRUCTION</small><h2>Build the sequence as it unfolds</h2></div><span>AP questions may describe the mechanism without naming it.</span></div>
+ <div id="attackPath" class="path-track"></div>
+</section>
 
-  <div id="alertQueue" class="alert-queue"></div>
-
-  <div class="active-incidents">
-    <div class="subsection-head"><div><small>ACTIVE INCIDENTS</small><h3>Escalated investigations</h3></div><span id="incidentHint">Build a defensible working set before escalating.</span></div>
-    <div id="caseCards" class="case-cards"></div>
-  </div>
-
-  <div class="case-history">
-    <div class="subsection-head"><div><small>CASE HISTORY</small><h3>Prior Ironcrest operations</h3></div><span>Closed and training cases remain available for review.</span></div>
-    <div id="historyCards" class="history-cards"></div>
-  </div>
+<section class="transfer-gate" id="transferGate">
+ <div><small>READY FOR DEFENDER MODE?</small><h2>Now investigate without the labels.</h2><p>You have watched one example. Signal Lost gives you telemetry and evidence instead of an animation. Determine which mechanisms are actually supported.</p></div>
+ <button id="enterTransfer" disabled>COMPLETE SIMULATION FIRST</button>
 </section>
 </div><div id="caseBrief" class="hidden"><button id="backQueue" class="back-link">← CASE QUEUE</button><h1>Assigned Case <span id="briefId"></span></h1><div class="priority" id="briefPriority"></div><h2 id="briefTitle"></h2><p id="briefText"></p><div class="brief-grid"><div><b>Mission</b><br><span id="briefMission"></span></div><div><b>Resources</b><br><span id="briefResources"></span></div><div><b>Standard</b><br><span id="briefStandard"></span></div></div><label>Analyst team <select id="roleSelect"></select></label><button id="acceptCase" class="primary">ACCEPT CASE</button></div></div></div>
 <div id="console" class="app hidden"><header><div><strong>IRONCREST</strong><span> CYBER PARTNERS</span></div><div class="status"><span class="pulse"></span>SOC // ANALYST CONSOLE</div></header><aside><div class="caseblock"><small>ACTIVE CASE</small><b id="activeCaseId"></b><span id="activeCaseTitle"></span><em id="activePriority"></em></div><nav><button data-view="logs" class="active">▦ <span id="telemetryNav">Telemetry</span></button><button data-view="evidence">◇ Evidence Locker</button><button data-view="timeline">⌁ Case File</button><button data-view="notes">▤ Case Notes</button><button data-view="assessment">✓ Incident Decision</button></nav><button id="consoleToolkit" class="console-toolkit">⊕ Analyst Toolkit</button><div class="credits"><small>INVESTIGATION CREDITS</small><div id="creditDots"></div></div><div class="team"><small>ANALYST TEAM</small><div id="teamName"></div></div><button id="caseQueue" class="queue-button">← Case Queue</button><button id="resetCase" class="reset-case">↻ Reset Case</button></aside><main>
@@ -85,4 +66,4 @@
 </main></div>
 <div id="drawer" class="drawer hidden"><button id="closeDrawer">×</button><small id="drawerLabel">RECORD DETAIL</small><h3 id="drawerTitle"></h3><div id="drawerBody"></div><button id="pinEvent">+ Add to case file</button></div>
 <div id="modal" class="modal hidden"><div class="modalcard"><button id="closeModal">×</button><div id="modalBody"></div></div></div>
-<script src="js/cases.js?v=20260926-v6"></script><script src="js/app.js?v=20260926-v6"></script></body></html>
+<script src="js/cases.js?v=20260927-attack1"></script><script src="js/app.js?v=20260927-attack1"></script></body></html>
