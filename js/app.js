@@ -6,67 +6,51 @@ function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function loadState(){KEY="ironcrest-"+C.id.toLowerCase();state=Object.assign(defaults(C),JSON.parse(localStorage.getItem(KEY)||"{}"));state.timeline=(state.timeline||[]).map(x=>x&&x.type?x:{type:"legacy",time:(x&&x.time)||"—",title:"Migrated Finding",source:"Legacy case file",observation:(x&&x.text)||"Imported finding."});save()}
 function caseState(c){try{return JSON.parse(localStorage.getItem("ironcrest-"+c.id.toLowerCase())||"{}")}catch(e){return{}}}
 
-const ALERT_KEY="ironcrest-alert-correlation-v1";
-const ALERTS=[
- {id:"ALT-260926-071",time:"07:54",sev:"MED",source:"EMAIL",client:"Northstar Health Services",title:"Employee-reported benefits message",summary:"External message uses a payroll deadline and directs the user to a benefits verification site.",detail:"Display name: Northstar Benefits. Subject: Payroll verification required before 08:30. Message contains a link to northstar-benefits.example/verify.",caseId:"U1-003"},
- {id:"ALT-260926-084",time:"08:03",sev:"LOW",source:"WEB",client:"Northstar Health Services",title:"Unusual external sign-in page",summary:"Managed laptop visited an external benefits domain that presented a corporate-style sign-in form.",detail:"Web gateway observed NHS-LT-24 visit northstar-benefits.example/verify. The gateway can see the page request, but cannot establish what the user typed.",caseId:"U1-003"},
- {id:"ALT-260926-096",time:"08:08",sev:"MED",source:"WIRELESS",client:"Northstar Health Services",title:"Near-match guest SSID detected",summary:"A wireless network similar to the approved conference guest network appeared in the same area.",detail:"Approved SSID: HarborCenter-Guest. Observed near-match: HarborCenter_Guest. Sensor also observed BSSID D2:44:9A:18:71:02; its authorization status is not established by this alert alone.",caseId:"U1-003"},
- {id:"ALT-260926-111",time:"08:13",sev:"HIGH",source:"IDENTITY",client:"Northstar Health Services",title:"Failures followed by successful sign-in",summary:"Three password failures from an unfamiliar source were followed by a successful sign-in for the same account.",detail:"Account dlee: 3 failures from 198.51.100.62 between 08:12:46 and 08:13:11, followed by LOGIN_SUCCESS at 08:13:29 from an unknown browser.",caseId:"U1-003"},
- {id:"ALT-260926-123",time:"08:15",sev:"HIGH",source:"MAIL",client:"Northstar Health Services",title:"New security-message inbox rule",summary:"A new rule was created during the unfamiliar cloud session.",detail:"Mail service recorded a rule for dlee that moves messages containing 'security' to Archive. This is post-login activity; determine whether the user authorized it.",caseId:"U1-003"}
+
+const SIM_STEPS=[
+ {time:"08:00:00",phase:"NORMAL BASELINE",name:"Baseline first.",code:"OBSERVE",events:["08:00  WAP  Harborview-Guest healthy","08:00  CLIENT  TRAVELER-LT associated"],observed:"A legitimate access point and client operating normally. Establishing normal behavior gives you something to compare later observations against.",mechanism:"No attack has occurred yet. Do not classify normal activity as malicious.",boundary:"An unfamiliar observation may deserve investigation, but unfamiliar does not automatically mean malicious.",defense:"Know the approved network name and expected infrastructure before deciding something is abnormal.",path:"BASELINE"},
+ {time:"08:04:18",phase:"RECONNAISSANCE",name:"War Driving",code:"1.3.B",events:["08:04  SENSOR  Wireless beacons queried","08:05  PHYSICAL  Vehicle moving slowly near venue"],observed:"A nearby adversary surveys wireless beacons and collects network information while moving through the area.",mechanism:"WAR DRIVING is wireless reconnaissance: detecting wireless networks and gathering information while driving or walking through an area.",boundary:"A vehicle near a building does not prove war driving. You need evidence of wireless reconnaissance activity.",defense:"Reduce unnecessary wireless exposure and monitor for reconnaissance patterns, but remember: reconnaissance is information gathering, not credential theft by itself.",path:"WAR DRIVING"},
+ {time:"08:09:42",phase:"AVAILABILITY DISRUPTION",name:"Jamming",code:"1.3.B",events:["08:09  RF  Noise floor spikes on channel 6","08:09  WAP  17 clients disconnect","08:09  LAN  Wired hosts remain reachable"],observed:"Strong interference appears on the wireless channel while legitimate wireless clients lose connectivity. The wired network remains available.",mechanism:"JAMMING uses a strong electromagnetic signal in the same frequency range to prevent legitimate wireless communication. It primarily affects AVAILABILITY.",boundary:"A Wi-Fi outage alone does not prove jamming. RF interference plus wireless-specific disruption provides stronger evidence.",defense:"Investigate the RF environment and maintain alternate connectivity where availability matters. A VPN does not stop radio-frequency jamming.",path:"JAMMING"},
+ {time:"08:10:11",phase:"IMPERSONATION",name:"Evil Twin",code:"1.3.B",events:["08:10  SENSOR  New SSID Harborview_Guest","08:10  BSSID  Not in approved inventory"],observed:"A new access point appears with a name nearly identical to the legitimate guest network.",mechanism:"An EVIL TWIN is an adversary-operated wireless access point using an SSID similar or identical to a legitimate network so victims may connect to it.",boundary:"A similar SSID is suspicious, but the strongest classification comes from correlating the name with unauthorized infrastructure and client behavior.",defense:"Verify the exact SSID before connecting. Organizations should maintain an approved access-point inventory and detect rogue infrastructure.",path:"EVIL TWIN"},
+ {time:"08:11:03",phase:"CREDENTIAL EXPOSURE",name:"Credential-harvesting portal",code:"1.3.C",events:["08:11  CLIENT  Associated: Harborview_Guest","08:11  WEB  Captive portal requests work credentials"],observed:"The traveler connects to the near-match network and receives a portal asking for work credentials.",mechanism:"The rogue network is now being used to influence the victim into revealing sensitive authentication information. The portal interaction creates a credential-exposure opportunity.",boundary:"Seeing a credential form does not prove the victim submitted credentials. Even confirmed exposure would not, by itself, prove later account access.",defense:"Verify network authenticity and consider the sensitivity of information before using public Wi-Fi. HTTPS protects encrypted web traffic, but users must still evaluate where they are entering credentials.",path:"CREDENTIAL HARVEST"},
+ {time:"08:17:29",phase:"IDENTITY ACTIVITY",name:"Correlate beyond Wi-Fi",code:"PROVES / SUPPORTS / NEED",events:["08:17  IDP  3 LOGIN_FAILURE unknown browser","08:18  IDP  LOGIN_SUCCESS unknown browser"],observed:"Later identity activity shows failures followed by a successful login from an unfamiliar source.",mechanism:"This is where analysts correlate across data sources. Wireless evidence and identity evidence may form an attack narrative, but each claim must match what the evidence establishes.",boundary:"Timing and similarity SUPPORT a relationship. They do not automatically PROVE that this specific wireless interaction caused the successful login. Identify what additional evidence you NEED.",defense:"Use MFA, strong unique credentials, identity monitoring, and rapid response to suspicious sign-ins. Correlate network, user, and identity evidence before asserting causation.",path:"POSSIBLE CREDENTIAL ABUSE"}
 ];
-function alertState(){try{return Object.assign({working:[],held:[],incidentCreated:false,opened:[]},JSON.parse(localStorage.getItem(ALERT_KEY)||"{}"))}catch(e){return{working:[],held:[],incidentCreated:false,opened:[]}}}
-function saveAlertState(s){localStorage.setItem(ALERT_KEY,JSON.stringify(s))}
-function renderWorkspace(){
- const s=alertState(),working=new Set(s.working||[]),held=new Set(s.held||[]),opened=new Set(s.opened||[]);
- const active=s.incidentCreated?1:0;
- $("#statAlerts").textContent=ALERTS.filter(a=>!working.has(a.id)&&!held.has(a.id)).length;
- $("#statWorking").textContent=working.size;
- $("#statCases").textContent=active;
- $("#createIncident").disabled=working.size<2||s.incidentCreated;
- $("#createIncident").textContent=s.incidentCreated?"INCIDENT CREATED":"CREATE INCIDENT ("+working.size+")";
- $("#incidentHint").textContent=s.incidentCreated?"U1-003 created from correlated observations. Open the incident to investigate.":"Build a defensible working set before escalating.";
- $("#alertQueue").innerHTML=ALERTS.map(a=>{
-   const status=working.has(a.id)?"WORKING SET":held.has(a.id)?"HOLD":opened.has(a.id)?"REVIEWED":"NEW";
-   return '<article class="alert-row '+(working.has(a.id)?"correlated ":"")+(held.has(a.id)?"held ":"")+'sev-'+a.sev.toLowerCase()+'"><div class="alert-time">'+esc(a.time)+'</div><div class="alert-sev">'+esc(a.sev)+'</div><div class="alert-source">'+esc(a.source)+'</div><div class="alert-main"><b>'+esc(a.title)+'</b><span>'+esc(a.client)+'</span><p>'+esc(a.summary)+'</p></div><div class="alert-status">'+status+'</div><button data-alert="'+esc(a.id)+'">INSPECT</button></article>'
- }).join("");
- $("#caseCards").innerHTML=s.incidentCreated?incidentCard(CASES["U1-003"]):'<div class="empty-incident"><b>NO ACTIVE INCIDENT</b><span>Inspect incoming alerts and build a working set. When the evidence supports correlation, create an incident.</span></div>';
- $("#historyCards").innerHTML=["U1-002","U1-001"].map(id=>{
-   const c=CASES[id],closed=id==="U1-002"?"CLOSED / PRIOR OP":"TRAINING ARCHIVE";
-   return '<article><div><small>'+esc(closed)+'</small><b>'+esc(c.id)+' // '+esc(c.title)+'</b><span>'+esc(c.topic)+'</span></div><button data-case="'+esc(c.id)+'">REVIEW CASE</button></article>'
- }).join("");
+let simStep=0,simTimer=null;
+function renderWorkspace(){renderSim()}
+function renderSim(){
+ const s=SIM_STEPS[simStep];
+ $("#simClock").textContent=s.time;$("#simPhase").textContent=s.phase;$("#conceptName").textContent=s.name;$("#conceptCode").textContent=s.code;
+ $("#conceptObserved").textContent=s.observed;$("#conceptMechanism").textContent=s.mechanism;$("#conceptBoundary").textContent=s.boundary;$("#conceptDefense").textContent=s.defense;
+ $("#simEvents").innerHTML=SIM_STEPS.slice(0,simStep+1).flatMap((x,i)=>x.events.map(e=>'<div class="sim-event '+(i===simStep?"current":"")+'"><span>'+esc(e.slice(0,5))+'</span><b>'+esc(e.slice(6))+'</b></div>')).join("");
+ $("#attackPath").innerHTML=SIM_STEPS.map((x,i)=>'<div class="path-node '+(i<simStep?"done ":"")+(i===simStep?"active ":"")+'"><i></i><small>'+(i===0?"START":"0"+i)+'</small><b>'+esc(x.path)+'</b></div>').join("");
+ $("#simPrev").disabled=simStep===0;$("#simNext").disabled=simStep===SIM_STEPS.length-1;
+ $("#simNext").textContent=simStep===SIM_STEPS.length-1?"SEQUENCE COMPLETE":"NEXT EVENT →";
+ $("#enterTransfer").disabled=simStep!==SIM_STEPS.length-1;$("#enterTransfer").textContent=simStep===SIM_STEPS.length-1?"ENTER SIGNAL LOST INVESTIGATION →":"COMPLETE SIMULATION FIRST";
+ $("#attacker").classList.toggle("visible",simStep>=1);$("#attackerStatus").textContent=simStep===1?"SCANNING WIRELESS BEACONS":simStep>=2?"ACTIVE NEAR VENUE":"NO ACTIVITY";
+ $("#jamOverlay").classList.toggle("visible",simStep===2);$("#rfField").classList.toggle("jammed",simStep===2);
+ $("#rogueAp").classList.toggle("visible",simStep>=3);
+ $("#victim").classList.toggle("disconnected",simStep===2);$("#victim").classList.toggle("compromised",simStep>=4);
+ $("#clientStatus").textContent=simStep===2?"WIRELESS DISCONNECTED":simStep>=4?"CONNECTED: Harborview_Guest":"CONNECTED: Harborview-Guest";
+ $("#portalCard").classList.toggle("visible",simStep===4);
+ $("#identityAlert").classList.toggle("visible",simStep>=5);
 }
-function incidentCard(c){return '<article class="queue-card assigned incident-card"><div class="queue-card-top"><small>'+esc(c.id)+' // ACTIVE INCIDENT</small><span class="priority-mini">'+esc(c.priority)+'</span></div><h2>'+esc(c.title)+'</h2><p>Northstar Health Services // '+esc(c.topic)+'</p><div class="queue-meta"><span>CORRELATED ALERTS</span><span>'+esc(c.records.length)+' INCIDENT RECORDS</span><span>'+esc(c.credits)+' EVIDENCE CREDITS</span></div><button data-case="'+esc(c.id)+'" class="primary">OPEN INCIDENT</button></article>'}
-function openAlert(id){
- const a=ALERTS.find(x=>x.id===id);if(!a)return;
- const s=alertState();if(!s.opened.includes(id))s.opened.push(id);saveAlertState(s);renderWorkspace();
- const disposition=(s.working||[]).includes(id)?"WORKING SET":(s.held||[]).includes(id)?"HOLD":"UNTRIAGED";
- showModal('<div class="alert-modal-head"><small>'+esc(a.id)+' // '+esc(a.time)+' // '+esc(a.source)+'</small><span class="severity '+esc(a.sev.toLowerCase())+'">'+esc(a.sev)+'</span></div><h2>'+esc(a.title)+'</h2><p class="lead">'+esc(a.summary)+'</p><div class="alert-artifact"><small>OBSERVABLE DETAIL</small><p>'+esc(a.detail)+'</p></div><div class="triage-reminder"><b>TRIAGE QUESTION</b><span>Does this observation belong in the same working set as other Northstar activity? Correlation is a hypothesis until the evidence supports it.</span></div><div class="triage-actions"><button data-alert-action="working" data-alert-id="'+esc(a.id)+'">ADD TO WORKING SET</button><button data-alert-action="hold" data-alert-id="'+esc(a.id)+'">HOLD / NEED CONTEXT</button><button data-alert-action="clear" data-alert-id="'+esc(a.id)+'">CLEAR TRIAGE</button></div><p class="current-triage">CURRENT: <b>'+esc(disposition)+'</b></p>');
-}
-function triageAlert(id,action){
- const s=alertState();s.working=(s.working||[]).filter(x=>x!==id);s.held=(s.held||[]).filter(x=>x!==id);
- if(action==="working")s.working.push(id);if(action==="hold")s.held.push(id);
- saveAlertState(s);closeModal();renderWorkspace();
-}
-function createIncident(){
- const s=alertState();if((s.working||[]).length<2||s.incidentCreated)return;
- s.incidentCreated=true;saveAlertState(s);renderWorkspace();
- showModal('<h2>INCIDENT CREATED // U1-003</h2><p class="lead">Your working set has been escalated into an Ironcrest incident.</p><div class="incident-created"><b>CHAIN REACTION</b><span>NORTHSTAR HEALTH SERVICES</span><p>You have correlated '+s.working.length+' alerts. That correlation starts the investigation—it does not prove a complete attack path. Open the incident and test your hypothesis against telemetry and evidence.</p></div><button data-open-created="U1-003" class="primary-modal">OPEN INCIDENT →</button>');
+function stepSim(delta){simStep=Math.max(0,Math.min(SIM_STEPS.length-1,simStep+delta));renderSim()}
+function resetSim(){if(simTimer){clearInterval(simTimer);simTimer=null;$("#simAuto").textContent="▶ RUN ATTACK"}simStep=0;renderSim()}
+function autoSim(){
+ if(simTimer){clearInterval(simTimer);simTimer=null;$("#simAuto").textContent="▶ RUN ATTACK";return}
+ if(simStep===SIM_STEPS.length-1)simStep=0;renderSim();$("#simAuto").textContent="■ PAUSE";
+ simTimer=setInterval(()=>{if(simStep>=SIM_STEPS.length-1){clearInterval(simTimer);simTimer=null;$("#simAuto").textContent="▶ REPLAY ATTACK";return}stepSim(1)},2400);
 }
 
 function switchWorkspace(name){document.querySelectorAll(".workspace-tab").forEach(b=>b.classList.toggle("active",b.dataset.workspace===name));document.querySelectorAll(".workspace-panel").forEach(p=>p.classList.toggle("active",p.id==="workspace-"+name))}
 function queue(){C=null;$("#console").classList.add("hidden");$("#briefing").classList.remove("hidden");$("#caseBrief").classList.add("hidden");$("#queueView").classList.remove("hidden");renderWorkspace()}
 function openBrief(id){C=CASES[id];if(!C)return;loadState();$("#queueView").classList.add("hidden");$("#caseBrief").classList.remove("hidden");$("#briefId").textContent=C.id;$("#briefPriority").textContent="PRIORITY: "+C.priority;$("#briefTitle").textContent=C.title;$("#briefText").textContent=C.brief;$("#briefMission").textContent=C.mission;$("#briefResources").textContent=C.credits+" investigation credits. Additional evidence has a cost.";$("#briefStandard").textContent=C.standard;$("#roleSelect").innerHTML=C.roles.map(r=>'<option>'+esc(r)+'</option>').join("");$("#roleSelect").value=state.team||C.roles[0]}
-$("#caseCards").onclick=e=>{const b=e.target.closest("[data-case]");if(b)openBrief(b.dataset.case)};
-$("#historyCards").onclick=e=>{const b=e.target.closest("[data-case]");if(b)openBrief(b.dataset.case)};
-$("#alertQueue").onclick=e=>{const b=e.target.closest("[data-alert]");if(b)openAlert(b.dataset.alert)};
-$("#createIncident").onclick=createIncident;
-$("#modalBody").addEventListener("click",e=>{
- const t=e.target.closest("[data-alert-action]");if(t){triageAlert(t.dataset.alertId,t.dataset.alertAction);return}
- const o=e.target.closest("[data-open-created]");if(o){closeModal();openBrief(o.dataset.openCreated)}
-});
 
-$("#openIncidentRecap").onclick=()=>showModal('<h2>INCIDENT RECAP // CAPTIVECRUNCH</h2><p class="lead">Microsoft Threat Intelligence reported a real campaign targeting travelers through hospitality and other captive-portal networks.</p><div class="intel-brief"><b>WHAT HAPPENED</b><p>Storm-2945 manipulated DNS and HTTP traffic from affected captive-portal networks so user traffic could be redirected through actor-controlled infrastructure. Microsoft observed phishing, credential and session-token theft, and malware delivery.</p><b>WHY DEFENDERS CARE</b><p>A network that appears routine or trusted can become part of the attack path. Defenders must correlate network behavior, user interaction, identity activity, and endpoint evidence rather than relying on the SSID or portal appearance alone.</p><b>ANALYST CAUTION</b><p>Use this incident as threat context—not as proof that a simulated Ironcrest case used the same actor or technique.</p></div>');
-$("#openExamLens").onclick=()=>showModal('<h2>AP EXAM LENS // TOPIC 1.3</h2><p class="lead">Translate the real incident into the exact concepts College Board can ask you to identify or explain.</p><div class="exam-lens-grid"><div><b>EVIL TWIN</b><span>An adversary-operated wireless access point uses an SSID similar or identical to a legitimate network. Look for evidence of the impersonating access point—not merely “public Wi-Fi.”</span></div><div><b>JAMMING</b><span>Strong electromagnetic interference in the same frequency range prevents legitimate wireless communication. Think availability.</span></div><div><b>WAR DRIVING</b><span>Wireless reconnaissance used to detect beacons and gather network information while moving through an area.</span></div><div><b>ADVERSARY SKILL</b><span>Classify low- versus high-skilled adversaries from capability, tooling, and vulnerability use—not simply from the severity of impact.</span></div><div><b>PUBLIC-NETWORK PROTECTION</b><span>Verify the exact SSID and consider data sensitivity before joining an unencrypted network.</span></div><div><b>VPN</b><span>A VPN encrypts traffic to the VPN operator. It does not stop radio-frequency jamming and does not make every untrusted interaction safe.</span></div></div><p><b>EXAM HABIT:</b> OBSERVE → IDENTIFY THE MECHANISM → CITE THE EVIDENCE → SELECT THE APPROPRIATE CONTROL.</p>');
+$("#simReset").onclick=resetSim;
+$("#simPrev").onclick=()=>stepSim(-1);
+$("#simNext").onclick=()=>stepSim(1);
+$("#simAuto").onclick=autoSim;
+$("#enterTransfer").onclick=()=>{if(simStep===SIM_STEPS.length-1)openBrief("U1-002")};
 
 
 const intelContent={
