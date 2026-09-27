@@ -7,50 +7,94 @@ function loadState(){KEY="ironcrest-"+C.id.toLowerCase();state=Object.assign(def
 function caseState(c){try{return JSON.parse(localStorage.getItem("ironcrest-"+c.id.toLowerCase())||"{}")}catch(e){return{}}}
 
 
-const SIM_STEPS=[
- {time:"08:00:00",phase:"NORMAL BASELINE",name:"Baseline first.",code:"OBSERVE",events:["08:00  WAP  Harborview-Guest healthy","08:00  CLIENT  TRAVELER-LT associated"],observed:"A legitimate access point and client operating normally. Establishing normal behavior gives you something to compare later observations against.",mechanism:"No attack has occurred yet. Do not classify normal activity as malicious.",boundary:"An unfamiliar observation may deserve investigation, but unfamiliar does not automatically mean malicious.",defense:"Know the approved network name and expected infrastructure before deciding something is abnormal.",path:"BASELINE"},
- {time:"08:04:18",phase:"RECONNAISSANCE",name:"War Driving",code:"1.3.B",events:["08:04  SENSOR  Wireless beacons queried","08:05  PHYSICAL  Vehicle moving slowly near venue"],observed:"A nearby adversary surveys wireless beacons and collects network information while moving through the area.",mechanism:"WAR DRIVING is wireless reconnaissance: detecting wireless networks and gathering information while driving or walking through an area.",boundary:"A vehicle near a building does not prove war driving. You need evidence of wireless reconnaissance activity.",defense:"Reduce unnecessary wireless exposure and monitor for reconnaissance patterns, but remember: reconnaissance is information gathering, not credential theft by itself.",path:"WAR DRIVING"},
- {time:"08:09:42",phase:"AVAILABILITY DISRUPTION",name:"Jamming",code:"1.3.B",events:["08:09  RF  Noise floor spikes on channel 6","08:09  WAP  17 clients disconnect","08:09  LAN  Wired hosts remain reachable"],observed:"Strong interference appears on the wireless channel while legitimate wireless clients lose connectivity. The wired network remains available.",mechanism:"JAMMING uses a strong electromagnetic signal in the same frequency range to prevent legitimate wireless communication. It primarily affects AVAILABILITY.",boundary:"A Wi-Fi outage alone does not prove jamming. RF interference plus wireless-specific disruption provides stronger evidence.",defense:"Investigate the RF environment and maintain alternate connectivity where availability matters. A VPN does not stop radio-frequency jamming.",path:"JAMMING"},
- {time:"08:10:11",phase:"IMPERSONATION",name:"Evil Twin",code:"1.3.B",events:["08:10  SENSOR  New SSID Harborview_Guest","08:10  BSSID  Not in approved inventory"],observed:"A new access point appears with a name nearly identical to the legitimate guest network.",mechanism:"An EVIL TWIN is an adversary-operated wireless access point using an SSID similar or identical to a legitimate network so victims may connect to it.",boundary:"A similar SSID is suspicious, but the strongest classification comes from correlating the name with unauthorized infrastructure and client behavior.",defense:"Verify the exact SSID before connecting. Organizations should maintain an approved access-point inventory and detect rogue infrastructure.",path:"EVIL TWIN"},
- {time:"08:11:03",phase:"CREDENTIAL EXPOSURE",name:"Credential-harvesting portal",code:"1.3.C",events:["08:11  CLIENT  Associated: Harborview_Guest","08:11  WEB  Captive portal requests work credentials"],observed:"The traveler connects to the near-match network and receives a portal asking for work credentials.",mechanism:"The rogue network is now being used to influence the victim into revealing sensitive authentication information. The portal interaction creates a credential-exposure opportunity.",boundary:"Seeing a credential form does not prove the victim submitted credentials. Even confirmed exposure would not, by itself, prove later account access.",defense:"Verify network authenticity and consider the sensitivity of information before using public Wi-Fi. HTTPS protects encrypted web traffic, but users must still evaluate where they are entering credentials.",path:"CREDENTIAL HARVEST"},
- {time:"08:17:29",phase:"IDENTITY ACTIVITY",name:"Correlate beyond Wi-Fi",code:"PROVES / SUPPORTS / NEED",events:["08:17  IDP  3 LOGIN_FAILURE unknown browser","08:18  IDP  LOGIN_SUCCESS unknown browser"],observed:"Later identity activity shows failures followed by a successful login from an unfamiliar source.",mechanism:"This is where analysts correlate across data sources. Wireless evidence and identity evidence may form an attack narrative, but each claim must match what the evidence establishes.",boundary:"Timing and similarity SUPPORT a relationship. They do not automatically PROVE that this specific wireless interaction caused the successful login. Identify what additional evidence you NEED.",defense:"Use MFA, strong unique credentials, identity monitoring, and rapid response to suspicious sign-ins. Correlate network, user, and identity evidence before asserting causation.",path:"POSSIBLE CREDENTIAL ABUSE"}
+
+const RANGE_STEPS=[
+ {kicker:"08:38 // BELLWEATHER SATELLITE OFFICE",title:"Start with what normal looks like.",question:"What should you establish before deciding an observation is suspicious?",help:"Bellweather-Guest is the approved network. BW-LT-22 is connected normally. The SOC has no active alerts.",choices:[["baseline","The normal baseline"],["attack","The attack name"],["impact","The final impact"]],answer:"baseline",feedback:"Correct. A baseline gives you something defensible to compare later observations against."},
+ {kicker:"08:39 // ATTACKER PERSPECTIVE",title:"The attacker looks before acting.",question:"What can the attacker learn from wireless observations?",help:"Watch the attacker workstation. This view is for learning the attack—not evidence the SOC automatically possesses.",choices:[["ssid","Network names, signal, channels and identifiers"],["passwords","Everyone's Wi-Fi passwords"],["files","Files stored on employee laptops"]],answer:"ssid",feedback:"Correct. Wireless reconnaissance can reveal network identifiers and characteristics. It does not magically reveal passwords or endpoint files."},
+ {kicker:"08:40 // EMPLOYEE PERSPECTIVE",title:"A familiar-looking network appears.",question:"What is the most important difference between the two Bellweather network names?",help:"Look closely. Attackers benefit when people recognize the brand or general name and stop checking the exact identifier.",choices:[["dash","Bellweather-Guest uses a dash; Bellweather_Guest uses an underscore"],["signal","Only the signal strength matters"],["none","They are the same network"]],answer:"dash",feedback:"Exactly. The near-match SSID is designed to look familiar. Similarity is suspicious; authorization and infrastructure evidence make the classification stronger."},
+ {kicker:"08:41 // EMPLOYEE INTERACTION",title:"The network asks for something sensitive.",question:"If the employee submits this form, what does that establish?",help:"Use evidence discipline. Do not jump from credential exposure to account compromise.",choices:[["exposure","Credentials were exposed to the simulated portal"],["compromise","The corporate account was definitely compromised"],["malware","Malware was installed"]],answer:"exposure",feedback:"Correct. Submission establishes credential exposure in this simulation. It does not prove later use or account access."},
+ {kicker:"08:48 // SOC PERSPECTIVE",title:"Now the identity system sees something.",question:"What does the later successful login allow the analyst to say?",help:"Correlate the wireless story with identity activity, but separate observation from causation.",choices:[["supports","It supports possible unauthorized access and deserves correlation"],["caused","It proves the evil twin caused the login"],["benign","A success after failures is automatically benign"]],answer:"supports",feedback:"Correct. The unfamiliar login sequence supports the unauthorized-access hypothesis. More evidence is needed before claiming exactly how the credential was obtained or who used it."},
+ {kicker:"AP EXAM LENS // TOPIC 1.3",title:"Name the mechanism from the evidence.",question:"Which AP concept best describes the impersonating wireless network?",help:"Use the mechanism—not merely the fact that public Wi-Fi was involved.",choices:[["evil","Evil Twin"],["jam","Jamming"],["war","War Driving"]],answer:"evil",feedback:"Correct. The near-match SSID, unauthorized infrastructure, client association and portal interaction support an EVIL TWIN classification."},
+ {kicker:"DEFENDER REPLAY",title:"Now remove the omniscient view.",question:"Reconstruct the incident using only defender-observable evidence.",help:"The attacker workstation and employee experience are hidden. This is the transition from learning the mechanism to doing SOC work.",choices:[],answer:"",feedback:""}
 ];
-let simStep=0,simTimer=null;
-function renderWorkspace(){renderSim()}
-function renderSim(){
- const s=SIM_STEPS[simStep];
- $("#simClock").textContent=s.time;$("#simPhase").textContent=s.phase;$("#conceptName").textContent=s.name;$("#conceptCode").textContent=s.code;
- $("#conceptObserved").textContent=s.observed;$("#conceptMechanism").textContent=s.mechanism;$("#conceptBoundary").textContent=s.boundary;$("#conceptDefense").textContent=s.defense;
- $("#simEvents").innerHTML=SIM_STEPS.slice(0,simStep+1).flatMap((x,i)=>x.events.map(e=>'<div class="sim-event '+(i===simStep?"current":"")+'"><span>'+esc(e.slice(0,5))+'</span><b>'+esc(e.slice(6))+'</b></div>')).join("");
- $("#attackPath").innerHTML=SIM_STEPS.map((x,i)=>'<div class="path-node '+(i<simStep?"done ":"")+(i===simStep?"active ":"")+'"><i></i><small>'+(i===0?"START":"0"+i)+'</small><b>'+esc(x.path)+'</b></div>').join("");
- $("#simPrev").disabled=simStep===0;$("#simNext").disabled=simStep===SIM_STEPS.length-1;
- $("#simNext").textContent=simStep===SIM_STEPS.length-1?"SEQUENCE COMPLETE":"NEXT EVENT →";
- $("#enterTransfer").disabled=simStep!==SIM_STEPS.length-1;$("#enterTransfer").textContent=simStep===SIM_STEPS.length-1?"ENTER SIGNAL LOST INVESTIGATION →":"COMPLETE SIMULATION FIRST";
- $("#attacker").classList.toggle("visible",simStep>=1);$("#attackerStatus").textContent=simStep===1?"SCANNING WIRELESS BEACONS":simStep>=2?"ACTIVE NEAR VENUE":"NO ACTIVITY";
- $("#jamOverlay").classList.toggle("visible",simStep===2);$("#rfField").classList.toggle("jammed",simStep===2);
- $("#rogueAp").classList.toggle("visible",simStep>=3);
- $("#victim").classList.toggle("disconnected",simStep===2);$("#victim").classList.toggle("compromised",simStep>=4);
- $("#clientStatus").textContent=simStep===2?"WIRELESS DISCONNECTED":simStep>=4?"CONNECTED: Harborview_Guest":"CONNECTED: Harborview-Guest";
- $("#portalCard").classList.toggle("visible",simStep===4);
- $("#identityAlert").classList.toggle("visible",simStep>=5);
+let rangeStep=0,portalSubmitted=false;
+const SOC_EVENTS=[
+ ["08:38:12","WAP","Bellweather-Guest healthy // approved BSSID A4:77:19:20:11:03"],
+ ["08:40:36","WAP SENSOR","New SSID Bellweather_Guest observed // -42 dBm"],
+ ["08:40:44","WAP SENSOR","BSSID AA:91:7C:22:4F:10 not in approved inventory"],
+ ["08:41:03","CLIENT","BYOD-17 associated to Bellweather_Guest"],
+ ["08:41:19","WEB","Captive portal observed on Bellweather_Guest"],
+ ["08:47:21","IDENTITY","LOGIN_FAILURE // unfamiliar source 198.51.100.44"],
+ ["08:47:39","IDENTITY","LOGIN_FAILURE // unfamiliar source 198.51.100.44"],
+ ["08:48:06","IDENTITY","LOGIN_SUCCESS // unfamiliar source 198.51.100.44"]
+];
+function renderWorkspace(){renderRange()}
+function rangeEventsForStep(){
+ if(rangeStep===0)return SOC_EVENTS.slice(0,1);
+ if(rangeStep===1)return SOC_EVENTS.slice(0,1);
+ if(rangeStep===2)return SOC_EVENTS.slice(0,3);
+ if(rangeStep===3)return SOC_EVENTS.slice(0,5);
+ return SOC_EVENTS;
 }
-function stepSim(delta){simStep=Math.max(0,Math.min(SIM_STEPS.length-1,simStep+delta));renderSim()}
-function resetSim(){if(simTimer){clearInterval(simTimer);simTimer=null;$("#simAuto").textContent="▶ RUN ATTACK"}simStep=0;renderSim()}
-function autoSim(){
- if(simTimer){clearInterval(simTimer);simTimer=null;$("#simAuto").textContent="▶ RUN ATTACK";return}
- if(simStep===SIM_STEPS.length-1)simStep=0;renderSim();$("#simAuto").textContent="■ PAUSE";
- simTimer=setInterval(()=>{if(simStep>=SIM_STEPS.length-1){clearInterval(simTimer);simTimer=null;$("#simAuto").textContent="▶ REPLAY ATTACK";return}stepSim(1)},2400);
+function renderRange(){
+ const s=RANGE_STEPS[rangeStep];
+ $("#stageKicker").textContent=s.kicker;$("#stageTitle").textContent=s.title;$("#decisionQuestion").textContent=s.question;$("#decisionHelp").textContent=s.help;
+ document.querySelectorAll(".ribbon-step").forEach((x,i)=>{x.classList.toggle("active",i===rangeStep);x.classList.toggle("done",i<rangeStep)});
+ $("#rangeBack").disabled=rangeStep===0;$("#rangeNext").disabled=rangeStep===RANGE_STEPS.length-1;
+ $("#rangeNext").textContent=rangeStep===0?"BEGIN EXERCISE →":rangeStep===RANGE_STEPS.length-2?"DEFENDER REPLAY →":rangeStep===RANGE_STEPS.length-1?"REPLAY ACTIVE":"CONTINUE →";
+ $("#decisionChoices").innerHTML=s.choices.map(c=>'<button data-range-choice="'+c[0]+'">'+esc(c[1])+'</button>').join("");
+ $("#decisionFeedback").textContent="";$("#decisionFeedback").className="decision-feedback";
+ $("#attackerState").textContent=rangeStep>=1?"ACTIVE":"STANDBY";
+ $("#employeeState").textContent=rangeStep>=2?"NETWORK CHANGE":"CONNECTED";
+ $("#socState").textContent=rangeStep>=4?"ALERTING":"MONITORING";
+ $("#attackerTerminal").innerHTML=attackerView();
+ $("#rogueNetwork").classList.toggle("hidden",rangeStep<2);
+ $("#fakePortal").classList.toggle("hidden",rangeStep!==3||portalSubmitted);
+ $("#connectedToast").classList.toggle("hidden",!(rangeStep===3&&portalSubmitted));
+ $("#metricWireless").textContent=rangeStep>=2?"ROGUE AP?":"NORMAL";$("#metricIdentity").textContent=rangeStep>=4?"SUSPICIOUS":"NORMAL";$("#metricAlerts").textContent=rangeStep>=4?"3":rangeStep>=2?"2":"0";
+ $("#liveSocLog").innerHTML=rangeEventsForStep().map((e,i)=>'<div class="live-row '+(i===rangeEventsForStep().length-1?"latest":"")+'"><span>'+e[0]+'</span><b>'+e[1]+'</b><p>'+esc(e[2])+'</p></div>').join("");
+ $("#apReveal").classList.toggle("hidden",rangeStep<5);
+ $("#replayPanel").classList.toggle("hidden",rangeStep<6);
+ $(".screen-deck").classList.toggle("defender-only",rangeStep===6);
+ $("#decisionPanel").classList.toggle("hidden",rangeStep===6);
+ if(rangeStep===6)renderReplay();
+}
+function attackerView(){
+ if(rangeStep===0)return '<div class="term-line muted">ironcrest-range:~$ <span>training console ready</span></div><div class="term-line">No simulated adversary activity.</div>';
+ if(rangeStep===1)return '<div class="term-line muted">SIMULATED WIRELESS OBSERVATION</div><div class="scan-head">SSID                 BSSID               CH   SIGNAL</div><div class="scan-row">Bellweather-Guest    A4:77:19:20:11:03    6   -48</div><div class="scan-row">Bellweather-Staff    8C:21:70:44:09:12   44   -61</div><div class="scan-row">Cafe-Free-WiFi       71:09:55:18:30:22   11   -72</div><div class="term-line accent">Target-like guest SSID observed.</div>';
+ if(rangeStep>=2)return '<div class="term-line muted">SIMULATED ROGUE ACCESS POINT</div><div class="term-line">SSID     <b>Bellweather_Guest</b></div><div class="term-line">BSSID    <b>AA:91:7C:22:4F:10</b></div><div class="term-line">STATUS   <b class="red">BROADCASTING</b></div><div class="term-line">PORTAL   <b>credential prompt enabled</b></div>'+(portalSubmitted?'<div class="capture-box"><small>SIMULATED FORM EVENT</small><b>FORM_SUBMISSION RECEIVED</b><span>Training credentials exposed to portal</span></div>':'');
+ return "";
+}
+function chooseRange(answer){
+ const s=RANGE_STEPS[rangeStep],box=$("#decisionFeedback");
+ const ok=answer===s.answer;box.textContent=ok?s.feedback:"Not quite. Re-read what this perspective actually establishes, then try again.";box.className="decision-feedback "+(ok?"correct":"incorrect");
+ if(ok&&rangeStep===3&&!portalSubmitted)box.textContent+=" Use SIGN IN & CONNECT in the employee window to complete the exposure event.";
+}
+function advanceRange(){if(rangeStep<RANGE_STEPS.length-1){rangeStep++;renderRange()}}
+function resetRange(){rangeStep=0;portalSubmitted=false;renderRange()}
+function submitPortal(){portalSubmitted=true;$("#fakePortal").classList.add("hidden");$("#connectedToast").classList.remove("hidden");$("#attackerTerminal").innerHTML=attackerView();$("#decisionFeedback").textContent="SIMULATION EVENT: The fictional training credentials were submitted. That establishes exposure in this exercise—not later account use.";$("#decisionFeedback").className="decision-feedback correct"}
+function renderReplay(){
+ $("#replayLogs").innerHTML=SOC_EVENTS.slice(1).map(e=>'<div class="live-row"><span>'+e[0]+'</span><b>'+e[1]+'</b><p>'+esc(e[2])+'</p></div>').join("");
+}
+function classifyReplay(a){
+ const f=$("#classifyFeedback");
+ if(a==="evil"){f.innerHTML="<b>CORRECT // EVIL TWIN</b><p>The near-match SSID, unapproved BSSID, client association, and captive portal collectively support the classification. The later identity activity should be correlated, but does not by itself prove the wireless interaction caused the login.</p>";f.className="correct";$("#openSignalLost").classList.remove("hidden")}
+ else {f.innerHTML="<b>NOT SUPPORTED BY THIS EVIDENCE</b><p>Focus on the mechanism visible in the telemetry: an impersonating access point. Jamming requires RF-interference/availability evidence; war driving requires reconnaissance evidence.</p>";f.className="incorrect"}
 }
 
 function switchWorkspace(name){document.querySelectorAll(".workspace-tab").forEach(b=>b.classList.toggle("active",b.dataset.workspace===name));document.querySelectorAll(".workspace-panel").forEach(p=>p.classList.toggle("active",p.id==="workspace-"+name))}
 function queue(){C=null;$("#console").classList.add("hidden");$("#briefing").classList.remove("hidden");$("#caseBrief").classList.add("hidden");$("#queueView").classList.remove("hidden");renderWorkspace()}
 function openBrief(id){C=CASES[id];if(!C)return;loadState();$("#queueView").classList.add("hidden");$("#caseBrief").classList.remove("hidden");$("#briefId").textContent=C.id;$("#briefPriority").textContent="PRIORITY: "+C.priority;$("#briefTitle").textContent=C.title;$("#briefText").textContent=C.brief;$("#briefMission").textContent=C.mission;$("#briefResources").textContent=C.credits+" investigation credits. Additional evidence has a cost.";$("#briefStandard").textContent=C.standard;$("#roleSelect").innerHTML=C.roles.map(r=>'<option>'+esc(r)+'</option>').join("");$("#roleSelect").value=state.team||C.roles[0]}
 
-$("#simReset").onclick=resetSim;
-$("#simPrev").onclick=()=>stepSim(-1);
-$("#simNext").onclick=()=>stepSim(1);
-$("#simAuto").onclick=autoSim;
-$("#enterTransfer").onclick=()=>{if(simStep===SIM_STEPS.length-1)openBrief("U1-002")};
+
+$("#rangeReset").onclick=resetRange;
+$("#rangeBack").onclick=()=>{if(rangeStep>0){rangeStep--;renderRange()}};
+$("#rangeNext").onclick=advanceRange;
+$("#decisionChoices").onclick=e=>{const b=e.target.closest("[data-range-choice]");if(b)chooseRange(b.dataset.rangeChoice)};
+$("#wifiPanel").onclick=e=>{const b=e.target.closest("[data-network]");if(!b)return;if(b.dataset.network==="rogue"&&rangeStep>=2){rangeStep=Math.max(rangeStep,3);renderRange()}else if(b.dataset.network==="approved"){$("#decisionFeedback").textContent="The approved network is Bellweather-Guest. In this exercise the employee later chooses the stronger near-match network.";$("#decisionFeedback").className="decision-feedback correct"}};
+$("#portalSubmit").onclick=submitPortal;
+$("#replayPanel").onclick=e=>{const b=e.target.closest("[data-classify]");if(b)classifyReplay(b.dataset.classify)};
+$("#openSignalLost").onclick=()=>openBrief("U1-002");
 
 
 const intelContent={
