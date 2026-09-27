@@ -1,0 +1,30 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const root=__dirname+'/../';
+const context={window:{}};vm.createContext(context);
+vm.runInContext(fs.readFileSync(root+'js/cases.js','utf8'),context);
+vm.runInContext(fs.readFileSync(root+'js/frq.js','utf8'),context);
+const api=context.window.IRONCREST_FRQ,c=context.window.IRONCREST_CASES['U1-002'];
+const replay=api.replayPacket([{time:'08:38',source:'Inventory',kind:'wireless',text:'approved'},{time:'08:48',source:'Identity',kind:'identity',text:'login'}]);
+const locked=api.casePacket(c,{unlocked:[]}),unlocked=api.casePacket(c,{unlocked:['inventory']});
+assert.equal(replay.parts.flatMap(p=>p.questions).length,8);
+assert.equal(locked.parts.flatMap(p=>p.questions).length,9);
+for(const packet of [replay,locked]){
+ const questions=packet.parts.flatMap(p=>p.questions);
+ assert.equal(new Set(questions.map(q=>q.id)).size,questions.length);
+ assert.equal([...new Set(questions.map(q=>q.verb))].sort().join(','),'Describe,Determine,Explain,Identify,Write');
+ assert(packet.parts.every(p=>['Detect Attacks','Mitigate Risk'].includes(p.skill)));
+ assert(packet.extension.skill.startsWith('Analyze Risk'));
+ assert.equal(packet.sources.length,4);
+ assert(questions.find(q=>q.verb==='Write').command);
+}
+assert.equal(locked.sources[1].evidence.length,0);
+assert.equal(unlocked.sources[1].evidence.length,1);
+assert.equal(unlocked.sources[1].evidence[0].id,'inventory');
+assert.equal(unlocked.sources[1].evidence[0].ref,'2.2');
+assert.equal(api.casePacket(c,{unlocked:['rf','inventory']}).sources[1].evidence[1].ref,'2.2');
+assert.equal(c.records.length,26);assert.equal(c.evidence.length,6);
+const html=fs.readFileSync(root+'index.html','utf8');
+for(const file of [...html.matchAll(/(?:src|href)="((?:js|css)\/[^"?]+)(?:\?[^\"]*)?"/g)].map(m=>m[1]))assert(fs.existsSync(root+file));
+for(const name of ['js/app.js','js/frq.js','js/cases.js'])new vm.Script(fs.readFileSync(root+name,'utf8'));
+assert(!/\beval\s*\(|new Function/.test(fs.readFileSync(root+'js/frq.js','utf8')));
+console.log('PASS: 8/9 core parts, five task verbs, correct skill split, unique question IDs, source filtering, original case data, assets and JavaScript syntax.');
