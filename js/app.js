@@ -29,6 +29,31 @@ const SOC_EVENTS=[
  ["08:48:06","IDENTITY","LOGIN_SUCCESS // unfamiliar source 198.51.100.44"]
 ];
 function renderWorkspace(){renderRange()}
+
+function applyPerspectiveFocus(){
+ const deck=$("#screenDeck"),cue=$("#focusCue"),label=$("#focusLabel"),instruction=$("#focusInstruction");
+ const modes=[
+  ["overview","EMPLOYEE + SOC","Establish the normal baseline before the attack begins."],
+  ["attacker","ATTACKER WORKSTATION","Watch what the simulated adversary can observe. This is a teaching view—not SOC evidence."],
+  ["employee","EMPLOYEE LAPTOP","Look closely at the Wi-Fi list. The employee must decide which network to trust."],
+  ["employee","EMPLOYEE LAPTOP","Stay with the employee. Complete the simulated captive-portal interaction."],
+  ["soc","IRONCREST SOC","The omniscient view is over. Follow what the defender can actually observe."],
+  ["ap","AP EXAM LENS","Translate the experience into the exact AP concept and evidence boundaries."],
+  ["soc","DEFENDER REPLAY","Use only defender-observable evidence to reconstruct the incident."]
+ ];
+ const m=modes[rangeStep]||modes[0];
+ deck.className="screen-deck focus-"+m[0]+(rangeStep===6?" defender-only":"");
+ label.textContent=m[1];instruction.textContent=m[2];
+ cue.className="focus-cue focus-"+m[0];
+ document.querySelectorAll(".screen-window").forEach(w=>{
+   const p=w.dataset.perspective;
+   const focused=m[0]==="overview"?(p==="employee"||p==="soc"):p===m[0];
+   w.classList.toggle("is-focused",focused);
+   w.classList.toggle("is-context",!focused);
+ });
+ if(m[0]==="ap")cue.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
 function rangeEventsForStep(){
  if(rangeStep===0)return SOC_EVENTS.slice(0,1);
  if(rangeStep===1)return SOC_EVENTS.slice(0,1);
@@ -38,6 +63,7 @@ function rangeEventsForStep(){
 }
 function renderRange(){
  const s=RANGE_STEPS[rangeStep];
+ applyPerspectiveFocus();
  $("#stageKicker").textContent=s.kicker;$("#stageTitle").textContent=s.title;$("#decisionQuestion").textContent=s.question;$("#decisionHelp").textContent=s.help;
  document.querySelectorAll(".ribbon-step").forEach((x,i)=>{x.classList.toggle("active",i===rangeStep);x.classList.toggle("done",i<rangeStep)});
  $("#rangeBack").disabled=rangeStep===0;
@@ -89,6 +115,13 @@ function queue(){C=null;$("#console").classList.add("hidden");$("#briefing").cla
 function openBrief(id){C=CASES[id];if(!C)return;loadState();$("#queueView").classList.add("hidden");$("#caseBrief").classList.remove("hidden");$("#briefId").textContent=C.id;$("#briefPriority").textContent="PRIORITY: "+C.priority;$("#briefTitle").textContent=C.title;$("#briefText").textContent=C.brief;$("#briefMission").textContent=C.mission;$("#briefResources").textContent=C.credits+" investigation credits. Additional evidence has a cost.";$("#briefStandard").textContent=C.standard;$("#roleSelect").innerHTML=C.roles.map(r=>'<option>'+esc(r)+'</option>').join("");$("#roleSelect").value=state.team||C.roles[0]}
 
 
+$("#screenDeck").onclick=e=>{
+ const w=e.target.closest(".screen-window.is-context");if(!w||rangeStep===6)return;
+ const p=w.dataset.perspective;$("#screenDeck").className="screen-deck focus-"+p+" manual-focus";
+ document.querySelectorAll(".screen-window").forEach(x=>{x.classList.toggle("is-focused",x===w);x.classList.toggle("is-context",x!==w)});
+ $("#focusLabel").textContent=p==="attacker"?"ATTACKER WORKSTATION":p==="employee"?"EMPLOYEE LAPTOP":"IRONCREST SOC";
+ $("#focusInstruction").textContent="Context view opened. Use CONTINUE or BACK to return to the guided perspective.";
+};
 $("#rangeReset").onclick=resetRange;
 $("#rangeBack").onclick=()=>{if(rangeStep>0){rangeStep--;renderRange()}};
 $("#rangeNext").onclick=advanceRange;
