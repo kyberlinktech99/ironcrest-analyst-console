@@ -22,7 +22,6 @@ function renderWorkspace(){
  $("#statAlerts").textContent=ALERTS.filter(a=>!working.has(a.id)&&!held.has(a.id)).length;
  $("#statWorking").textContent=working.size;
  $("#statCases").textContent=active;
- $("#workingCount").textContent="("+working.size+")";
  $("#createIncident").disabled=working.size<2||s.incidentCreated;
  $("#createIncident").textContent=s.incidentCreated?"INCIDENT CREATED":"CREATE INCIDENT ("+working.size+")";
  $("#incidentHint").textContent=s.incidentCreated?"U1-003 created from correlated observations. Open the incident to investigate.":"Build a defensible working set before escalating.";
