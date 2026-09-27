@@ -74,7 +74,7 @@ function chooseRange(answer){
 }
 function advanceRange(){if(rangeStep<RANGE_STEPS.length-1){rangeStep++;renderRange()}}
 function resetRange(){rangeStep=0;portalSubmitted=false;renderRange()}
-function submitPortal(){portalSubmitted=true;$("#fakePortal").classList.add("hidden");$("#connectedToast").classList.remove("hidden");$("#attackerTerminal").innerHTML=attackerView();$("#decisionFeedback").textContent="SIMULATION EVENT: The fictional training credentials were submitted. That establishes exposure in this exercise—not later account use.";$("#decisionFeedback").className="decision-feedback correct"}
+function submitPortal(){portalSubmitted=true;renderRange();$("#decisionFeedback").textContent="SIMULATION EVENT: The fictional training credentials were submitted. That establishes exposure in this exercise—not later account use.";$("#decisionFeedback").className="decision-feedback correct"}
 function renderReplay(){
  $("#replayLogs").innerHTML=SOC_EVENTS.slice(1).map(e=>'<div class="live-row"><span>'+e[0]+'</span><b>'+e[1]+'</b><p>'+esc(e[2])+'</p></div>').join("");
 }
