@@ -32,9 +32,11 @@ const completedSteps=new Set();
 function renderWorkspace(){
  $('#queueView').classList.add('hidden');$('#unitHome').classList.remove('hidden');$('#exerciseHome').classList.add('hidden');
  window.IRONCREST_UNIT1.landing($('#unitHome'),(id,direct)=>{
+ window.IRONCREST_INTEL.show($('#unitHome'),id,()=>{
   if(direct){openBrief(id);return}
   if(id==='U1-002'){$('#unitHome').classList.add('hidden');$('#queueView').classList.remove('hidden');$('#exerciseHome').classList.remove('hidden');resetRange()}
   else window.IRONCREST_UNIT1.lesson($('#unitHome'),id,openBrief,queue);
+ },queue,direct);
  });
 }
 $('#exerciseHome').onclick=queue;
