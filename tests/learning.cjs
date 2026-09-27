@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=__dirname+'/../',ctx={window:{}};vm.createContext(ctx);
-for(const file of ['config','cases','learning','unit1','frq'])vm.runInContext(fs.readFileSync(root+'js/'+file+'.js','utf8'),ctx);
+for(const file of ['config','cases','learning','unit1','frq','story','ai'])vm.runInContext(fs.readFileSync(root+'js/'+file+'.js','utf8'),ctx);
 const {IRONCREST_CONFIG:config,IRONCREST_LEARNING:learning,IRONCREST_CASES:cases}=ctx.window;
 assert.equal(config.teams.join('|'),'Team Alpha|Team Bravo|Team Charlie');
 assert.equal(config.normalizeTeam('Threat Analysis Team'),'Team Bravo');

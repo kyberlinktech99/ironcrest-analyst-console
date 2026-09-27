@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=__dirname+'/../',ctx={window:{}};vm.createContext(ctx);
-for(const name of ['config','cases','learning','frq','unit1'])vm.runInContext(fs.readFileSync(root+'js/'+name+'.js','utf8'),ctx);
+for(const name of ['config','cases','learning','frq','unit1','story','ai'])vm.runInContext(fs.readFileSync(root+'js/'+name+'.js','utf8'),ctx);
 const api=ctx.window.IRONCREST_UNIT1,cases=ctx.window.IRONCREST_CASES;
 assert.equal(api.catalog.length,Object.keys(cases).length);
 const keys=new Set();
@@ -21,4 +21,4 @@ for(const item of api.catalog){
 }
 const app=fs.readFileSync(root+'js/app.js','utf8');new vm.Script(app);
 assert(!app.includes('frqReplay'));assert(app.includes('finalActivity:true'));assert(app.includes("classList.add('active');$('#logs')"));
-console.log('PASS: all three cases, unique drafts, source filtering, all task verbs, skill alignment, seven-stage lessons and final-only FRQ integration.');
+console.log('PASS: all five cases, unique drafts, source filtering, all task verbs, skill alignment, seven-stage lessons and final-only FRQ integration.');
