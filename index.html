@@ -1,0 +1,105 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ironcrest Analyst Console</title><link rel="stylesheet" href="css/ironcrest.css?v=20260926-v6"></head><body>
+<div id="briefing" class="briefing"><div class="queue-shell workspace-shell">
+<div class="workspace-topbar"><div><div class="eyebrow">IRONCREST CYBER PARTNERS // SOC WORKSPACE</div><h1>Junior Cyber Analyst Workspace</h1><p class="queue-lead">Operate cases, use analyst tools, review intelligence, and build your investigation record.</p></div><div class="analyst-badge"><small>ROLE</small><b>JUNIOR CYBER ANALYST</b><span><i></i> WORKSPACE ONLINE</span></div></div>
+<div id="queueView" class="soc-home">
+<section class="external-brief">
+  <div class="brief-signal"><span class="signal-dot"></span><b>EXTERNAL THREAT INTELLIGENCE</b><span>TLP:CLEAR</span><span>31 JUL 2026</span></div>
+  <div class="brief-hero">
+    <div class="brief-copy">
+      <small>MICROSOFT THREAT INTELLIGENCE // CAPTIVECRUNCH</small>
+      <h2>Travelers targeted through compromised public Wi-Fi networks</h2>
+      <p>Microsoft reported that Storm-2945 manipulated DNS and HTTP traffic on hospitality networks served by captive portals, redirecting travelers through actor-controlled infrastructure for phishing, credential theft, and malware delivery.</p>
+      <div class="brief-actions">
+        <a href="https://www.microsoft.com/en-us/security/blog/2026/07/31/captivecrunch-midnight-blizzard-targets-travelers-worldwide-for-malware-delivery-and-credential-theft/" target="_blank" rel="noopener noreferrer">READ ORIGINAL REPORT ↗</a>
+        <button id="openIncidentRecap">INCIDENT RECAP</button>
+      </div>
+    </div>
+    <div class="brief-facts">
+      <div><small>ENVIRONMENT</small><b>Hotels / shared venues</b></div>
+      <div><small>OBSERVED</small><b>Captive-portal traffic manipulation</b></div>
+      <div><small>AT RISK</small><b>Credentials, sessions, endpoints</b></div>
+      <div><small>ANALYST CAUTION</small><b>Real campaign ≠ proof of our simulated case</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="translation-strip">
+  <div class="translation-head">
+    <div><small>INCIDENT → AP TRANSLATION</small><h2>Why this matters for the AP exam</h2></div>
+    <span class="ap-topic">TOPIC 1.3</span>
+  </div>
+  <div class="ap-objectives">
+    <article><b>1.3.A</b><span>Identify the type of adversary conducting a cyberattack.</span></article>
+    <article><b>1.3.B</b><span>Identify types of wireless cyberattacks.</span></article>
+    <article><b>1.3.C</b><span>Describe actions to increase protection of sensitive data on the internet or Wi-Fi.</span></article>
+  </div>
+  <div class="evidence-boundary">
+    <div><small>THIS REPORT ESTABLISHES</small><p>Compromised captive-portal networks, manipulated DNS/HTTP traffic, actor-controlled infrastructure, phishing and credential/session theft activity.</p></div>
+    <div><small>RELATED AP CONCEPTS</small><p><b>Evil twin · Jamming · War driving · adversary skill · public-network protections · VPN</b></p></div>
+    <div><small>DO NOT OVERCLAIM</small><p>This reporting does <b>not</b> establish that every public Wi-Fi attack is an evil twin, that jamming occurred, or that war driving occurred. Classify from evidence.</p></div>
+  </div>
+  <button id="openExamLens" class="exam-lens-btn">OPEN AP EXAM LENS →</button>
+</section>
+
+<section class="reinforcement-card">
+  <div class="reinforcement-label"><span>TECHNICAL REINFORCEMENT</span><small>ASSIGNED BY SOC LEAD</small></div>
+  <div class="reinforcement-body">
+    <div><small>CISCO NETWORKING ACADEMY</small><h3>Module 2 → 2.4 Wireless and Mobile Device Attacks</h3><p>Focus on attack mechanisms, observable characteristics, and defensive considerations. Then return to Ironcrest and apply the concepts to evidence.</p></div>
+    <div class="reinforcement-actions"><span>~15 MIN</span><a href="https://www.netacad.com/" target="_blank" rel="noopener noreferrer">BEGIN TECHNICAL BRIEFING ↗</a></div>
+  </div>
+</section>
+
+<section class="operations-board">
+  <div class="section-head"><div><small>IRONCREST OPERATIONS</small><h2>Incoming Alert Queue</h2></div><span>Alerts are observations—not incidents. Inspect, correlate, then decide what deserves escalation.</span></div>
+  <div class="shift-stats">
+    <div><small>NEW ALERTS</small><b id="statAlerts">0</b></div>
+    <div><small>WORKING SET</small><b id="statWorking">0</b></div>
+    <div><small>ACTIVE INCIDENTS</small><b id="statCases">0</b></div>
+    <div><small>ANALYST STANDARD</small><b>PROVES / SUPPORTS / NEED</b></div>
+  </div>
+
+  <div class="queue-toolbar">
+    <div><small>CORRELATION DESK</small><b>Which alerts might belong to the same incident?</b><p>Inspect an alert before adding it to your working set. Similar timing or a shared user can support correlation, but does not prove causation.</p></div>
+    <button id="createIncident" disabled>CREATE INCIDENT (0)</button>
+  </div>
+
+  <div id="alertQueue" class="alert-queue"></div>
+
+  <div class="active-incidents">
+    <div class="subsection-head"><div><small>ACTIVE INCIDENTS</small><h3>Escalated investigations</h3></div><span id="incidentHint">Build a defensible working set before escalating.</span></div>
+    <div id="caseCards" class="case-cards"></div>
+  </div>
+
+  <div class="case-history">
+    <div class="subsection-head"><div><small>CASE HISTORY</small><h3>Prior Ironcrest operations</h3></div><span>Closed and training cases remain available for review.</span></div>
+    <div id="historyCards" class="history-cards"></div>
+  </div>
+</section>
+
+<section class="cti-launch-section">
+  <div class="section-head">
+    <div><small>CYBER THREAT INTELLIGENCE</small><h2>Threat Intelligence Desk</h2></div>
+    <span>Move from public reporting to evidence, attribution, AP concepts, and defender intelligence.</span>
+  </div>
+  <a class="cti-launch-card" href="cti/">
+    <div class="cti-launch-icon">CTI</div>
+    <div class="cti-launch-copy">
+      <small>IRONCREST INTELLIGENCE PRODUCT // TOPIC 1.3</small>
+      <h3>CTI Incoming: Threat Actor Intelligence</h3>
+      <p>Investigate six real-world threat-actor examples, reconstruct reported attack activity, lock in AP Topic 1.3 vocabulary and concepts, and review model threat-intelligence posters.</p>
+      <div class="cti-tags"><span>THREAT ACTORS</span><span>ATTACK RECONSTRUCTION</span><span>AP 1.3</span><span>VOCABULARY</span></div>
+    </div>
+    <div class="cti-launch-action"><b>LAUNCH CTI DESK</b><span>→</span></div>
+  </a>
+</section>
+</div><div id="caseBrief" class="hidden"><button id="backQueue" class="back-link">← CASE QUEUE</button><h1>Assigned Case <span id="briefId"></span></h1><div class="priority" id="briefPriority"></div><h2 id="briefTitle"></h2><p id="briefText"></p><div class="brief-grid"><div><b>Mission</b><br><span id="briefMission"></span></div><div><b>Resources</b><br><span id="briefResources"></span></div><div><b>Standard</b><br><span id="briefStandard"></span></div></div><label>Analyst team <select id="roleSelect"></select></label><button id="acceptCase" class="primary">ACCEPT CASE</button></div></div></div>
+<div id="console" class="app hidden"><header><div><strong>IRONCREST</strong><span> CYBER PARTNERS</span></div><div class="status"><span class="pulse"></span>SOC // ANALYST CONSOLE</div></header><aside><div class="caseblock"><small>ACTIVE CASE</small><b id="activeCaseId"></b><span id="activeCaseTitle"></span><em id="activePriority"></em></div><nav><button data-view="logs" class="active">▦ <span id="telemetryNav">Telemetry</span></button><button data-view="evidence">◇ Evidence Locker</button><button data-view="timeline">⌁ Case File</button><button data-view="notes">▤ Case Notes</button><button data-view="assessment">✓ Incident Decision</button></nav><button id="consoleToolkit" class="console-toolkit">⊕ Analyst Toolkit</button><div class="credits"><small>INVESTIGATION CREDITS</small><div id="creditDots"></div></div><div class="team"><small>ANALYST TEAM</small><div id="teamName"></div></div><button id="caseQueue" class="queue-button">← Case Queue</button><button id="resetCase" class="reset-case">↻ Reset Case</button></aside><main>
+<section id="logs" class="view active"><div class="viewhead"><div><small id="telemetryKicker"></small><h2 id="telemetryTitle"></h2></div><span id="eventCount"></span></div><div class="objective"><b>INVESTIGATION OBJECTIVE</b><span id="objectiveText"></span><ol id="objectiveSteps"></ol></div><div class="filters"><input id="search" placeholder="Search telemetry…"><select id="eventFilter"><option value="">All observation types</option></select><select id="resultFilter"><option value="">All statuses</option></select><button id="clearFilters">Clear</button></div><div class="tablewrap"><table><thead><tr id="telemetryHeaders"></tr></thead><tbody id="logRows"></tbody></table></div><p class="hint">Select a record to inspect its full detail. Suspicious does not automatically mean malicious.</p></section>
+<section id="evidence" class="view"><div class="viewhead"><div><small>REQUEST ADDITIONAL CONTEXT</small><h2>Evidence Locker</h2></div><span>Each request costs 1 credit</span></div><p class="lead">Choose evidence because it answers an investigative question—not because you want to reveal everything.</p><div id="evidenceCards" class="cards"></div></section>
+<section id="timeline" class="view"><div class="viewhead"><div><small>CASE FILE</small><h2>Investigation Timeline</h2></div></div><p class="lead">Your case file combines telemetry findings, evidence, and analyst observations. Revise it as your hypothesis changes.</p><form id="timelineForm" class="inlineform"><input id="timelineTime" placeholder="Time / sequence"><input id="timelineText" placeholder="Analyst observation"><button>Add</button></form><div id="timelineList" class="entries"></div></section>
+<section id="notes" class="view"><div class="viewhead"><div><small>ANALYST WORKSPACE</small><h2>Case Notes</h2></div></div><p class="lead">Capture hypotheses, questions, and evidence to discuss with your team.</p><textarea id="caseNotes" rows="18" placeholder="What do you notice? What could explain it? What evidence would change your assessment?"></textarea><div class="saveflag" id="saveFlag">Saved locally in this browser.</div></section>
+<section id="assessment" class="view"><div class="viewhead"><div><small>CASE DISPOSITION</small><h2>SOC Briefing Assessment</h2></div></div><p class="lead">Use the case file you built. The console records your assessment; it does not tell you whether you are right.</p><div class="case-status"><div><small>CASE FILE FINDINGS</small><b id="statusTimeline">0</b></div><div><small>EVIDENCE REQUESTED</small><b id="statusEvidence">0 / 3</b></div><div><small>CASE NOTES</small><b id="statusNotes">NONE</b></div></div><div id="assessmentFindings" class="finding-review"></div><form id="assessmentForm" class="assessment"><label>Disposition<select id="disposition" required><option value="">Select…</option><option>ESCALATE</option><option>CONTINUE INVESTIGATION</option><option>CLOSE — NO INCIDENT</option></select></label><div id="customAssessment" class="custom-assessment"></div><label>Incident assessment — What do you believe happened?<textarea id="happened" required></textarea></label><div class="triple"><label>PROVES <small>What can you state as fact from the evidence?</small><textarea id="proves" required></textarea></label><label>SUPPORTS <small>What conclusion does the evidence suggest but not independently prove?</small><textarea id="supports" required></textarea></label><label>NEED <small>What additional evidence would strengthen or challenge your conclusion?</small><textarea id="need" required></textarea></label></div><label>Recommended next action — What should the SOC do next?<textarea id="nextAction" required></textarea></label><button class="primary">RECORD ASSESSMENT</button></form><div id="submitted" class="report hidden"><div class="reporthead"><div><small>ASSESSMENT RECORDED</small><h3>SOC BRIEFING REPORT</h3></div><span id="reportDisposition" class="report-disposition"></span></div><div id="reportBody"></div><div class="report-actions"><button type="button" id="editAssessment">EDIT ASSESSMENT</button><button type="button" id="copyBriefing" class="primary">COPY SOC BRIEFING</button><span id="copyStatus"></span></div></div></section>
+</main></div>
+<div id="drawer" class="drawer hidden"><button id="closeDrawer">×</button><small id="drawerLabel">RECORD DETAIL</small><h3 id="drawerTitle"></h3><div id="drawerBody"></div><button id="pinEvent">+ Add to case file</button></div>
+<div id="modal" class="modal hidden"><div class="modalcard"><button id="closeModal">×</button><div id="modalBody"></div></div></div>
+<script src="js/cases.js?v=20260926-v6"></script><script src="js/app.js?v=20260926-v6"></script></body></html>
