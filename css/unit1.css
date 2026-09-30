@@ -3,3 +3,15 @@
 @media(max-width:1100px){.unit-grid{grid-template-columns:1fr}.unit-card{padding:24px}.unit-cardactions{grid-template-columns:1fr 1fr}.unit-hero{gap:20px}.unit-count{min-width:140px}.unit-how ol{gap:20px}}
 @media(max-width:700px){.unit-hero{display:block;padding-top:20px}.unit-count{display:none}.unit-cardactions,.unit-how ol{grid-template-columns:1fr}.unit-how{padding:20px}.unit-screen{padding:18px}.unit-windowbar{padding:12px}.unit-screen p{font-size:16px}.unit-lessonhead{padding-top:10px}#unitHome .journey{overflow-x:auto}.unit-cardtop{font-size:14px}.unit-card{padding:20px}}
 @media(max-width:760px){#console #caseQueue{display:block;min-height:44px;margin:4px 0;padding:10px 12px;font-size:16px}}
+
+/* CTI launch card on the Unit 1 home */
+.unit-cti{margin:34px 0 26px;padding-top:26px;border-top:1px solid #31485a}
+.unit-cti .unit-sectionhead{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:14px}
+.unit-cti .unit-sectionhead p{max-width:560px;color:#9fb1bf;margin:0}
+.unit-cti-card{display:grid;grid-template-columns:72px 1fr auto;gap:18px;align-items:center;padding:20px;border:1px solid #3b6470;border-radius:10px;background:linear-gradient(135deg,#0d1c22,#111923 65%,#17150e);color:#d6e6f1;text-decoration:none;transition:.18s ease}
+.unit-cti-card:hover,.unit-cti-card:focus-visible{border-color:#73d8e5;transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.22)}
+.unit-cti-mark{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border:1px solid #477986;border-radius:8px;background:#0b252c;color:#9ae9f2;font-weight:800;letter-spacing:.12em}
+.unit-cti-card h3{margin:5px 0 7px!important}.unit-cti-card p{margin:0;color:#aebdca;line-height:1.5}
+.unit-cti-card>strong{font-size:12px;letter-spacing:.08em;color:#a3e7d9;white-space:nowrap}
+.unit-cti-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.unit-cti-tags span{padding:4px 7px;border:1px solid #344b59;border-radius:4px;background:#0b1219;color:#9fb1bf;font-size:10px;letter-spacing:.06em}
+@media(max-width:760px){.unit-cti .unit-sectionhead{display:block}.unit-cti-card{grid-template-columns:54px 1fr}.unit-cti-mark{width:50px;height:50px}.unit-cti-card>strong{grid-column:1/-1;text-align:right}}
