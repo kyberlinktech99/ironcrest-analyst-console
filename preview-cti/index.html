@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ironcrest CTI Incoming // Threat Actor Intelligence</title>
+<style>
+:root{--bg:#07090d;--panel:#10141b;--panel2:#151b24;--line:#28303d;--text:#eef2f7;--muted:#94a0b2;--red:#e5484d;--cyan:#35c2d8;--gold:#d6a84b;--green:#48c78e;--blue:#6596ff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 85% 0,#111b2b 0,transparent 32%),var(--bg);color:var(--text);font-family:Inter,Aptos,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,a{font:inherit}.shell{max-width:1450px;margin:auto;padding:24px}.topbar{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:18px}.eyebrow,.kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);font-weight:800}.topbar h1{margin:5px 0 6px;font-size:clamp(28px,4vw,48px);line-height:1}.topbar p{margin:0;color:var(--muted);max-width:800px}.badge{border:1px solid #31515a;background:#0b171b;padding:12px 14px;min-width:220px}.badge small{display:block;color:var(--muted);font-size:10px}.badge b{display:block;margin:3px 0;color:#dffaff}.badge span{font-size:11px;color:var(--green)}.pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(72,199,142,.6);animation:pulse 1.8s infinite;margin-right:6px}@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(72,199,142,0)}}
+.intro{display:grid;grid-template-columns:1.35fr .65fr;gap:16px;margin:22px 0}.card{background:linear-gradient(180deg,#111720,#0d1118);border:1px solid var(--line);padding:18px}.card h2,.card h3{margin:4px 0 8px}.card p{color:#b9c3d0;line-height:1.55;margin:6px 0}.rule{border-left:3px solid var(--gold)}.rule b{color:#ffe3a5}.selector{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:18px 0}.selector button{background:#0e131b;border:1px solid var(--line);color:#c7d0dc;padding:12px 8px;cursor:pointer;min-height:64px}.selector button:hover,.selector button.active{border-color:var(--cyan);background:#10232a;color:white}.selector button small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.stage{display:grid;grid-template-columns:300px 1fr;gap:16px}.rail{position:sticky;top:12px;align-self:start}.rail button{width:100%;text-align:left;margin-bottom:7px;background:#0d1219;border:1px solid var(--line);color:#c7d0dc;padding:12px;cursor:pointer}.rail button.active{border-left:3px solid var(--red);background:#17141a;color:white}.rail button small{display:block;color:var(--muted);font-size:9px;letter-spacing:.12em}.sourcebox{margin-top:12px;padding:12px;border:1px solid var(--line);background:#0b0f15}.sourcebox a{display:block;color:#83d8e6;text-decoration:none;margin-top:8px;font-size:12px}.sourcebox a:hover{text-decoration:underline}
+.view{display:none}.view.active{display:block}.brief-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.classification{padding:8px 10px;border:1px solid #50373a;background:#1b1114;color:#ffb6ba;font-size:11px;font-weight:800;letter-spacing:.08em}.headline{font-size:clamp(25px,3.5vw,42px);margin:5px 0}.lede{font-size:17px;color:#c4ceda;max-width:950px}.intel-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}.intel-grid>div{border:1px solid var(--line);background:#0c1118;padding:12px}.intel-grid small,.poster-grid small{display:block;color:var(--cyan);font-size:9px;font-weight:800;letter-spacing:.12em;margin-bottom:5px}.intel-grid b{font-size:14px}.boundary{margin-top:14px;border:1px solid #5a4b28;background:#19150c;padding:13px;color:#ffe1a0}.boundary b{color:#ffd36e}
+.sim{overflow:hidden;padding:0}.simtop{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:15px 17px;border-bottom:1px solid var(--line)}.controls{display:flex;gap:7px;flex-wrap:wrap}.controls button{border:1px solid var(--line);background:#121923;color:white;padding:8px 11px;cursor:pointer}.controls .primary{background:#18333a;border-color:#2c6d79}.simbody{display:grid;grid-template-columns:1fr 360px;min-height:430px}.scene{position:relative;min-height:430px;background:radial-gradient(circle at center,#101925,#090d13 60%);overflow:hidden}.gridlines{position:absolute;inset:0;background-image:linear-gradient(rgba(70,90,110,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(70,90,110,.08) 1px,transparent 1px);background-size:35px 35px}.node{position:absolute;width:170px;padding:12px;border:1px solid #38485d;background:#101722;transition:.5s;z-index:2}.node b{display:block}.node small{color:var(--muted)}.node.actor{left:7%;top:38%;border-color:#6a3438}.node.target{right:7%;top:38%;border-color:#315d68}.node.middle{left:calc(50% - 85px);top:14%;border-color:#5c5133}.node.output{left:calc(50% - 85px);bottom:12%;border-color:#375a48}.node.hot{box-shadow:0 0 0 2px rgba(229,72,77,.2),0 0 30px rgba(229,72,77,.18);border-color:var(--red);transform:scale(1.04)}.flow{position:absolute;height:2px;background:linear-gradient(90deg,var(--red),var(--cyan));left:22%;right:22%;top:50%;opacity:.12;transition:.5s}.flow.hot{opacity:1;box-shadow:0 0 12px var(--cyan)}.phase{position:absolute;top:12px;left:14px;font-size:10px;letter-spacing:.14em;color:var(--green);font-weight:800}.events{border-left:1px solid var(--line);background:#0b0f15;padding:14px;overflow:auto}.events h3{margin:0 0 10px}.event{border-left:2px solid #344252;padding:9px 10px;margin:7px 0;background:#10151d;opacity:.4;transition:.35s}.event.active{opacity:1;border-color:var(--red)}.event small{display:block;color:var(--muted);font-size:9px}.event b{display:block;margin:2px 0}.event span{font-size:12px;color:#bbc5d2}.reveal{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.reveal>div{border:1px solid var(--line);padding:12px;background:#0d1219}.reveal small{color:var(--cyan);font-size:9px;font-weight:800;letter-spacing:.12em}.reveal p{margin:5px 0;color:#c5ced9}
+.poster{border:1px solid #544626;background:linear-gradient(135deg,#17130b,#0e1117 58%);padding:20px}.poster-title{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #5b4c2d;padding-bottom:12px}.poster-title h2{font-size:34px;margin:2px 0}.poster-title span{color:#ffd26f;font-weight:800}.poster-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.poster-grid>div{border:1px solid #34333a;background:rgba(10,12,16,.7);padding:13px}.poster-grid p{margin:0;color:#d5d9e0;line-height:1.45}.questions{margin-top:14px}.questions li{margin:8px 0;color:#cbd3dd}.footer{margin:28px 0 8px;border-top:1px solid var(--line);padding-top:12px;color:#6f7a88;font-size:11px}
+@media(max-width:1000px){.selector{grid-template-columns:repeat(3,1fr)}.stage{grid-template-columns:1fr}.rail{position:static;display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.rail button{margin:0}.simbody{grid-template-columns:1fr}.events{border-left:0;border-top:1px solid var(--line)}.intel-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.shell{padding:13px}.topbar,.brief-head,.poster-title{display:block}.badge{margin-top:12px}.intro{grid-template-columns:1fr}.selector,.rail{grid-template-columns:1fr 1fr}.intel-grid,.poster-grid,.reveal{grid-template-columns:1fr}.simtop{display:block}.controls{margin-top:10px}.node{width:140px;font-size:12px}.node.middle,.node.output{left:calc(50% - 70px)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="topbar">
+ <div><div class="eyebrow">IRONCREST CYBER PARTNERS // THREAT INTELLIGENCE DESK</div><h1>CTI Incoming</h1><p>Read the intelligence brief. Reconstruct what happened. Then convert the incident into a threat-actor profile another SOC analyst could actually use.</p></div>
+ <div class="badge"><small>WORKSPACE</small><b>THREAT ACTOR INTELLIGENCE</b><span><i class="pulse"></i> FEED ONLINE</span></div>
+</header>
+<section class="intro">
+ <div class="card"><div class="kicker">MISSION</div><h2>From reporting → evidence → attribution</h2><p>Six real-world incidents represent the six threat-actor categories used in Topic 1.3. The simulations are simplified visual reconstructions of publicly reported activity—not exploit demonstrations.</p></div>
+ <div class="card rule"><div class="kicker">ANALYST RULE</div><h3>One clue rarely proves attribution.</h3><p><b>PROVES</b> what the source establishes. <b>SUPPORTS</b> the hypothesis the evidence suggests. <b>NEED</b> identifies what would strengthen or challenge it.</p></div>
+</section>
+<div class="selector" id="actorSelector"></div>
+<div class="stage">
+ <aside class="rail">
+   <button class="tab active" data-view="brief"><small>STEP 01</small>Incoming CTI Brief</button>
+   <button class="tab" data-view="simulation"><small>STEP 02</small>Attack Reconstruction</button>
+   <button class="tab" data-view="poster"><small>STEP 03</small>Threat Actor Poster</button>
+   <div class="sourcebox"><div class="kicker">SOURCE DESK</div><div id="sourceLinks"></div></div>
+ </aside>
+ <main>
+   <section id="brief" class="view active card"></section>
+   <section id="simulation" class="view"></section>
+   <section id="poster" class="view"></section>
+ </main>
+</div>
+<div class="footer">Ironcrest Cyber Partners // AP Cybersecurity Topic 1.3 // Educational CTI walkthrough. Public reporting is summarized and linked so analysts can distinguish source facts from analytical inference.</div>
+</div>
+<script>
+const cases = [
+{
+id:"nation",category:"Nation-State",actor:"Volt Typhoon",incident:"PRC State-Sponsored Access to U.S. Critical Infrastructure",
+headline:"Volt Typhoon pre-positions inside critical infrastructure networks",
+summary:"CISA, NSA, FBI and partners attribute activity to Volt Typhoon, a PRC state-sponsored actor. Public reporting describes extensive reconnaissance, exploitation of public-facing network appliances, valid-account use, living-off-the-land behavior, and persistent access in U.S. critical infrastructure.",
+why:"Strategic national objectives; U.S. agencies assess the activity as pre-positioning that could enable disruption of operational technology during a future crisis.",
+targets:"Communications, energy, transportation, water/wastewater and other strategically important critical-infrastructure organizations.",
+tactics:"Pre-compromise reconnaissance; exploitation of public-facing appliances; credential access; valid accounts; living-off-the-land; persistence; proxying traffic through compromised infrastructure.",
+watch:"Unusual valid-account behavior, admin-tool activity inconsistent with the user, access through edge devices, long-duration persistence, credential use designed to blend with normal working patterns.",
+example:"Volt Typhoon's campaign against U.S. critical infrastructure, publicly detailed by CISA and partner agencies.",
+boundary:"CISA attribution is strong source evidence for this case. A single LOTL command, public tool, or compromised router by itself would not prove Volt Typhoon.",
+sources:[
+["CISA Joint Advisory","https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-038a"],
+["CISA Malware Analysis","https://www.cisa.gov/news-events/analysis-reports/ar24-038a"]
+],
+steps:[
+["RECON","Actor studies network architecture, security controls and normal user behavior."],
+["INITIAL ACCESS","Public-facing network appliances are exploited using known or zero-day vulnerabilities."],
+["CREDENTIALS","Administrative credentials are obtained and valid accounts are used."],
+["BLEND IN","Built-in tools and normal administration paths reduce obvious malware signals."],
+["PERSIST","Access is maintained quietly for long periods."],
+["PRE-POSITION","U.S. agencies assess the access could enable future disruption of critical functions."]
+],
+questions:["What evidence supports state sponsorship?","Does living-off-the-land prove Volt Typhoon?","What does target selection tell you about motivation?","What additional evidence would strengthen attribution?"]
+},
+{
+id:"criminal",category:"Cybercriminal",actor:"ShinyHunters",incident:"2026 Canvas by Instructure Attack",
+headline:"ShinyHunters attacks Canvas directly; XSS paths lead to elevated access and extortion",
+summary:"Instructure says the 2026 Canvas incidents appear to have been perpetrated by ShinyHunters. Its customer incident FAQ describes a Free-for-Teacher account submitting malicious code in a support ticket; opening the ticket triggered an XSS vulnerability, yielding an authorization token and elevated Canvas access. A second unpatched XSS path was exploited May 7. Instructure temporarily took Canvas offline to contain the activity.",
+why:"Financial gain through data theft and extortion. Instructure says it reached an agreement with the unauthorized actor and described the event as dealing with cyber criminals.",
+targets:"Canvas/Instructure and education-sector customer data accessible through the Canvas application.",
+tactics:"Free-for-Teacher account; malicious support-ticket content; cross-site scripting; authorization-token theft; privilege escalation; broad data access/exfiltration; custom-theme/CSS ransom messaging; extortion.",
+watch:"Unexpected support-account activity, rapid access across many courses/users, unusual token generation, privilege escalation, unexpected custom-theme changes, abnormal bulk data access.",
+example:"April 29 and May 7, 2026 Canvas incidents. Instructure says both the prior Salesforce-related incident and the direct Canvas incidents appear to involve ShinyHunters.",
+boundary:"Instructure's attribution says the incidents 'appear' to have been perpetrated by ShinyHunters. The May 7 outage was a defensive containment decision by Instructure after renewed unauthorized access—not simply an attacker pressing an 'offline' button.",
+sources:[
+["Instructure Customer Incident FAQ","https://www.instructure.com/incident-update/customers"],
+["U.S. Dept. of Education Alert","https://fsapartners.ed.gov/knowledge-center/library/electronic-announcements/2026-05-12/technology-security-alert-ongoing-cybersecurity-incident-involving-canvas-learning-management-system-updated-may-29-2026"]
+],
+steps:[
+["FOOTHOLD","Threat actor creates a Canvas Free-for-Teacher account."],
+["TRIGGER","A support ticket contains malicious code; a support agent opening it triggers an XSS vulnerability."],
+["TOKEN","The actor obtains an authorization token and gains elevated Canvas application access."],
+["DATA ACCESS","The actor accesses and exfiltrates data across affected environments."],
+["RETURN","On May 7, a second unpatched XSS path is used through the Canvas discussion feature/OAuth flow."],
+["EXTORT + CONTAIN","Ransom messaging appears through a custom theme; monitoring detects activity and Instructure temporarily takes Canvas offline for containment."]
+],
+questions:["Why is ShinyHunters classified as a cybercriminal actor?","Did the attackers directly 'turn off' Canvas? What actually caused the outage?","Does an extortion message alone prove ShinyHunters?","Which observed behaviors are most useful to defenders?"]
+},
+{
+id:"hacktivist",category:"Hacktivist",actor:"Anonymous",incident:"Operation Avenge Assange // PayPal DDoS",
+headline:"Anonymous coordinates DDoS attacks after PayPal suspends WikiLeaks donations",
+summary:"DOJ records state that Anonymous coordinated and executed DDoS attacks against PayPal in December 2010 after PayPal suspended WikiLeaks' donation account. The operation was called 'Operation Avenge Assange,' and attack tools were made available for download.",
+why:"Cause-driven retaliation/protest connected to WikiLeaks and opposition to PayPal's decision.",
+targets:"PayPal and other organizations perceived as acting against WikiLeaks.",
+tactics:"Public coordination, freely distributed DDoS tooling, many participants generating traffic intended to deny legitimate service.",
+watch:"Cause-related messaging, public calls to participate, attack timing linked to a political/social event, target selection tied to the stated cause, denial-of-service telemetry.",
+example:"Anonymous' December 2010 Operation Avenge Assange DDoS attack against PayPal.",
+boundary:"DDoS is a technique, not an identity. The motive, public coordination, operation name and target selection help distinguish this case from financially motivated DDoS.",
+sources:[["U.S. DOJ — PayPal DDoS Pleas","https://www.justice.gov/usao-ndca/pr/thirteen-defendants-plead-guilty-december-2010-cyber-attack-against-paypal"]],
+steps:[
+["TRIGGER","PayPal suspends WikiLeaks' donation account."],
+["MOBILIZE","Anonymous frames the action as retaliation and coordinates participation."],
+["TOOLING","DDoS software is made available for download."],
+["TRAFFIC","Participants direct large volumes of requests toward PayPal systems."],
+["IMPACT","Legitimate availability is degraded by denial-of-service activity."],
+["ATTRIBUTION","Public motive and coordinated claims provide context beyond the DDoS technique itself."]
+],
+questions:["What makes this hacktivism rather than ordinary cybercrime?","Could a cybercriminal also use DDoS?","Which evidence reveals motivation?","Does using Anonymous-provided tooling prove membership in Anonymous?"]
+},
+{
+id:"insider",category:"Insider Threat",actor:"Former Cisco Employee",incident:"2018 Cisco Webex Teams Cloud Damage",
+headline:"Former Cisco employee accesses cloud infrastructure and deletes 456 virtual machines",
+summary:"DOJ says former Cisco employee Sudhish Kasaba Ramesh intentionally accessed Cisco cloud infrastructure without authorization in September 2018 and deployed code that resulted in deletion of 456 virtual machines supporting Webex Teams, affecting approximately 16,000 accounts.",
+why:"The public DOJ record establishes intentional unauthorized access and damage. It does not, by itself, establish a simple motive such as revenge; analysts should avoid inventing motive.",
+targets:"Cisco cloud infrastructure supporting the Webex Teams application.",
+tactics:"Unauthorized access using knowledge/access context from prior employment; code deployment; destructive deletion of cloud virtual machines.",
+watch:"Former-employee access, stale permissions or credentials, unexpected cloud-administration activity, destructive changes, activity outside normal role or employment status.",
+example:"2018 unauthorized Cisco cloud access by former employee Sudhish Kasaba Ramesh.",
+boundary:"Being a former employee does not prove revenge. Valid or familiar access patterns also do not prove the human owner performed the action; identity and access evidence must be corroborated.",
+sources:[["U.S. DOJ — Cisco Network Damage","https://www.justice.gov/usao-ndca/pr/san-jose-man-pleads-guilty-damaging-cisco-s-network"]],
+steps:[
+["TRUST CONTEXT","The individual had previously worked for Cisco and understood the environment."],
+["UNAUTHORIZED ACCESS","Months after resigning, he accessed Cisco's AWS-hosted cloud infrastructure without permission."],
+["CODE DEPLOYED","Code from his Google Cloud Project account was deployed."],
+["DELETION","456 virtual machines supporting Webex Teams were deleted."],
+["IMPACT","Approximately 16,000 Webex Teams accounts were affected."],
+["LESSON","Offboarding, least privilege and monitoring of privileged cloud activity matter."]
+],
+questions:["What makes this an insider-threat case rather than ordinary external compromise?","Does former employment prove revenge?","What evidence establishes unauthorized action?","What controls could reduce risk after an employee leaves?"]
+},
+{
+id:"script",category:"Script Kiddie",actor:"17-year-old TalkTalk Hacker",incident:"2015 TalkTalk Website Intrusion",
+headline:"Teen uses existing SQLmap tooling, says he was 'showing off' to friends",
+summary:"Court reporting describes a 17-year-old who used SQLmap to identify vulnerabilities on TalkTalk's website, shared details online, and said he was showing off to friends. Reporting also distinguishes his actions from later activity by others who exploited the exposed weakness.",
+why:"Recognition/showing off rather than demonstrated financial gain in this individual's conduct.",
+targets:"Public-facing websites with exploitable weaknesses, including TalkTalk.",
+tactics:"Existing SQLmap software; identification of SQL-injection weakness; sharing vulnerability details rather than developing a novel exploit.",
+watch:"Commodity/public tooling, known vulnerabilities, noisy or opportunistic activity, little evidence of custom tool development, public bragging or sharing of discovered weaknesses.",
+example:"The unnamed 17-year-old linked to the 2015 TalkTalk breach who pleaded guilty to hacking offenses.",
+boundary:"Do not attribute every later theft in the broader TalkTalk incident to this teenager. The teaching value is the combination of existing tooling, known weakness and stated recognition motive. Damage does not equal skill.",
+sources:[
+["Guardian — Court Reporting","https://www.theguardian.com/uk-news/2016/nov/15/boy-who-hacked-talktalk-website-was-showing-off-to-mates"],
+["UK cyber.uk — Script Kiddie Case Study","https://cyber.uk/areas-of-cyber-security/cyber-security-threat-groups-2/script-kiddies-case-study/"]
+],
+steps:[
+["SCAN","Existing SQLmap software is used to identify web vulnerabilities."],
+["WEAKNESS FOUND","A SQL-injection weakness is identified on TalkTalk's site."],
+["SHARE","Details of the weakness are posted/shared online."],
+["OTHERS ACT","Other attackers subsequently target the exposed weakness."],
+["IMPACT GROWS","Customer data is accessed in the broader incident."],
+["LESSON","A low-skill method can still contribute to major organizational impact."]
+],
+questions:["Which evidence supports low-skilled classification?","Does the size of TalkTalk's losses make the actor high-skilled?","What part of the broader breach can we safely attribute to this teenager?","What evidence would show original tool development?"]
+},
+{
+id:"terror",category:"Terrorist Group / Terrorist-Linked",actor:"Ardit Ferizi → ISIL",incident:"2015 Theft and Transfer of U.S. Personnel PII",
+headline:"Hacker steals PII and provides selected U.S. military/government data to ISIL",
+summary:"DOJ records state that Ardit Ferizi gained administrator-level access to a victim company's server, stole PII, selected records belonging to U.S. military and government personnel, and provided that information to ISIL member Junaid Hussain. The information was later published in the name of the Islamic State Hacking Division to encourage attacks.",
+why:"Ideological/terrorist objectives and material support: stolen information was supplied with the understanding that ISIL would use it against identified personnel.",
+targets:"U.S. military members and federal government personnel whose PII was present in the compromised company's databases.",
+tactics:"Unauthorized server access; PII theft; selection/culling of military and government records; transfer of stolen data to an ISIL member; publication for intimidation and targeting.",
+watch:"Ideological target selection, data collection intended to enable physical-world harm, transfer of stolen information to extremist networks, threatening publication tied to terrorist objectives.",
+example:"Ardit Ferizi's 2015 hacking and provision of roughly 1,300 U.S. military/government personnel records to ISIL.",
+boundary:"Teach the attribution precisely: Ferizi hacked the victim company and supplied the data to ISIL. Do not simplify this to 'ISIL hacked the company' unless evidence supports that statement.",
+sources:[["U.S. DOJ — Ferizi Sentencing","https://www.justice.gov/usao-edva/pr/isil-linked-hacker-sentenced-20-years-prison"]],
+steps:[
+["COMPROMISE","Ferizi gains administrator-level access to a U.S. victim company's server."],
+["COLLECT","PII belonging to tens of thousands of customers is accessible."],
+["SELECT","Records for U.S. military and government personnel are culled from the larger dataset."],
+["TRANSFER","The selected PII is provided to ISIL member Junaid Hussain."],
+["PUBLISH","A document containing roughly 1,300 personnel records is published in the name of the Islamic State Hacking Division."],
+["INTENT","DOJ records say the data was provided with the understanding it would be used to encourage attacks against those individuals."]
+],
+questions:["Who actually hacked the victim company?","What does the evidence establish about ISIL's role?","Why is precise attribution important here?","Which facts support ideological/terrorist motivation rather than ordinary cybercrime?"]
+}
+];
+
+let current=0, step=0, timer=null;
+const qs=s=>document.querySelector(s), qsa=s=>[...document.querySelectorAll(s)];
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function renderSelector(){
+ qs("#actorSelector").innerHTML=cases.map((c,i)=>`<button class="${i===current?"active":""}" data-case="${i}"><small>${esc(c.category)}</small>${esc(c.actor)}</button>`).join("");
+ qsa("[data-case]").forEach(b=>b.onclick=()=>{current=+b.dataset.case;step=0;stop();renderAll();});
+}
+function renderSources(){
+ const c=cases[current];qs("#sourceLinks").innerHTML=c.sources.map(s=>`<a href="${s[1]}" target="_blank" rel="noopener noreferrer">${esc(s[0])} ↗</a>`).join("");
+}
+function renderBrief(){
+ const c=cases[current];
+ qs("#brief").innerHTML=`
+ <div class="brief-head"><div><div class="kicker">CTI INCOMING // VERIFIED PUBLIC REPORTING</div><h2 class="headline">${esc(c.headline)}</h2><p class="lede">${esc(c.summary)}</p></div><div class="classification">${esc(c.category.toUpperCase())}</div></div>
+ <div class="intel-grid"><div><small>ACTOR</small><b>${esc(c.actor)}</b></div><div><small>INCIDENT</small><b>${esc(c.incident)}</b></div><div><small>LIKELY MOTIVATION</small><b>${esc(c.why)}</b></div><div><small>TARGETS</small><b>${esc(c.targets)}</b></div></div>
+ <div class="card" style="margin-top:10px"><div class="kicker">OBSERVED / REPORTED METHODS</div><p>${esc(c.tactics)}</p></div>
+ <div class="boundary"><b>EVIDENCE BOUNDARY //</b> ${esc(c.boundary)}</div>
+ <div class="questions"><div class="kicker">ANALYST QUESTIONS</div><ol>${c.questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ol></div>`;
+}
+function renderSimulation(){
+ const c=cases[current];
+ qs("#simulation").innerHTML=`
+ <div class="card sim">
+  <div class="simtop"><div><div class="kicker">SIMPLIFIED ATTACK RECONSTRUCTION</div><h3 style="margin:3px 0">${esc(c.incident)}</h3></div><div class="controls"><button id="reset">↻ RESET</button><button id="prev">← PREV</button><button id="next" class="primary">NEXT EVENT →</button><button id="auto">▶ RUN</button></div></div>
+  <div class="simbody">
+   <div class="scene"><div class="gridlines"></div><div class="phase" id="phase">READY // SELECT NEXT EVENT</div><div class="flow" id="flow"></div>
+    <div class="node actor" id="nActor"><small>THREAT ACTOR</small><b>${esc(c.actor)}</b></div>
+    <div class="node middle" id="nMethod"><small>METHOD / ACCESS</small><b id="methodLabel">OBSERVE</b></div>
+    <div class="node target" id="nTarget"><small>TARGET</small><b>${esc(c.targets.split(",")[0])}</b></div>
+    <div class="node output" id="nOutput"><small>OUTCOME</small><b id="outLabel">NOT YET DETERMINED</b></div>
+   </div>
+   <aside class="events"><h3>Event Stream</h3><div id="eventList">${c.steps.map((s,i)=>`<div class="event" data-step="${i}"><small>EVENT ${String(i+1).padStart(2,"0")}</small><b>${esc(s[0])}</b><span>${esc(s[1])}</span></div>`).join("")}</div></aside>
+  </div>
+ </div>
+ <div class="reveal"><div><small>PROVES</small><p id="proves">Advance the reconstruction and separate source facts from assumptions.</p></div><div><small>SUPPORTS</small><p>Patterns of motive, target selection and behavior can support an actor classification without making every technique unique to that actor.</p></div><div><small>NEED</small><p>For real attribution, analysts seek corroborating infrastructure, identity, telemetry, tooling, timing, victimology and intelligence reporting.</p></div></div>`;
+ qs("#reset").onclick=()=>{step=0;stop();paintStep()};
+ qs("#prev").onclick=()=>{step=Math.max(0,step-1);stop();paintStep()};
+ qs("#next").onclick=()=>{step=Math.min(c.steps.length,step+1);stop();paintStep()};
+ qs("#auto").onclick=run;
+ paintStep();
+}
+function paintStep(){
+ const c=cases[current];
+ qsa(".event").forEach((e,i)=>e.classList.toggle("active",i<step));
+ ["#nActor","#nMethod","#nTarget","#nOutput","#flow"].forEach(x=>qs(x)?.classList.remove("hot"));
+ if(step===0){qs("#phase").textContent="READY // SELECT NEXT EVENT";qs("#methodLabel").textContent="OBSERVE";qs("#outLabel").textContent="NOT YET DETERMINED";return}
+ const s=c.steps[step-1];qs("#phase").textContent=`EVENT ${String(step).padStart(2,"0")} // ${s[0]}`;qs("#methodLabel").textContent=s[0];qs("#outLabel").textContent=step===c.steps.length?"RECONSTRUCTION COMPLETE":"ACTIVITY IN PROGRESS";
+ qs("#nActor").classList.add("hot");qs("#nMethod").classList.add("hot");qs("#flow").classList.add("hot");if(step>1)qs("#nTarget").classList.add("hot");if(step===c.steps.length)qs("#nOutput").classList.add("hot");
+ qs("#proves").textContent=s[1];
+}
+function run(){stop();step=0;paintStep();timer=setInterval(()=>{if(step>=cases[current].steps.length){stop();return}step++;paintStep()},1100)}
+function stop(){if(timer){clearInterval(timer);timer=null}}
+function renderPoster(){
+ const c=cases[current];
+ qs("#poster").innerHTML=`<div class="poster"><div class="poster-title"><div><div class="kicker">IRONCREST THREAT ACTOR WANTED POSTER // MODEL</div><h2>${esc(c.actor)}</h2></div><span>${esc(c.category.toUpperCase())}</span></div>
+ <div class="poster-grid">
+ <div><small>WHO // DEFINITION</small><p>${esc(c.actor)} is used here as a real-world example of the <b>${esc(c.category)}</b> category. The classification is based on the incident evidence and source reporting—not on one technique alone.</p></div>
+ <div><small>WHY // MOTIVATION</small><p>${esc(c.why)}</p></div>
+ <div><small>TARGETS</small><p>${esc(c.targets)}</p></div>
+ <div><small>TACTICS / METHODS</small><p>${esc(c.tactics)}</p></div>
+ <div><small>REAL-WORLD EXAMPLE</small><p>${esc(c.example)}</p></div>
+ <div><small>WATCH FOR // DEFENDER INTELLIGENCE</small><p>${esc(c.watch)}</p></div>
+ </div></div>
+ <div class="card questions"><div class="kicker">SOC INTELLIGENCE BRIEFING // QUESTIONS</div><ol>${c.questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ol><p><b>Universal close:</b> What does the evidence PROVE? What does it SUPPORT? What would you still NEED?</p></div>`;
+}
+function renderAll(){renderSelector();renderSources();renderBrief();renderSimulation();renderPoster()}
+qsa(".tab").forEach(b=>b.onclick=()=>{stop();qsa(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");qsa(".view").forEach(v=>v.classList.remove("active"));qs("#"+b.dataset.view).classList.add("active")});
+renderAll();
+</script>
+</body></html>
