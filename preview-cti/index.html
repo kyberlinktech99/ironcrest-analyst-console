@@ -14,6 +14,16 @@ button,a{font:inherit}.shell{max-width:1450px;margin:auto;padding:24px}.topbar{d
 .sim{overflow:hidden;padding:0}.simtop{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:15px 17px;border-bottom:1px solid var(--line)}.controls{display:flex;gap:7px;flex-wrap:wrap}.controls button{border:1px solid var(--line);background:#121923;color:white;padding:8px 11px;cursor:pointer}.controls .primary{background:#18333a;border-color:#2c6d79}.simbody{display:grid;grid-template-columns:1fr 360px;min-height:430px}.scene{position:relative;min-height:430px;background:radial-gradient(circle at center,#101925,#090d13 60%);overflow:hidden}.gridlines{position:absolute;inset:0;background-image:linear-gradient(rgba(70,90,110,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(70,90,110,.08) 1px,transparent 1px);background-size:35px 35px}.node{position:absolute;width:170px;padding:12px;border:1px solid #38485d;background:#101722;transition:.5s;z-index:2}.node b{display:block}.node small{color:var(--muted)}.node.actor{left:7%;top:38%;border-color:#6a3438}.node.target{right:7%;top:38%;border-color:#315d68}.node.middle{left:calc(50% - 85px);top:14%;border-color:#5c5133}.node.output{left:calc(50% - 85px);bottom:12%;border-color:#375a48}.node.hot{box-shadow:0 0 0 2px rgba(229,72,77,.2),0 0 30px rgba(229,72,77,.18);border-color:var(--red);transform:scale(1.04)}.flow{position:absolute;height:2px;background:linear-gradient(90deg,var(--red),var(--cyan));left:22%;right:22%;top:50%;opacity:.12;transition:.5s}.flow.hot{opacity:1;box-shadow:0 0 12px var(--cyan)}.phase{position:absolute;top:12px;left:14px;font-size:10px;letter-spacing:.14em;color:var(--green);font-weight:800}.events{border-left:1px solid var(--line);background:#0b0f15;padding:14px;overflow:auto}.events h3{margin:0 0 10px}.event{border-left:2px solid #344252;padding:9px 10px;margin:7px 0;background:#10151d;opacity:.4;transition:.35s}.event.active{opacity:1;border-color:var(--red)}.event small{display:block;color:var(--muted);font-size:9px}.event b{display:block;margin:2px 0}.event span{font-size:12px;color:#bbc5d2}.reveal{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.reveal>div{border:1px solid var(--line);padding:12px;background:#0d1219}.reveal small{color:var(--cyan);font-size:9px;font-weight:800;letter-spacing:.12em}.reveal p{margin:5px 0;color:#c5ced9}
 .poster{border:1px solid #544626;background:linear-gradient(135deg,#17130b,#0e1117 58%);padding:20px}.poster-title{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #5b4c2d;padding-bottom:12px}.poster-title h2{font-size:34px;margin:2px 0}.poster-title span{color:#ffd26f;font-weight:800}.poster-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.poster-grid>div{border:1px solid #34333a;background:rgba(10,12,16,.7);padding:13px}.poster-grid p{margin:0;color:#d5d9e0;line-height:1.45}.questions{margin-top:14px}.questions li{margin:8px 0;color:#cbd3dd}.footer{margin:28px 0 8px;border-top:1px solid var(--line);padding-top:12px;color:#6f7a88;font-size:11px}
 
+
+.vocab-hero{border:1px solid #3b5964;background:linear-gradient(135deg,#0c171d,#10141b 70%);padding:16px;margin-bottom:10px}
+.vocab-hero h2{margin:4px 0 6px;font-size:29px}.vocab-hero p{margin:4px 0;color:#bdc8d5}
+.vocab-jump{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 13px}.vocab-jump button{background:#101923;border:1px solid #334958;color:#d9eef2;padding:6px 9px;cursor:pointer;font-size:11px}.vocab-jump button:hover{border-color:#62c9da}
+.vocab-group{margin:12px 0}.vocab-group h3{margin:0 0 7px;font-size:18px}.vocab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.vocab-card{border:1px solid var(--line);background:#0d1219;padding:10px;min-height:104px}.vocab-card.ap{border-top:3px solid #54c5d5}.vocab-card.bridge{border-top:3px solid #d3aa56}
+.vocab-card b{display:block;font-size:15px;color:#fff}.vocab-card span{display:block;margin-top:4px;color:#b9c4d0;font-size:12px;line-height:1.4}.vocab-card em{display:block;margin-top:6px;color:#8ee5f2;font-size:10px;font-style:normal}
+.vocab-note{border-left:3px solid #d3aa56;background:#17150f;padding:9px 11px;color:#d7cfbd;font-size:12px;margin-top:10px}
+@media(max-width:1000px){.vocab-grid{grid-template-columns:1fr 1fr}}@media(max-width:650px){.vocab-grid{grid-template-columns:1fr}}
+
 .concept-hero{border:1px solid #31495a;background:linear-gradient(135deg,#0d1820,#10141b 65%);padding:18px;margin-bottom:12px}.concept-hero h2{margin:4px 0 7px;font-size:32px}.concept-hero p{margin:4px 0;color:#bdc8d5;line-height:1.5}.lo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:12px 0}.lo{border:1px solid var(--line);background:#0d1219;padding:12px}.lo b{display:block;color:#8ee5f2;font-size:12px;margin-bottom:4px}.lo span{font-size:13px;color:#c7d0dc}.concept-section{margin-top:13px}.concept-section>h3{margin:0 0 8px;font-size:20px}.concept-section>p{color:#aeb9c7}.lock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.lock-card{border:1px solid var(--line);background:#0d1219;padding:13px;min-height:150px}.lock-card .term{color:#fff;font-size:17px;font-weight:800}.lock-card .def{color:#b8c3d0;font-size:13px;line-height:1.45;margin-top:6px}.lock-card .exam{margin-top:8px;color:#f0ca77;font-size:11px}.chain{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;align-items:stretch}.chain>div{border:1px solid #334151;background:#101722;padding:11px;text-align:center}.chain small{display:block;color:var(--cyan);font-size:9px;letter-spacing:.1em}.chain b{display:block;margin:5px 0}.attack-matrix{width:100%;border-collapse:collapse;font-size:13px}.attack-matrix th,.attack-matrix td{border:1px solid var(--line);padding:9px;vertical-align:top}.attack-matrix th{background:#141b24;color:#8ee5f2;text-align:left}.attack-matrix td{color:#c8d0db}.bridge{border:1px dashed #5a4d2d;background:#15130d;padding:13px;margin-top:12px}.bridge .kicker{color:#e7bd62}.device-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}.device{border:1px solid #383842;background:#0f1218;padding:11px}.device b{display:block}.device span{display:block;color:#aeb9c7;font-size:12px;margin-top:4px}.cfu{border:1px solid #2d4f59;background:#0d171b;padding:14px;margin-top:12px}.cfu-item{border-top:1px solid #24363d;padding:10px 0}.cfu-item:first-of-type{border-top:0}.cfu-q{font-weight:700}.cfu button{margin-top:7px;background:#14262c;color:#dffaff;border:1px solid #315d68;padding:6px 9px;cursor:pointer}.cfu-a{display:none;color:#9fe5b8;margin-top:7px}.cfu-a.show{display:block}.teacher-callout{border-left:3px solid var(--red);padding:10px 12px;background:#171116;color:#e7c9cb;margin:10px 0}
 @media(max-width:1000px){.lock-grid,.device-grid{grid-template-columns:1fr 1fr}.chain{grid-template-columns:1fr}.lo-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.lock-grid,.device-grid{grid-template-columns:1fr}}
@@ -36,6 +46,7 @@ button,a{font:inherit}.shell{max-width:1450px;margin:auto;padding:24px}.topbar{d
 <div class="selector" id="actorSelector"></div>
 <div class="stage">
  <aside class="rail">
+   <button class="tab quick" data-view="vocabulary"><small>QUICK JUMP</small>Vocabulary</button>
    <button class="tab active" data-view="brief"><small>STEP 01</small>Incoming CTI Brief</button>
    <button class="tab" data-view="simulation"><small>STEP 02</small>Attack Reconstruction</button>
    <button class="tab" data-view="concepts"><small>STEP 03</small>AP Concepts Lock-In</button>
@@ -43,6 +54,7 @@ button,a{font:inherit}.shell{max-width:1450px;margin:auto;padding:24px}.topbar{d
    <div class="sourcebox"><div class="kicker">SOURCE DESK</div><div id="sourceLinks"></div></div>
  </aside>
  <main>
+   <section id="vocabulary" class="view"></section>
    <section id="brief" class="view active card"></section>
    <section id="simulation" class="view"></section>
    <section id="concepts" class="view"></section>
@@ -243,6 +255,78 @@ function paintStep(){
 function run(){stop();step=0;paintStep();timer=setInterval(()=>{if(step>=cases[current].steps.length){stop();return}step++;paintStep()},1100)}
 function stop(){if(timer){clearInterval(timer);timer=null}}
 
+
+function renderVocabulary(){
+ qs("#vocabulary").innerHTML=`
+ <div class="vocab-hero">
+  <div class="kicker">TOPIC 1.3 // QUICK REFERENCE</div>
+  <h2>Vocabulary Lock-In</h2>
+  <p>Use this as the fast path when time is short. <b>Blue-top cards</b> are direct Topic 1.3 / AP lock-in. <b>Gold-top cards</b> are Cisco/industry bridge vocabulary that helps analysts explain the scenario.</p>
+ </div>
+ <div class="vocab-jump">
+  <button data-vjump="v-foundation">FOUNDATION</button><button data-vjump="v-actor">ACTOR + SKILL</button><button data-vjump="v-ttp">TTPs</button><button data-vjump="v-wlan">WLAN ATTACKS</button><button data-vjump="v-protect">PROTECTION</button><button data-vjump="v-devices">SECURITY DEVICES</button>
+ </div>
+
+ <div id="v-foundation" class="vocab-group card"><div class="kicker">FOUNDATION // ANALYST LANGUAGE</div><h3>Threat, Vulnerability, Risk & Security Properties</h3><div class="vocab-grid">
+  <div class="vocab-card bridge"><b>Threat</b><span>A potential cause of harm to an asset, system, organization, or person.</span><em>ASK: What could cause harm?</em></div>
+  <div class="vocab-card bridge"><b>Vulnerability</b><span>A weakness that a threat can exploit.</span><em>ASK: What weakness makes the attack possible?</em></div>
+  <div class="vocab-card bridge"><b>Risk</b><span>The potential for loss or harm when a threat can exploit a vulnerability; reason about likelihood and impact.</span><em>ASK: How likely and how damaging?</em></div>
+  <div class="vocab-card bridge"><b>Security Control</b><span>A safeguard or countermeasure used to prevent, detect, limit, or respond to security events.</span><em>CONTROL reduces likelihood and/or impact.</em></div>
+  <div class="vocab-card bridge"><b>Confidentiality</b><span>Protect information from unauthorized disclosure.</span><em>THINK: exposed credentials or readable data.</em></div>
+  <div class="vocab-card bridge"><b>Integrity</b><span>Protect information from unauthorized modification or destruction.</span><em>THINK: altered data, settings, or content.</em></div>
+  <div class="vocab-card bridge"><b>Availability</b><span>Keep systems and services accessible to authorized users when needed.</span><em>THINK: jamming / DoS.</em></div>
+ </div></div>
+
+ <div id="v-actor" class="vocab-group card"><div class="kicker">1.3.A // ADVERSARY CLASSIFICATION</div><h3>Actor, Skill & Motivation</h3><div class="vocab-grid">
+  <div class="vocab-card ap"><b>Adversary / Threat Actor</b><span>A person or group conducting malicious cyber activity. Actor category does not automatically determine skill level.</span><em>WHO is acting?</em></div>
+  <div class="vocab-card ap"><b>Low-Skilled Adversary</b><span>Relies on malicious tools created by others and exploits known vulnerabilities.</span><em>DAMAGE ≠ SKILL.</em></div>
+  <div class="vocab-card ap"><b>High-Skilled Adversary</b><span>Can create or modify malicious tools, adapt to defenses, and discover undocumented vulnerabilities.</span><em>Look at capability, not impact.</em></div>
+  <div class="vocab-card ap"><b>Known Vulnerability</b><span>A documented weakness. Low-skilled adversaries may use existing tools to exploit known vulnerabilities.</span><em>KNOWN + borrowed tool can still cause major damage.</em></div>
+  <div class="vocab-card ap"><b>Zero Day</b><span>An undocumented vulnerability for which defenders/vendor have had no prior opportunity to prepare a patch.</span><em>College Board associates discovery capacity with high-skilled adversaries.</em></div>
+  <div class="vocab-card ap"><b>Motivation</b><span>Why the adversary acts: greed, recognition, dedication to a cause, revenge, politics, or beliefs.</span><em>WHY are they acting?</em></div>
+ </div></div>
+
+ <div id="v-ttp" class="vocab-group card"><div class="kicker">CISCO 1.3 // BEHAVIOR</div><h3>Tactics, Techniques & Procedures (TTPs)</h3><div class="vocab-grid">
+  <div class="vocab-card bridge"><b>Tactic</b><span>The adversary's objective or goal.</span><em>WHAT are they trying to accomplish?</em></div>
+  <div class="vocab-card bridge"><b>Technique</b><span>The method used to accomplish the tactic.</span><em>HOW are they doing it?</em></div>
+  <div class="vocab-card bridge"><b>Procedure</b><span>The specific way an actor actually carried out a technique in a real incident.</span><em>WHAT DID THIS ACTOR ACTUALLY DO?</em></div>
+  <div class="vocab-card bridge"><b>Attribution</b><span>Connecting observed activity to a likely actor using evidence and analysis.</span><em>Technique alone rarely proves actor identity.</em></div>
+  <div class="vocab-card bridge"><b>Proves / Supports / Need</b><span>Separate what evidence establishes, what it suggests, and what additional evidence is required.</span><em>Do not overclaim.</em></div>
+ </div></div>
+
+ <div id="v-wlan" class="vocab-group card"><div class="kicker">1.3.B // WLAN ATTACKS</div><h3>Wireless Vocabulary You Must Distinguish</h3><div class="vocab-grid">
+  <div class="vocab-card ap"><b>WLAN</b><span>Wireless local area network: devices communicate over radio within a local area.</span><em>WIRELESS NETWORK CONTEXT</em></div>
+  <div class="vocab-card ap"><b>WAP / Access Point</b><span>A wireless access point connects wireless devices to a network.</span><em>An evil twin impersonates the expected network.</em></div>
+  <div class="vocab-card ap"><b>SSID</b><span>Service Set Identifier: the name used to identify a wireless network.</span><em>VERIFY THE EXACT NAME.</em></div>
+  <div class="vocab-card ap"><b>Evil Twin</b><span>A rogue WAP uses an SSID similar or identical to a legitimate network so victims may connect to it.</span><em>Can capture traffic; HTTPS-encrypted traffic cannot simply be read in transit.</em></div>
+  <div class="vocab-card ap"><b>Jamming</b><span>Strong electromagnetic interference in the same wireless frequency range prevents legitimate communication.</span><em>AVAILABILITY → DoS.</em></div>
+  <div class="vocab-card ap"><b>Denial of Service (DoS)</b><span>An attack that prevents users from accessing a resource or service.</span><em>Topic 1.3 example: wireless jamming.</em></div>
+  <div class="vocab-card ap"><b>War Driving</b><span>Detecting wireless network beacons while driving or walking to discover networks, network types, and signal leakage.</span><em>RECONNAISSANCE — not traffic interception.</em></div>
+  <div class="vocab-card ap"><b>Beacon</b><span>A wireless signal/announcement used by an access point to advertise network information.</span><em>War driving detects beacons.</em></div>
+  <div class="vocab-card ap"><b>Reconnaissance</b><span>Information gathering used to understand a target before a later attack.</span><em>War driving belongs here.</em></div>
+ </div></div>
+
+ <div id="v-protect" class="vocab-group card"><div class="kicker">1.3.C // PUBLIC-NETWORK PROTECTION</div><h3>Protect Sensitive Data</h3><div class="vocab-grid">
+  <div class="vocab-card ap"><b>Verify SSID</b><span>Confirm the exact wireless network name before joining it.</span><em>Primary user action against evil-twin confusion.</em></div>
+  <div class="vocab-card ap"><b>Unencrypted Wi-Fi</b><span>A network where traffic may lack link-level protection; consider the sensitivity of data before connecting.</span><em>Vulnerable information can include DNS queries.</em></div>
+  <div class="vocab-card ap"><b>VPN</b><span>Virtual private network: encrypts traffic between the device and the VPN operator's system.</span><em>Trust shifts to VPN provider; VPN does NOT stop jamming.</em></div>
+  <div class="vocab-card ap"><b>HTTPS</b><span>An encrypted web protocol that protects web traffic in transit.</span><em>An evil-twin operator cannot simply read HTTPS-encrypted traffic.</em></div>
+  <div class="vocab-card ap"><b>DNS Query</b><span>A request used to resolve a domain name. Topic 1.3 identifies DNS queries as an example of data that can be vulnerable on unencrypted Wi-Fi.</span><em>DATA SENSITIVITY MATTERS.</em></div>
+ </div></div>
+
+ <div id="v-devices" class="vocab-group card"><div class="kicker">CISCO / INDUSTRY BRIDGE</div><h3>Security Devices & Defensive Roles</h3><div class="vocab-grid">
+  <div class="vocab-card bridge"><b>Firewall</b><span>Allows or blocks network traffic according to security rules.</span><em>GATEKEEPER</em></div>
+  <div class="vocab-card bridge"><b>IDS</b><span>Intrusion Detection System: detects suspicious activity and alerts.</span><em>ALARM</em></div>
+  <div class="vocab-card bridge"><b>IPS</b><span>Intrusion Prevention System: detects suspicious activity and can actively block it.</span><em>DETECT + BLOCK</em></div>
+  <div class="vocab-card bridge"><b>WIPS</b><span>Wireless Intrusion Prevention System: monitors wireless activity and can help identify or respond to rogue/WLAN threats.</span><em>WIRELESS DEFENSE</em></div>
+  <div class="vocab-card bridge"><b>Wireless Controller</b><span>Centralizes management and policy for managed wireless access points.</span><em>MANAGE THE WLAN</em></div>
+  <div class="vocab-card bridge"><b>Defense in Depth</b><span>Use multiple layers of safeguards so one failed control does not leave the asset unprotected.</span><em>NO SINGLE CONTROL SOLVES EVERYTHING.</em></div>
+ </div>
+ <div class="vocab-note"><b>Time-saving path:</b> If you have only 5 minutes, hit <b>Actor + Skill → WLAN Attacks → Protection</b>. Those are the direct Topic 1.3 lock-ins. Foundation, TTPs, and Security Devices are supporting analyst/Cisco language.</div>
+ </div>`;
+ qsa("[data-vjump]").forEach(b=>b.onclick=()=>qs("#"+b.dataset.vjump).scrollIntoView({behavior:"smooth",block:"start"}));
+}
+
 function renderConcepts(){
  qs("#concepts").innerHTML=`
  <div class="concept-hero">
@@ -343,7 +427,7 @@ function renderPoster(){
  </div></div>
  <div class="card questions"><div class="kicker">SOC INTELLIGENCE BRIEFING // QUESTIONS</div><ol>${c.questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ol><p><b>Universal close:</b> What does the evidence PROVE? What does it SUPPORT? What would you still NEED?</p></div>`;
 }
-function renderAll(){renderSelector();renderSources();renderBrief();renderSimulation();renderConcepts();renderPoster()}
+function renderAll(){renderSelector();renderSources();renderBrief();renderSimulation();renderVocabulary();renderConcepts();renderPoster()}
 qsa(".tab").forEach(b=>b.onclick=()=>{stop();qsa(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");qsa(".view").forEach(v=>v.classList.remove("active"));qs("#"+b.dataset.view).classList.add("active")});
 renderAll();
 </script>
