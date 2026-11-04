@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="5" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim5_encryption">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Encryption Type Matcher — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#c084fc;--red:#ef4444;--green:#22c55e;--amber:#f59e0b;--cyan:#00d4ff;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-purple) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-purple) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--c-purple) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-purple) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-purple) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* ENC TYPE REFERENCE */
+.enc-ref{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:620px;margin:0 auto 24px;}
+.er{padding:14px;border:1px solid var(--border);background:var(--panel);}
+.er-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;margin-bottom:6px;}
+.er.symmetric .er-label{color:var(--cyan);}
+.er.asymmetric .er-label{color:var(--acc);}
+.er.hashing .er-label{color:var(--green);}
+.er-desc{font-size:11px;color:var(--text3);line-height:1.5;margin-bottom:6px;}
+.er-examples{font-family:var(--mono);font-size:10px;}
+.er.symmetric .er-examples{color:var(--cyan);}
+.er.asymmetric .er-examples{color:var(--acc);}
+.er.hashing .er-examples{color:var(--green);}
+
+/* SCENARIO BOX */
+.scenario-box{background:var(--panel);border:1px solid var(--border2);padding:18px 20px;margin-bottom:16px;}
+.scenario-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;}
+.scenario-text{font-size:14px;line-height:1.75;color:var(--text);}
+.scenario-text strong{color:var(--acc);}
+.scenario-text code{font-family:var(--mono);font-size:12px;color:var(--cyan);background:var(--bg3);padding:1px 5px;}
+
+/* VISUAL DIAGRAM */
+.enc-visual{background:var(--bg3);border:1px solid var(--border);padding:16px;margin-bottom:14px;}
+.enc-flow{display:flex;align-items:center;justify-content:space-around;gap:8px;flex-wrap:wrap;min-height:80px;}
+.ef-node{text-align:center;padding:10px 14px;border:1px solid var(--border2);background:var(--panel);min-width:90px;}
+.ef-node-icon{font-size:20px;display:block;margin-bottom:4px;}
+.ef-node-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;}
+.ef-arrow{font-size:18px;color:var(--text3);}
+.ef-key{font-family:var(--mono);font-size:10px;padding:4px 8px;border:1px solid;text-align:center;}
+.ef-key.sym{border-color:var(--cyan);color:var(--cyan);}
+.ef-key.asym-pub{border-color:var(--acc);color:var(--acc);}
+.ef-key.asym-priv{border-color:color-mix(in srgb,var(--c-purple) 40%,transparent);color:var(--c-purple);}
+.ef-key.hash{border-color:var(--green);color:var(--green);}
+
+/* CHOICES */
+.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.type-btn{background:var(--panel);border:2px solid var(--border);padding:16px 14px;cursor:pointer;text-align:center;transition:all .2s;}
+.type-btn:hover{border-color:var(--acc);background:color-mix(in srgb,var(--c-purple) 6%,transparent);}
+.type-btn.correct-ans{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 6%,transparent)!important;}
+.type-btn.wrong-ans{border-color:var(--red)!important;animation:shake .4s;}
+.type-btn.locked{pointer-events:none;opacity:.5;}
+.type-btn.correct-ans,.type-btn.wrong-ans{opacity:1!important;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.tb-icon{font-size:24px;display:block;margin-bottom:6px;}
+.tb-name{font-family:var(--display);font-size:15px;font-weight:700;margin-bottom:3px;}
+.tb-name.sym{color:var(--cyan);}
+.tb-name.asym{color:var(--acc);}
+.tb-name.hash{color:var(--green);}
+.tb-sub{font-size:11px;color:var(--text3);}
+
+/* MCQ extra */
+.choices{display:grid;gap:8px;margin-bottom:12px;}
+.choice-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 15px;cursor:pointer;text-align:left;transition:all .2s;}
+.choice-btn:hover:not(.locked){border-color:var(--acc);background:color-mix(in srgb,var(--c-purple) 5%,transparent);}
+.choice-btn.correct-ans{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.choice-btn.wrong-ans{border-color:var(--red)!important;animation:shake .4s ease;}
+.choice-btn.locked{pointer-events:none;opacity:.5;}
+.choice-btn.correct-ans,.choice-btn.wrong-ans{opacity:1!important;}
+.cl{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px;display:block;}
+.ct{font-size:13px;color:var(--text);line-height:1.45;}
+
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--c-purple) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.enc-ref,.type-grid,.concept-grid{grid-template-columns:1fr 1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--c-purple);--red:var(--red);--green:var(--c-green);--amber:var(--amber);--cyan:var(--cyan);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 5</div>
+  <div>
+    <div class="hdr-title">Encryption Type Matcher</div>
+    <div class="hdr-sub">UNIT 5 · SECURING APPS & DATA · SYMMETRIC · ASYMMETRIC · HASHING</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">S1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">S2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">S3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">S4</span><div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">S5</span><div class="prog-step" id="p5"></div>
+  <span class="prog-lbl">S6</span><div class="prog-step" id="p6"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p7"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🔐</span>
+    <div class="intro-title">Encryption Type Matcher</div>
+    <div class="intro-desc">Six real-world scenarios involving cryptography. Identify whether each uses symmetric encryption, asymmetric encryption, or hashing — then answer the follow-up question about why that type was chosen.</div>
+    <div class="enc-ref">
+      <div class="er symmetric">
+        <div class="er-label">SYMMETRIC</div>
+        <div class="er-desc">Same key encrypts and decrypts. Fast. Key must be shared securely.</div>
+        <div class="er-examples">AES-256, AES-128, 3DES</div>
+      </div>
+      <div class="er asymmetric">
+        <div class="er-label">ASYMMETRIC</div>
+        <div class="er-desc">Public key encrypts, private key decrypts. Slow. No shared secret needed.</div>
+        <div class="er-examples">RSA, ECC, Diffie-Hellman</div>
+      </div>
+      <div class="er hashing">
+        <div class="er-label">HASHING</div>
+        <div class="er-desc">One-way. No decryption. Fixed-length output. Verifies integrity.</div>
+        <div class="er-examples">SHA-256, SHA-3, bcrypt, MD5</div>
+      </div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN MATCHING</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+<div class="screen" id="s5"></div>
+<div class="screen" id="s6"></div>
+
+<div class="screen" id="s7">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">SYMMETRIC vs ASYMMETRIC</div><div class="concept-def">Symmetric (AES) is fast — used for bulk data encryption. Asymmetric (RSA) is slow but solves the key distribution problem. TLS uses both: asymmetric to establish a shared secret, then symmetric for the actual data transfer.</div></div>
+    <div class="concept-card"><div class="concept-term">HASHING IS NOT ENCRYPTION</div><div class="concept-def">Hashing is one-way — you cannot "decrypt" a hash. Encryption is reversible with a key. Hashing verifies integrity (passwords, file integrity) while encryption protects confidentiality. The AP exam tests this distinction directly.</div></div>
+    <div class="concept-card"><div class="concept-term">PASSWORD STORAGE</div><div class="concept-def">Passwords should NEVER be stored as plaintext or reversibly encrypted. They're stored as salted hashes (bcrypt, Argon2). At login, the entered password is hashed and compared to the stored hash. The original password is never recoverable.</div></div>
+    <div class="concept-card"><div class="concept-term">DIGITAL SIGNATURES</div><div class="concept-def">A digital signature uses asymmetric cryptography: the sender signs with their private key, recipients verify with the public key. This proves authenticity (who sent it) and integrity (wasn't modified). Used in code signing, email (S/MIME), and TLS certificates.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ TRY AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim5_hub.html'">← UNIT 5 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const SCENARIOS=[
+  {
+    label:"SCENARIO 01 — PASSWORD DATABASE",
+    desc:"When users register on a web app, their passwords are processed before storage. The database stores <code>$2b$12$eImiTXuWVxfM37uY4JANjQ...</code> for the password <strong>'MyP@ssword!'</strong>. At login, the same process is applied to the entered password and compared to the stored value.",
+    visual:`<div class="enc-flow">
+      <div class="ef-node"><span class="ef-node-icon">🔑</span><div class="ef-node-label">PASSWORD</div></div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-node" style="border-color:var(--green);"><span class="ef-node-icon">⚙️</span><div class="ef-node-label" style="color:var(--green);">BCRYPT</div></div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-node"><span class="ef-node-icon">📋</span><div class="ef-node-label">$2b$12$... (STORED)</div></div>
+      <div class="ef-arrow" style="color:var(--red);">✗</div>
+      <div class="ef-node" style="border-color:var(--red);"><span class="ef-node-icon">🔄</span><div class="ef-node-label" style="color:var(--red);">REVERSE? NO</div></div>
+    </div>`,
+    answer:"Hashing",
+    followUp:{
+      text:"Why is hashing appropriate for password storage instead of encryption?",
+      choices:[
+        {l:"A",t:"Hashing is faster than encryption, reducing server load during login"},
+        {l:"B",t:"If the database is breached, attackers get hashes they cannot reverse — the original passwords remain protected"},
+        {l:"C",t:"Hashing allows users to recover forgotten passwords from the stored value"},
+        {l:"D",t:"Hashing uses a key that only the server knows, preventing unauthorized decryption"}
+      ],
+      answer:"B",
+      explain:"Hashing is one-way — a breach of the password database exposes hashes, not passwords. Attackers must run offline dictionary or brute force attacks against the hashes (slowed significantly by bcrypt's computational cost). With encryption, a database breach + key theft = all passwords exposed instantly. Hashing eliminates this risk at the cost of making password recovery impossible (users must reset, not recover)."
+    }
+  },
+  {
+    label:"SCENARIO 02 — FULL DISK ENCRYPTION",
+    desc:"A laptop's SSD is encrypted with <strong>BitLocker using AES-256</strong>. The same 256-bit key that encrypted the 512GB drive is used to decrypt it when the user enters their PIN. A thief who steals the laptop cannot access any files without the key.",
+    visual:`<div class="enc-flow">
+      <div class="ef-node"><span class="ef-node-icon">📁</span><div class="ef-node-label">PLAINTEXT DATA</div></div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-key sym">AES-256 KEY</div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-node"><span class="ef-node-icon">🔒</span><div class="ef-node-label">CIPHERTEXT</div></div>
+      <div class="ef-arrow">↔</div>
+      <div class="ef-key sym">SAME KEY</div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-node"><span class="ef-node-icon">📁</span><div class="ef-node-label">PLAINTEXT DATA</div></div>
+    </div>`,
+    answer:"Symmetric",
+    followUp:{
+      text:"Why is symmetric encryption (AES) used for full disk encryption rather than asymmetric encryption?",
+      choices:[
+        {l:"A",t:"Asymmetric encryption can't encrypt large amounts of data due to key size limitations"},
+        {l:"B",t:"Symmetric encryption is significantly faster — encrypting/decrypting a full disk in real time requires performance that asymmetric encryption can't provide"},
+        {l:"C",t:"Asymmetric encryption requires an internet connection to the key server"},
+        {l:"D",t:"Symmetric encryption is more secure than asymmetric for disk-level operations"}
+      ],
+      answer:"B",
+      explain:"Speed is the deciding factor. AES-256 can encrypt gigabytes per second in hardware — modern CPUs include AES-NI instructions for near-zero overhead. RSA encryption of the same data would be 100–1000x slower, making real-time disk encryption impractical. The key distribution problem (symmetric's weakness) is solved locally — the key is stored in a TPM chip or derived from the user's PIN, so no network key exchange is needed."
+    }
+  },
+  {
+    label:"SCENARIO 03 — HTTPS TLS HANDSHAKE",
+    desc:"When your browser connects to <code>https://bank.com</code>, it downloads the server's <strong>public key</strong> in the certificate. The browser uses this to encrypt a session key. The server decrypts it with its <strong>private key</strong>. All subsequent traffic uses the session key.",
+    visual:`<div class="enc-flow">
+      <div class="ef-node"><span class="ef-node-icon">🌐</span><div class="ef-node-label">BROWSER</div></div>
+      <div style="text-align:center;"><div class="ef-arrow" style="display:block;margin:4px 0;">→ encrypt with public key →</div><div class="ef-key asym-pub" style="margin:4px auto;max-width:140px;">PUBLIC KEY (shared)</div></div>
+      <div class="ef-node"><span class="ef-node-icon">🏦</span><div class="ef-node-label">BANK SERVER</div></div>
+      <div style="text-align:center;"><div class="ef-arrow" style="display:block;margin:4px 0;">← decrypt with private key ←</div><div class="ef-key asym-priv" style="margin:4px auto;max-width:140px;">PRIVATE KEY (secret)</div></div>
+    </div>`,
+    answer:"Asymmetric",
+    followUp:{
+      text:"In TLS, the asymmetric phase is used to exchange a symmetric session key. Why not use asymmetric encryption for ALL the data transfer?",
+      choices:[
+        {l:"A",t:"Asymmetric encryption isn't secure enough for banking data"},
+        {l:"B",t:"Asymmetric encryption requires both parties to be online simultaneously"},
+        {l:"C",t:"Asymmetric encryption is too slow for bulk data transfer — the session key enables fast AES encryption for the actual traffic"},
+        {l:"D",t:"Asymmetric encryption can only encrypt 256 bytes at a time regardless of key size"}
+      ],
+      answer:"C",
+      explain:"TLS uses a hybrid approach: asymmetric (RSA/ECDH) for the handshake to securely exchange a symmetric session key, then symmetric (AES) for all actual data. This combines the key distribution advantage of asymmetric with the speed advantage of symmetric. This is called a hybrid cryptosystem and is how virtually all modern encrypted communications work."
+    }
+  },
+  {
+    label:"SCENARIO 04 — FILE INTEGRITY VERIFICATION",
+    desc:"A software company publishes a Linux ISO along with its <strong>SHA-256 checksum</strong>: <code>a35f8d...(64 hex chars)</code>. After downloading, users run <code>sha256sum ubuntu.iso</code> and compare the output to verify the file wasn't corrupted or tampered with during download.",
+    visual:`<div class="enc-flow">
+      <div class="ef-node"><span class="ef-node-icon">💿</span><div class="ef-node-label">ISO FILE (4.7 GB)</div></div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-node" style="border-color:var(--green);"><span class="ef-node-icon">⚙️</span><div class="ef-node-label" style="color:var(--green);">SHA-256</div></div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-node"><span class="ef-node-icon">🔍</span><div class="ef-node-label" style="color:var(--green);">64-CHAR HASH</div></div>
+    </div>
+    <div style="margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--text3);">SAME FILE → ALWAYS SAME HASH · ONE CHANGED BIT → COMPLETELY DIFFERENT HASH</div>`,
+    answer:"Hashing",
+    followUp:{
+      text:"A user downloads the ISO, computes the SHA-256 hash, and it matches the published checksum. What does this confirm?",
+      choices:[
+        {l:"A",t:"The file is free of malware — the hash proves nothing malicious was added"},
+        {l:"B",t:"The file's contents match exactly what the publisher hashed — it was not corrupted or modified in transit"},
+        {l:"C",t:"The file is encrypted and safe from eavesdroppers during download"},
+        {l:"D",t:"The download server is authentic and not an impersonation"}
+      ],
+      answer:"B",
+      explain:"Hash matching confirms integrity — the file bits are exactly what the publisher released. It does NOT confirm the file is malware-free (the publisher could have published malware), it doesn't encrypt anything (hashing ≠ encryption), and it doesn't verify the server's identity (that's what TLS certificates do). Integrity and authenticity are separate properties — hashing covers integrity; digital signatures cover authenticity.",
+    }
+  },
+  {
+    label:"SCENARIO 05 — EMAIL DIGITAL SIGNATURE",
+    desc:"A CFO signs an email with her <strong>private key</strong>. Recipients use her <strong>public key</strong> to verify the signature. If even one character in the email body is changed after signing, signature verification fails. The email software displays a 'Signature Valid ✓' indicator.",
+    visual:`<div class="enc-flow">
+      <div class="ef-node"><span class="ef-node-icon">📧</span><div class="ef-node-label">EMAIL (CFO)</div></div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-key asym-priv">PRIVATE KEY<br>(CFO only)</div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-node"><span class="ef-node-icon">✍️</span><div class="ef-node-label">SIGNED EMAIL</div></div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-key asym-pub">PUBLIC KEY<br>(everyone)</div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-node" style="border-color:var(--green);"><span class="ef-node-icon">✅</span><div class="ef-node-label">VERIFIED</div></div>
+    </div>`,
+    answer:"Asymmetric",
+    followUp:{
+      text:"Digital signatures are 'reversed' from encryption — the private key signs and the public key verifies. What two properties does a valid digital signature guarantee?",
+      choices:[
+        {l:"A",t:"Confidentiality and Availability — the email is encrypted and backed up"},
+        {l:"B",t:"Authentication and Integrity — proves who sent it and that it wasn't modified"},
+        {l:"C",t:"Non-repudiation and Availability — the sender can't deny sending it and it will always be delivered"},
+        {l:"D",t:"Confidentiality and Non-repudiation — the email is encrypted and the sender is identified"}
+      ],
+      answer:"B",
+      explain:"Digital signatures provide: (1) Authentication — only the CFO has her private key, so only she could have produced that signature. (2) Integrity — if the email is modified after signing, the signature is invalid. Note: digital signatures do NOT provide confidentiality — the email is readable by anyone. Combine with encryption for confidentiality. Non-repudiation (can't deny sending) is a consequence of authentication."
+    }
+  },
+  {
+    label:"SCENARIO 06 — RANSOMWARE ENCRYPTION",
+    desc:"A ransomware sample encrypts victim files using <strong>AES-256</strong> with a randomly generated key. The AES key is then encrypted with the attacker's <strong>RSA public key</strong> and sent to the C2 server. Victims cannot decrypt files without paying for the RSA private key.",
+    visual:`<div class="enc-flow" style="flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center;">
+        <div class="ef-node"><span class="ef-node-icon">📁</span><div class="ef-node-label">VICTIM FILES</div></div>
+        <div class="ef-arrow">→</div>
+        <div class="ef-key sym">AES KEY (random)</div>
+        <div class="ef-arrow">→</div>
+        <div class="ef-node"><span class="ef-node-icon">🔒</span><div class="ef-node-label">ENCRYPTED</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center;">
+        <div class="ef-node"><span class="ef-node-icon">🗝️</span><div class="ef-node-label">AES KEY</div></div>
+        <div class="ef-arrow">→</div>
+        <div class="ef-key asym-pub">ATTACKER RSA PUB</div>
+        <div class="ef-arrow">→</div>
+        <div class="ef-node"><span class="ef-node-icon">📡</span><div class="ef-node-label">→ C2 SERVER</div></div>
+      </div>
+    </div>`,
+    answer:"Both",
+    followUp:{
+      text:"This ransomware uses BOTH symmetric and asymmetric encryption. Why does ransomware combine both rather than using only RSA to encrypt files?",
+      choices:[
+        {l:"A",t:"RSA provides stronger encryption than AES so using both is redundant — but ransomware authors don't know this"},
+        {l:"B",t:"AES is fast (encrypts thousands of files quickly), RSA protects the AES key so only the attacker can recover it — combining speed with secure key protection"},
+        {l:"C",t:"AES requires an internet connection to encrypt, so RSA handles offline files"},
+        {l:"D",t:"Both methods must be used to comply with international encryption standards"}
+      ],
+      answer:"B",
+      explain:"This is the hybrid cryptosystem pattern again — the same approach TLS uses, but weaponized. AES encrypts files at gigabyte-per-second speeds (essential for encrypting thousands of files before detection). RSA wraps the AES key so only the attacker (with their private key) can unwrap it and provide decryption. This is elegant and effective: fast encryption, with the only decryption path running through the attacker's C2 server."
+    }
+  }
+];
+
+let score=0,results=[],total=SCENARIOS.length,sel=[],locked=[],_chg=[],fSel=[],fLocked=[],_fchg=[];
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildScenario(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildScenario(idx){
+  const sc=SCENARIOS[idx];
+  const types=[{id:"Symmetric",icon:"🔑",name:"Symmetric",cls:"sym",sub:"AES, 3DES — same key"},{id:"Asymmetric",icon:"🔓",name:"Asymmetric",cls:"asym",sub:"RSA, ECC — key pair"},{id:"Hashing",icon:"🔒",name:"Hashing",cls:"hash",sub:"SHA-256, bcrypt — one-way"},{id:"Both",icon:"🔀",name:"Both",cls:"asym",sub:"Hybrid cryptosystem"}];
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// SCENARIO ${idx+1} OF ${total}</div>
+    <div class="sec-title">Identify the Cryptography Type</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Scenario ${idx+1}/${total}</span>
+    </div>
+    <div class="scenario-box">
+      <div class="scenario-label">${sc.label}</div>
+      <div class="scenario-text">${sc.desc}</div>
+    </div>
+    <div class="enc-visual">${sc.visual}</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:10px;">// SELECT THE CRYPTOGRAPHY TYPE</div>
+    <div class="type-grid" id="types-${idx}" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));">
+      ${types.map(t=>`<div class="type-btn" data-t="${t.id}" onclick="pickType(this,'${t.id}',${idx})">
+        <span class="tb-icon">${t.icon}</span>
+        <div class="tb-name ${t.cls}">${t.name}</div>
+        <div class="tb-sub">${t.sub}</div>
+      </div>`).join('')}
+    </div>
+    <div class="lock-row"><button class="btn btn-acc" id="lock-${idx}" disabled onclick="lockIn(${idx})">🔒 LOCK IN CRYPTOGRAPHY TYPE</button><span class="lock-hint" id="hint-${idx}">Choose a type. You can change it until you lock in. Nothing is revealed before that.</span></div>
+    <div id="followup-${idx}" style="display:none;">
+      <div class="scenario-box" style="border-color:var(--border2);margin-top:14px;">
+        <div class="scenario-label">// FOLLOW-UP QUESTION (+10 pts)</div>
+        <div class="scenario-text" style="margin-bottom:12px;">${sc.followUp.text}</div>
+        <div class="choices" id="fq-ch-${idx}">
+          ${sc.followUp.choices.map(c=>`<div class="choice-btn" onclick="pickFollowUp(this,'${c.l}',${idx})"><span class="cl">${c.l}</span><div class="ct">${c.t}</div></div>`).join('')}
+        </div>
+        <div class="lock-row"><button class="btn btn-acc" id="fqlock-${idx}" disabled onclick="lockFollowUp(${idx})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="fqhint-${idx}">Choose an answer. You can change it until you lock in.</span></div>
+        <div class="feedback" id="fq-fb-${idx}"></div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav"><div></div><button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT →'}</button></div>`;
+}
+
+function pickType(el,type,idx){
+  if(locked[idx])return;
+  if(sel[idx]&&sel[idx]!==type)_chg[idx]=(_chg[idx]||0)+1;
+  sel[idx]=type;
+  document.getElementById('types-'+idx).querySelectorAll('.type-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+idx).disabled=false;
+  document.getElementById('hint-'+idx).textContent='Selected: '+type+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockIn(idx){
+  if(locked[idx]||!sel[idx])return;
+  locked[idx]=true;
+  const sc=SCENARIOS[idx],type=sel[idx],ok=type===sc.answer;
+  document.querySelector('#s'+(idx+1)+' .lock-row').style.display='none';
+  document.getElementById('types-'+idx).querySelectorAll('.type-btn').forEach(c=>{
+    c.classList.remove('picked');c.classList.add('locked');
+    if(c.dataset.t===sc.answer)c.classList.add('correct-ans');
+    if(c.dataset.t===type){if(!ok)c.classList.add('wrong-ans');c.querySelector('.tb-name').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx]={typeCorrect:ok,fuCorrect:false,pts:ok?15:0,type:type};
+  if(ok){score+=15;document.getElementById('score-disp').textContent='SCORE: '+score+' pts';}
+  const fb=document.getElementById('fb-'+idx);
+  fb.className='feedback show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?`<div class="fb-lbl ok">// LOCKED IN — CORRECT: ${sc.answer.toUpperCase()}</div>`:`<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: ${sc.answer.toUpperCase()}</div>You chose <strong>${type}</strong>. `)+`Now answer the follow-up question for bonus points.`;
+  document.getElementById('followup-'+idx).style.display='block';
+}
+
+function pickFollowUp(el,letter,idx){
+  if(fLocked[idx])return;
+  if(fSel[idx]&&fSel[idx]!==letter)_fchg[idx]=(_fchg[idx]||0)+1;
+  fSel[idx]=letter;
+  document.getElementById('fq-ch-'+idx).querySelectorAll('.choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('fqlock-'+idx).disabled=false;
+  document.getElementById('fqhint-'+idx).textContent='Selected: '+letter+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockFollowUp(idx){
+  if(fLocked[idx]||!fSel[idx])return;
+  fLocked[idx]=true;
+  const sc=SCENARIOS[idx],letter=fSel[idx],ok=letter===sc.followUp.answer;
+  document.querySelector('#followup-'+idx+' .lock-row').style.display='none';
+  document.getElementById('fq-ch-'+idx).querySelectorAll('.choice-btn').forEach(c=>{
+    const l=c.querySelector('.cl').textContent;
+    c.classList.remove('picked');c.classList.add('locked');
+    if(l===sc.followUp.answer)c.classList.add('correct-ans');
+    if(l===letter){if(!ok)c.classList.add('wrong-ans');c.querySelector('.ct').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx].fuCorrect=ok;results[idx].fu=letter;
+  if(ok){score+=10;results[idx].pts+=10;document.getElementById('score-disp').textContent='SCORE: '+score+' pts';}
+  const fb=document.getElementById('fq-fb-'+idx);
+  fb.className='feedback show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?'<div class="fb-lbl ok">// LOCKED IN — CORRECT +10 pts</div>':'<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: '+sc.followUp.answer+'</div>')+sc.followUp.explain;
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*25))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Cryptography Expert 🔐','You correctly identified all encryption types and explained why each was chosen. Symmetric vs. asymmetric vs. hashing is a guaranteed AP exam topic.'],mid:['Good Foundation 🎯','Review the core distinction: symmetric = same key (fast), asymmetric = key pair (slow, solves distribution), hashing = one-way (integrity only).'],low:['Keep Building 📚','Focus on: can it be decrypted? (no = hashing). Does sender and receiver use the same key? (yes = symmetric). Does it use a public/private key pair? (yes = asymmetric).']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=SCENARIOS.map((sc,i)=>{
+    const r=results[i]||{typeCorrect:false,fuCorrect:false,pts:0};
+    return `<div class="b-row"><div class="b-check">${r.typeCorrect&&r.fuCorrect?'✅':'⚠️'}</div><div class="b-text"><strong>${sc.label.split('—')[1].trim()}</strong> — ${sc.answer} · Type: ${r.typeCorrect?'✓':'✗'} · Why: ${r.fuCorrect?'✓':'✗'}</div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];sel=[];locked=[];_chg=[];fSel=[];fLocked=[];_fchg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:5,sim:'enc',screenId:''+('s'+(total+1))+'',score:score,max:total*25,items:(function(){var o=[];SCENARIOS.forEach(function(sc,i){var r=results[i]||{};var lb=sc.label.split('—')[1].trim();o.push({label:lb+' — cryptography type',result:r.typeCorrect?'correct':'incorrect',pts:r.typeCorrect?15:0,max:15,response:r.type||'',expected:sc.answer,changes:_chg[i]||0});o.push({label:lb+' — follow-up',result:r.fuCorrect?'correct':'incorrect',pts:r.fuCorrect?10:0,max:10,response:r.fu||'',expected:sc.followUp.answer,changes:_fchg[i]||0});});return o;})()});
+};
+const _apRestart=restart;
+restart=function(){sel=[];locked=[];_chg=[];fSel=[];fLocked=[];_fchg=[];APSim.start(5,'enc');_apRestart();};
+APSim.start(5,'enc');
+
+goTo(0);
+</script>
+</body>
+</html>

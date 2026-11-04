@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="1" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim_threat_actors">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Threat Actor Profiler — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--accent:#c084fc;--accent2:#ff6b35;--I:#00ff9d;--warn:#ffd166;--danger:#ff4757;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-purple) 3%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-purple) 3%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--accent);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--accent);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--accent);box-shadow:0 0 8px var(--accent);}
+.prog-step.done{background:var(--I);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.sec-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-main{background:var(--accent);color:var(--on-acc);font-weight:700;}
+.btn-main:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-purple) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-purple) 8%,transparent);}
+.btn-I{background:var(--I);color:var(--on-acc);font-weight:700;}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+
+/* INTRO */
+.intro-center{text-align:center;padding:32px 20px 24px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:pulse 2.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06);filter:drop-shadow(0 0 12px color-mix(in srgb,var(--c-purple) 50%,transparent))}}
+.intro-title{font-family:var(--display);font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px;color:var(--accent);}
+.intro-desc{font-size:15px;color:var(--text2);max-width:480px;margin:0 auto 28px;line-height:1.65;}
+.actor-preview{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:600px;margin:0 auto 28px;}
+.ap-item{background:var(--panel);border:1px solid var(--border);padding:12px 6px;text-align:center;}
+.ap-emoji{font-size:22px;display:block;margin-bottom:4px;}
+.ap-name{font-size:10px;color:var(--text3);line-height:1.3;}
+
+/* SCENARIO */
+.intel-box{background:var(--panel);border:1px solid var(--border2);border-left:3px solid var(--accent);padding:18px 20px;margin-bottom:16px;}
+.intel-label{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.15em;margin-bottom:10px;}
+.intel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.intel-item{font-size:13px;line-height:1.6;color:var(--text2);}
+.intel-item strong{color:var(--text);display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--accent);margin-bottom:2px;}
+
+/* ACTOR CARDS */
+.actor-grid{display:grid;grid-template-columns:repeat(1,1fr);gap:10px;margin-bottom:14px;}
+.actor-card{background:var(--panel);border:1px solid var(--border);padding:16px 18px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:all .22s;position:relative;overflow:hidden;}
+.actor-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--border2);transition:background .3s;}
+.actor-card:hover{border-color:var(--accent);background:var(--panel2);}
+.actor-card:hover::before{background:var(--accent);}
+.actor-card.selected::before{background:var(--I);}
+.actor-card.selected{border-color:var(--I);background:color-mix(in srgb,var(--green) 5%,transparent);}
+.actor-card.wrong{border-color:var(--danger);animation:shake .4s ease;}
+.actor-card.wrong::before{background:var(--danger);}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.actor-emoji{font-size:28px;flex-shrink:0;}
+.actor-info{flex:1;}
+.actor-name{font-family:var(--display);font-weight:700;font-size:15px;margin-bottom:2px;}
+.actor-desc{font-size:12px;color:var(--text2);line-height:1.45;}
+.actor-tags{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;}
+.tag{font-family:var(--mono);font-size:9px;padding:2px 7px;background:var(--bg3);border:1px solid var(--border2);color:var(--text3);letter-spacing:.06em;}
+
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:10px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--I);background:color-mix(in srgb,var(--green) 5%,transparent);}
+.feedback.wrong-fb{border-color:var(--danger);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--I);}
+.fb-lbl.no{color:var(--danger);}
+
+/* RESULTS */
+.result-hero{text-align:center;padding:32px 0 24px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--I);text-shadow:0 0 30px color-mix(in srgb,var(--green) 40%,transparent);}
+.result-score.mid{color:var(--warn);}
+.result-score.low{color:var(--danger);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:22px;}
+.b-row{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;margin-top:1px;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--accent);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.actor-preview{grid-template-columns:repeat(3,1fr);}.intel-grid{grid-template-columns:1fr;}.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--accent:var(--c-purple);--accent2:var(--c-orange);--I:var(--green);--warn:var(--amber);--danger:var(--red);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">AP Cyber</div>
+  <div>
+    <div class="hdr-title">Threat Actor Profiler</div>
+    <div class="hdr-sub">UNIT 1 · INTRO TO SECURITY · THREAT ACTORS</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+
+<div class="prog">
+  <span class="prog-lbl">INTRO</span>
+  <div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">CASE 1</span>
+  <div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">CASE 2</span>
+  <div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">CASE 3</span>
+  <div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">CASE 4</span>
+  <div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">RESULTS</span>
+  <div class="prog-step" id="p5"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🕵️</span>
+    <div class="intro-title">Threat Actor Profiler</div>
+    <div class="intro-desc">You're a cybersecurity analyst. Four incidents just came in. For each one, study the intelligence report — the target, method, and motive — and identify who's behind the attack.</div>
+    <div class="actor-preview">
+      <div class="ap-item"><span class="ap-emoji">🏛️</span><div class="ap-name">Nation-State</div></div>
+      <div class="ap-item"><span class="ap-emoji">💰</span><div class="ap-name">Cybercriminal</div></div>
+      <div class="ap-item"><span class="ap-emoji">✊</span><div class="ap-name">Hacktivist</div></div>
+      <div class="ap-item"><span class="ap-emoji">🏢</span><div class="ap-name">Insider Threat</div></div>
+      <div class="ap-item"><span class="ap-emoji">💻</span><div class="ap-name">Script Kiddie</div></div>
+    </div>
+    <button class="btn btn-main" onclick="goTo(1)">▶ OPEN CASE FILES</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+
+<div class="screen" id="s5">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl" style="margin-bottom:10px;">// THREAT ACTOR REFERENCE</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">NATION-STATE</div><div class="concept-def">Government-sponsored. High sophistication. Targets: government, military, critical infrastructure. Motive: espionage, disruption, geopolitical advantage.</div></div>
+    <div class="concept-card"><div class="concept-term">CYBERCRIMINAL</div><div class="concept-def">Financially motivated. Targets: anyone with money or valuable data. Tools: ransomware, phishing, credential theft. Motive: profit.</div></div>
+    <div class="concept-card"><div class="concept-term">HACKTIVIST</div><div class="concept-def">Ideologically motivated. Targets: organizations they oppose politically. Tools: DDoS, defacement, leaks. Motive: making a statement.</div></div>
+    <div class="concept-card"><div class="concept-term">INSIDER THREAT</div><div class="concept-def">Current or former employee, contractor, or partner. Has legitimate access. Motive: revenge, financial gain, ideology, or accidental harm.</div></div>
+    <div class="concept-card"><div class="concept-term">SCRIPT KIDDIE</div><div class="concept-def">Low skill. Uses pre-built tools without understanding them. Targets: anyone vulnerable. Motive: notoriety, curiosity, or mischief.</div></div>
+    <div class="concept-card"><div class="concept-term">THREAT MODELING</div><div class="concept-def">Analyzing who is likely to attack you, why, and how — so defenses can be prioritized appropriately for your organization.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ RUN AGAIN</button>
+    <button class="btn btn-I" onclick="window.location.href='sim_hub.html'">← BACK TO HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const CASES = [
+  {
+    label:"CASE FILE 001 — ENERGY SECTOR",
+    intel:{
+      "Target":"National power grid operator — 12 states",
+      "Method":"Zero-day exploit in industrial control software (SCADA). No phishing. Custom malware written for this system specifically.",
+      "Timeline":"Attack persisted undetected for 14 months",
+      "Goal":"Mapping grid infrastructure — no destructive action taken yet",
+      "Attribution clue":"Code comments found in Cyrillic. Attack occurred during geopolitical tensions."
+    },
+    answer:"nation",
+    explanation:"Every signal points to a <strong>Nation-State</strong>: zero-day exploits (expensive, rare), custom malware targeting specific industrial systems, a 14-month stealth operation, and Cyrillic code comments during a geopolitical flashpoint. Nation-states invest in long-duration access — they want intelligence or the ability to act later, not quick profit.",
+    trap:"Cybercriminals move fast and want money. This attacker was patient, stealthy, and mapped infrastructure without triggering alarms — that's espionage, not crime."
+  },
+  {
+    label:"CASE FILE 002 — RETAIL CHAIN",
+    intel:{
+      "Target":"Regional grocery chain — 340 stores",
+      "Method":"Point-of-sale malware installed via phishing email to IT staff. Credit card data harvested for 6 weeks.",
+      "Volume":"~2.1 million payment cards stolen",
+      "Monetization":"Cards sold on dark web markets within 48 hours of breach",
+      "Attribution clue":"Same malware variant used in 7 other retail breaches over 18 months"
+    },
+    answer:"criminal",
+    explanation:"This is a <strong>Cybercriminal</strong> operation — the motives and methods are purely financial. Payment card theft, rapid monetization on dark web markets, and reuse of the same malware across multiple retail targets all indicate an organized criminal group optimizing for profit and scale.",
+    trap:"Nation-states don't usually sell stolen credit cards — that creates attribution risks. The scale, speed of monetization, and repeat use of the same toolkit are criminal hallmarks."
+  },
+  {
+    label:"CASE FILE 003 — OIL COMPANY",
+    intel:{
+      "Target":"Multinational petroleum company's public website and social media",
+      "Method":"Website defaced with environmental protest imagery. Social accounts hijacked and posted anti-fossil-fuel messages.",
+      "Data stolen":"None",
+      "Systems disrupted":"Public web presence only — operations unaffected",
+      "Attribution clue":"Group posted a manifesto on Pastebin claiming credit, citing the company's Arctic drilling project"
+    },
+    answer:"hacktivist",
+    explanation:"Classic <strong>Hacktivist</strong> profile: the goal is publicity and political messaging, not profit or intelligence. Defacement and social media hijacking are designed to embarrass the target and broadcast a cause — not to steal data or cause operational damage. Taking credit via manifesto is a hallmark of hacktivism.",
+    trap:"Cybercriminals don't post manifestos — they avoid attention. Nation-states don't need to deface websites to make a point. The goal here is public visibility for an ideological cause."
+  },
+  {
+    label:"CASE FILE 004 — TECHNOLOGY FIRM",
+    intel:{
+      "Target":"Mid-size software company — source code repositories",
+      "Method":"Legitimate credentials used to access and exfiltrate proprietary source code over 3 weeks",
+      "Who had access":"Access logs show the account belonged to a senior developer who resigned 6 weeks prior",
+      "Clue":"Account was never deprovisioned after the employee left",
+      "Impact":"Stolen code later appeared in a competing product"
+    },
+    answer:"insider",
+    explanation:"This is an <strong>Insider Threat</strong> — specifically a former employee whose access was never revoked. The use of legitimate credentials, targeting of proprietary IP, and connection to a competitor suggest either malice (taking IP to a new employer) or a deliberate theft. The core failure is a process failure: offboarding did not include deprovisioning access.",
+    trap:"No hacking tools were used — just valid credentials. The attacker had authorized access that should have been removed. This is an insider threat made possible by poor access management."
+  }
+];
+
+const ACTOR_OPTIONS = [
+  {id:"nation",emoji:"🏛️",name:"Nation-State",desc:"Government-sponsored, sophisticated, long-duration operations targeting strategic assets",tags:["ESPIONAGE","APT","GEOPOLITICAL"]},
+  {id:"criminal",emoji:"💰",name:"Cybercriminal",desc:"Financially motivated, targets data and systems with direct monetary value",tags:["PROFIT","RANSOMWARE","FRAUD"]},
+  {id:"hacktivist",emoji:"✊",name:"Hacktivist",desc:"Ideologically motivated, attacks to make political or social statements publicly",tags:["IDEOLOGY","DEFACEMENT","DDOS"]},
+  {id:"insider",emoji:"🏢",name:"Insider Threat",desc:"Current or former employee with legitimate access, motivated by revenge, greed, or ideology",tags:["TRUSTED ACCESS","REVENGE","IP THEFT"]},
+  {id:"script",emoji:"💻",name:"Script Kiddie",desc:"Low-skill attacker using downloaded tools, motivated by notoriety or curiosity",tags:["LOW SKILL","OPPORTUNISTIC","NOISY"]},
+];
+
+let score=0,results=[];
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<6;i++){const el=document.getElementById('p'+i);el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=4)buildCase(n-1);
+  if(n===5)buildResults();
+}
+
+function buildCase(idx){
+  const c=CASES[idx];
+  const screen=document.getElementById('s'+(idx+1));
+  const intelRows=Object.entries(c.intel).map(([k,v])=>`<div class="intel-item"><strong>${k.toUpperCase()}</strong>${v}</div>`).join('');
+  const actorCards=ACTOR_OPTIONS.map(a=>`
+    <div class="actor-card" data-a="${a.id}" onclick="pickActor(this,'${a.id}',${idx})">
+      <div class="actor-emoji">${a.emoji}</div>
+      <div class="actor-info">
+        <div class="actor-name">${a.name}</div>
+        <div class="actor-desc">${a.desc}</div>
+        <div class="actor-tags">${a.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+  screen.innerHTML=`
+    <div class="sec-lbl">// CASE ${idx+1} OF 4 — ANALYZE INTELLIGENCE</div>
+    <div class="sec-title">Who's behind the attack?</div>
+    <div class="intel-box">
+      <div class="intel-label">📋 INTELLIGENCE REPORT — ${c.label}</div>
+      <div class="intel-grid">${intelRows}</div>
+    </div>
+    <div class="sec-desc">Based on the intelligence above, identify the most likely threat actor type:</div>
+    <div class="actor-grid">${actorCards}</div>
+    <div class="lock-row"><button class="btn btn-acc" id="lock-${idx}" disabled onclick="lockIn(${idx})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="hint-${idx}">Choose a threat actor. You can change it until you lock in. Nothing is revealed before that.</span></div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav"><div></div><button class="btn btn-main" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===3?'SEE RESULTS →':'NEXT CASE →'}</button></div>`;
+}
+
+let sel=[],locked=[],_chg=[];
+const AN=id=>ACTOR_OPTIONS.find(a=>a.id===id).name;
+function pickActor(el,choice,idx){
+  if(locked[idx])return;
+  if(sel[idx]&&sel[idx]!==choice)_chg[idx]=(_chg[idx]||0)+1;
+  sel[idx]=choice;
+  document.getElementById('s'+(idx+1)).querySelectorAll('.actor-card').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+idx).disabled=false;
+  document.getElementById('hint-'+idx).textContent='Selected: '+AN(choice)+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockIn(idx){
+  if(locked[idx]||!sel[idx])return;
+  locked[idx]=true;
+  const c=CASES[idx],choice=sel[idx],ok=choice===c.answer;
+  document.querySelector('#s'+(idx+1)+' .lock-row').style.display='none';
+  document.getElementById('s'+(idx+1)).querySelectorAll('.actor-card').forEach(card=>{
+    card.style.pointerEvents='none';card.classList.remove('picked');
+    if(card.dataset.a===c.answer)card.classList.add('selected');
+    if(card.dataset.a===choice){if(!ok)card.classList.add('wrong');card.querySelector('.actor-name').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx]={correct:ok,choice:AN(choice),id:choice};
+  if(ok)score+=25;
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  const fb=document.getElementById('fb-'+idx);
+  fb.className='feedback show '+(ok?'correct':'wrong-fb');
+  fb.innerHTML=(ok?`<div class="fb-lbl ok">// LOCKED IN — CORRECT: ${AN(choice).toUpperCase()}</div>`:`<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: ${AN(c.answer).toUpperCase()}</div>You chose <strong>${AN(choice)}</strong>. `)+`${c.explanation}`+(ok?'':`<br><br><em style="color:var(--text3);font-size:12px;">💡 ${c.trap}</em>`);
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/100)*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Master Profiler 🕵️','You correctly identified every threat actor. Strong threat modeling skills.'],mid:['Good Analysis 🎯','Most actors identified correctly. Review the tricky motive/method combinations.'],low:['Keep Studying 📚','Threat actor classification takes practice. Re-read the intelligence reports and focus on motive.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=CASES.map((c,i)=>{
+    const r=results[i]||{correct:false,choice:'—'};
+    const correctName=ACTOR_OPTIONS.find(a=>a.id===c.answer).name;
+    return `<div class="b-row"><div class="b-check">${r.correct?'✅':'❌'}</div><div class="b-text"><strong>${c.label.split('—')[1].trim()}</strong>: Answer was <strong>${correctName}</strong>${r.correct?'':' — you chose '+r.choice}</div><div class="b-pts">${r.correct?'+25':'+0'} pts</div></div>`;
+  }).join('');
+}
+
+function restart(){score=0;results=[];sel=[];locked=[];_chg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:1,sim:'actors',screenId:'s5',score:score,max:100,items:CASES.map(function(c,i){var r=results[i]||{correct:false};return {label:c.label.split('—')[1].trim(),result:r.correct?'correct':'incorrect',pts:r.correct?25:0,max:25,response:r.choice||'',expected:AN(c.answer),changes:_chg[i]||0};})});
+};
+const _apRestart=restart;
+restart=function(){sel=[];locked=[];_chg=[];APSim.start(1,'actors');_apRestart();};
+APSim.start(1,'actors');
+
+goTo(0);
+</script>
+</body></html>

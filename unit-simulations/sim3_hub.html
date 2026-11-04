@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="3" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="hub">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Unit 3 Sim Lab — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-green) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-green) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+
+.hero{text-align:center;padding:40px 0 36px;border-bottom:1px solid var(--border);margin-bottom:36px;}
+.hero-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--text3);margin-bottom:14px;}
+.hero-title{font-family:var(--display);font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:1.0;margin-bottom:12px;}
+.hero-title span{color:var(--c-green);}
+.hero-sub{font-size:16px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+.hero-stats{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat-val{font-family:var(--mono);font-size:28px;font-weight:700;display:block;margin-bottom:2px;}
+.stat-lbl{font-size:11px;color:var(--text3);letter-spacing:.08em;}
+
+.sims-title{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--text3);margin-bottom:18px;}
+.sims-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:36px;}
+.sim-card{background:var(--panel);border:1px solid var(--border);padding:0;cursor:pointer;text-decoration:none;display:block;transition:all .25s;position:relative;overflow:hidden;}
+.sim-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transition:background .3s;}
+.sim-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.sim-card-body{padding:20px;}
+.sim-num{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.15em;margin-bottom:10px;}
+.sim-icon{font-size:30px;display:block;margin-bottom:10px;}
+.sim-title{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px;}
+.sim-desc{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:12px;}
+.sim-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.sim-tag{font-family:var(--mono);font-size:9px;padding:3px 7px;background:var(--bg);border:1px solid var(--border2);color:var(--text3);letter-spacing:.06em;}
+.sim-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sim-meta{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.sim-cta{font-family:var(--mono);font-size:11px;letter-spacing:.08em;font-weight:700;opacity:.6;transition:opacity .2s;}
+.sim-card:hover .sim-cta{opacity:1;}
+
+.t-green::before,.t-green .sim-cta{color:var(--c-green);}.t-green::before{background:var(--c-green);}
+.t-emerald::before,.t-emerald .sim-cta{color:var(--c-green);}.t-emerald::before{background:var(--c-green);}
+.t-teal::before,.t-teal .sim-cta{color:var(--c-teal);}.t-teal::before{background:var(--c-teal);}
+.t-cyan::before,.t-cyan .sim-cta{color:var(--cyan);}.t-cyan::before{background:var(--cyan);}
+.t-sky::before,.t-sky .sim-cta{color:var(--c-sky);}.t-sky::before{background:var(--c-sky);}
+.t-lime::before,.t-lime .sim-cta{color:var(--c-lime);}.t-lime::before{background:var(--c-lime);}
+
+.skills-section{background:var(--panel);border:1px solid var(--border);padding:20px 24px;margin-bottom:28px;}
+.skills-title{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--text3);margin-bottom:14px;}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.skill-item{display:flex;align-items:flex-start;gap:10px;}
+.skill-check{color:var(--c-green);font-size:14px;flex-shrink:0;margin-top:1px;}
+.skill-text{font-size:12px;color:var(--text2);line-height:1.5;}
+.skill-text strong{display:block;color:var(--text);font-size:13px;margin-bottom:1px;}
+
+.exam-note{background:var(--panel2);border:1px solid var(--border2);padding:16px 20px;margin-bottom:28px;display:flex;gap:14px;align-items:flex-start;}
+.exam-icon{font-size:22px;flex-shrink:0;}
+.exam-text{font-size:13px;color:var(--text2);line-height:1.6;}
+.exam-text strong{color:var(--text);}
+
+.nav-row{display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-top:1px solid var(--border);flex-wrap:wrap;gap:12px;}
+.nav-link{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-decoration:none;padding:10px 20px;border:1px solid var(--border);transition:all .2s;}
+.nav-link:hover{border-color:var(--border2);}
+.nav-link.prev{color:var(--text3);}
+.nav-link.prev:hover{color:var(--text2);}
+.nav-link.next{color:var(--c-green);border-color:var(--c-green);}
+.nav-link.next:hover{background:color-mix(in srgb,var(--c-green) 8%,transparent);}
+
+@media(max-width:600px){.sims-grid,.skills-grid{grid-template-columns:1fr;}.hero-title{font-size:36px;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div id="u2-chip-host" style="float:right;"></div>
+
+<a href="sim2_hub.html" class="nav-link prev" style="display:inline-flex;margin-bottom:24px;">← UNIT 2 HUB</a>
+
+<div class="hero">
+  <div class="hero-kicker">AP CYBERSECURITY · SIMULATION LAB</div>
+  <div class="hero-title">UNIT 3<br><span>SECURING NETWORKS</span></div>
+  <div class="hero-sub">Six interactive simulations covering firewall rules, packet analysis, network topology, wireless attacks, attack timeline reconstruction, and VPN/encryption analysis.</div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-val" style="color:var(--c-green);">6</span><span class="stat-lbl">SIMULATIONS</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--c-lime);">~55</span><span class="stat-lbl">MINUTES TOTAL</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--c-green);">3</span><span class="stat-lbl">CORE SKILLS</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--cyan);">AP</span><span class="stat-lbl">EXAM ALIGNED</span></div>
+  </div>
+</div>
+
+<div class="skills-section">
+  <div class="skills-title">// UNIT 3 SKILLS YOU'LL PRACTICE</div>
+  <div class="skills-grid">
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Build firewall rulesets</strong>Write and test allow/deny rules with correct ordering, implicit deny, and port/protocol logic</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Read packet captures</strong>Identify SYN floods, ARP poisoning, port scans, and cleartext credential capture from Wireshark output</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Fix network topologies</strong>Place DMZs, VPNs, and firewalls correctly — and explain why architectural design determines security</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Identify wireless attacks</strong>Distinguish evil twin, deauthentication, rogue AP, and WPA2 downgrade from evidence logs</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Reconstruct attack timelines</strong>Sequence multi-stage attacks from scrambled log entries across firewall, auth, IDS, and endpoint sources</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Analyze VPN & encryption limits</strong>Know exactly what HTTPS, VPNs, and TLS do and don't protect — including SNI and DNS leakage</div></div>
+  </div>
+</div>
+
+<div class="exam-note">
+  <span class="exam-icon">📝</span>
+  <div class="exam-text"><strong>AP Exam Connection:</strong> Unit 3 is the highest-density unit for both MCQ and FRQ content. Firewall rule logic, network segmentation, and attack identification from log/packet evidence are all common MCQ scenarios. The FRQ Device Security Analysis frequently includes a network component — expect to identify a network attack from given evidence and recommend a specific control. The timeline reconstruction sim directly mirrors FRQ format.</div>
+</div>
+
+<div class="sims-title">// UNIT 3 SIMULATIONS — SELECT TO BEGIN</div>
+<div class="sims-grid">
+
+  <a href="sim3_firewall.html" class="sim-card t-green">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 3.1</div>
+      <span class="sim-icon">🔥</span>
+      <div class="sim-title">Firewall Rule Builder</div>
+      <div class="sim-desc">Build iptables-style firewall rulesets for three scenarios: a web server, a segmented hospital network, and a perimeter blocking dangerous services. Configure action, protocol, source, destination, and port — then test your ruleset against sample traffic.</div>
+      <div class="sim-tags">
+        <span class="sim-tag">IPTABLES</span>
+        <span class="sim-tag">IMPLICIT DENY</span>
+        <span class="sim-tag">PORT LOGIC</span>
+        <span class="sim-tag">INTERACTIVE</span>
+      </div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">~10 MIN · 3 SCENARIOS</span>
+      <span class="sim-cta t-green">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a href="sim3_wireshark.html" class="sim-card t-emerald">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 3.2</div>
+      <span class="sim-icon">🦈</span>
+      <div class="sim-title">Wireshark Packet Analyzer</div>
+      <div class="sim-desc">Four simulated packet captures in Wireshark format. Click rows to inspect packet details, then identify the attack: SYN flood, ARP poisoning, port scan, or cleartext credential capture. Each capture includes clickable packet details that reveal key indicators.</div>
+      <div class="sim-tags">
+        <span class="sim-tag">SYN FLOOD</span>
+        <span class="sim-tag">ARP POISONING</span>
+        <span class="sim-tag">PORT SCAN</span>
+        <span class="sim-tag">HTTP CLEARTEXT</span>
+      </div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">~10 MIN · 4 CAPTURES</span>
+      <span class="sim-cta t-emerald">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a href="sim3_topology.html" class="sim-card t-teal">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 3.3</div>
+      <span class="sim-icon">🗺️</span>
+      <div class="sim-title">Network Topology Defender</div>
+      <div class="sim-desc">Three vulnerable network diagrams with SVG visualizations — an exposed web server, a flat hospital network, and an RDP-exposed remote access setup. Analyze the diagram, identify the architectural flaw, and select the correct fix. Controls placement matters as much as control selection.</div>
+      <div class="sim-tags">
+        <span class="sim-tag">DMZ</span>
+        <span class="sim-tag">VLAN SEGMENTATION</span>
+        <span class="sim-tag">VPN ARCHITECTURE</span>
+        <span class="sim-tag">SVG DIAGRAMS</span>
+      </div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">~8 MIN · 3 TOPOLOGIES</span>
+      <span class="sim-cta t-teal">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a href="sim3_wireless.html" class="sim-card t-cyan">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 3.4</div>
+      <span class="sim-icon">📡</span>
+      <div class="sim-title">Wireless Attack Identifier</div>
+      <div class="sim-desc">Four wireless incidents — hotel conference network evil twin, campus deauth flood, rogue AP in the finance department, and a coffee shop credential capture. Evidence logs with highlighted red flags. Identify the attack type, then answer a bonus defense question for extra points (+10 each).</div>
+      <div class="sim-tags">
+        <span class="sim-tag">EVIL TWIN</span>
+        <span class="sim-tag">DEAUTH FLOOD</span>
+        <span class="sim-tag">ROGUE AP</span>
+        <span class="sim-tag">802.11W · HSTS</span>
+      </div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">~10 MIN · 4 INCIDENTS · BONUS Qs</span>
+      <span class="sim-cta t-cyan">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a href="sim3_timeline.html" class="sim-card t-sky">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 3.5</div>
+      <span class="sim-icon">🔎</span>
+      <div class="sim-title">Network Attack Timeline</div>
+      <div class="sim-desc">Three scrambled attack timelines reconstructed from real multi-source log evidence: SSH brute force → lateral movement, web SQL injection → exfiltration, and phishing → ransomware. Click-to-place sequencing game. Raw logs from firewall, auth, IDS, NetFlow, and endpoint sources — just like the AP FRQ.</div>
+      <div class="sim-tags">
+        <span class="sim-tag">LOG CORRELATION</span>
+        <span class="sim-tag">CYBER KILL CHAIN</span>
+        <span class="sim-tag">SEQUENCING GAME</span>
+        <span class="sim-tag">FRQ FORMAT</span>
+      </div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">~12 MIN · 3 TIMELINES</span>
+      <span class="sim-cta t-sky">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a href="sim3_vpn.html" class="sim-card t-lime">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 3.6 — CAPSTONE</div>
+      <span class="sim-icon">🔒</span>
+      <div class="sim-title">VPN & Encryption Analyzer</div>
+      <div class="sim-desc">Five questions covering the most misunderstood concepts in network security: what HTTPS protects vs. what it doesn't, what a VPN hides vs. what it leaks (SNI, DNS), and two scenario-based questions on DNS leakage and VPN limitations. Includes a full visibility table and animated network diagrams.</div>
+      <div class="sim-tags">
+        <span class="sim-tag">VPN LIMITS</span>
+        <span class="sim-tag">SNI LEAKAGE</span>
+        <span class="sim-tag">DNS LEAK</span>
+        <span class="sim-tag">TLS/HTTPS</span>
+        <span class="sim-tag">CAPSTONE</span>
+      </div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">~10 MIN · 5 QUESTIONS · CAPSTONE</span>
+      <span class="sim-cta t-lime">LAUNCH →</span>
+    </div>
+  </a>
+
+</div>
+
+<div id="u2-record"></div>
+
+<div class="nav-row">
+  <a href="sim2_hub.html" class="nav-link prev">← UNIT 2 — SECURING SPACES</a>
+  <a href="sim4_hub.html" class="nav-link next">UNIT 4 — SECURING DEVICES →</a>
+</div>
+
+<div style="text-align:center;margin-top:18px;"> &nbsp;·&nbsp; </div>
+</div>
+<script src="apsim_record.js"></script>
+<script>
+APSim.renderHub('u2-record',3);
+document.addEventListener('apsim-student',function(){APSim.renderHub('u2-record',3);});
+</script>
+</body>
+</html>

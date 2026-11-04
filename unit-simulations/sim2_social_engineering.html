@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="2" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="se">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Social Engineering Response — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#c084fc;--green:#00ff9d;--danger:#ff4757;--amber:#ffd166;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--acc) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--acc) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:#000;font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:var(--green);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:#000;font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--acc) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--acc) 8%,transparent);}
+.btn-G{background:var(--green);color:#000;font-weight:700;}
+.btn-G:hover{filter:brightness(1.1);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:32px 20px 24px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px;color:var(--acc);}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 28px;line-height:1.65;}
+
+/* SCENE CARD */
+.scene-card{background:var(--panel);border:1px solid var(--border2);padding:0;margin-bottom:20px;overflow:hidden;}
+.scene-header{padding:16px 20px;border-bottom:1px solid var(--border);background:var(--panel2);display:flex;align-items:center;gap:12px;}
+.scene-type{font-family:var(--mono);font-size:9px;letter-spacing:.2em;padding:3px 8px;border:1px solid var(--acc);color:var(--acc);}
+.scene-loc{font-family:var(--mono);font-size:11px;color:var(--text3);margin-left:auto;}
+.scene-body{padding:20px;}
+.scene-situation{font-size:15px;line-height:1.75;color:var(--text);margin-bottom:16px;}
+.scene-situation strong{color:var(--acc);}
+.scene-cue{display:flex;gap:10px;padding:12px 14px;background:color-mix(in srgb,var(--acc) 6%,transparent);border-left:3px solid var(--acc);margin-bottom:16px;}
+.scene-cue-icon{font-size:18px;flex-shrink:0;}
+.scene-cue-text{font-size:13px;color:var(--text2);line-height:1.55;}
+.scene-cue-text strong{color:var(--text);}
+
+/* red flags */
+.red-flags{margin-bottom:16px;}
+.rf-label{font-family:var(--mono);font-size:10px;color:var(--danger);letter-spacing:.15em;margin-bottom:8px;}
+.rf-list{display:grid;gap:5px;}
+.rf-item{font-size:12px;color:var(--text2);padding-left:18px;position:relative;line-height:1.5;}
+.rf-item::before{content:'⚠';position:absolute;left:0;font-size:10px;color:var(--danger);}
+
+/* choices */
+.choices{display:grid;gap:10px;margin-bottom:16px;}
+.choice-btn{background:var(--panel);border:1px solid var(--border);padding:14px 18px;cursor:pointer;text-align:left;transition:all .2s;font-family:var(--sans);}
+.choice-btn:hover{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 5%,transparent);}
+.choice-btn.best{border-color:var(--green)!important;background:color-mix(in srgb,var(--green) 6%,transparent)!important;}
+.choice-btn.ok{border-color:var(--amber)!important;background:color-mix(in srgb,var(--amber) 6%,transparent)!important;}
+.choice-btn.bad{border-color:var(--danger)!important;background:color-mix(in srgb,var(--danger) 6%,transparent)!important;}
+.choice-letter{font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:4px;display:block;}
+.choice-text{font-size:13px;color:var(--text);line-height:1.5;}
+.choice-result{font-size:12px;margin-top:8px;line-height:1.5;display:none;}
+.choice-btn.best .choice-result{color:var(--green);display:block;}
+.choice-btn.ok .choice-result{color:var(--amber);display:block;}
+.choice-btn.bad .choice-result{color:var(--danger);display:block;}
+
+/* feedback */
+.feedback{padding:16px 18px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--green) 5%,transparent);}
+.feedback.partial{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.feedback.wrong-fb{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}
+.fb-lbl.warn{color:var(--amber);}
+.fb-lbl.no{color:var(--danger);}
+
+/* round tracker */
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:var(--green);}
+.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+
+/* results */
+.result-hero{text-align:center;padding:32px 0 24px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--green) 40%,transparent);}
+.result-score.mid{color:var(--amber);text-shadow:0 0 30px color-mix(in srgb,var(--amber) 40%,transparent);}
+.result-score.low{color:var(--danger);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;margin-top:1px;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div class="badge">Unit 2</div>
+  <div>
+    <div class="hdr-title">Social Engineering Response</div>
+    <div class="hdr-sub">UNIT 2 · SECURING SPACES · TAILGATING · VISHING · PRETEXTING</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+
+<div class="prog">
+  <span class="prog-lbl">INTRO</span>
+  <div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">S1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">S2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">S3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">S4</span><div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p5"></div>
+</div>
+
+<!-- INTRO -->
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🎭</span>
+    <div class="intro-title">Social Engineering Response</div>
+    <div class="intro-desc">Four real workplace scenarios — tailgating, vishing, pretexting, and impersonation. For each one, choose the BEST response. Not just any response — the one that follows proper security protocol while remaining professional.</div>
+    <div style="background:var(--panel);border:1px solid var(--border2);padding:16px 20px;max-width:500px;margin:0 auto 28px;text-align:left;">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.15em;margin-bottom:10px;">// SCORING</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+        ✅ <strong style="color:var(--green);">Best response</strong> — full points. Follows protocol exactly.<br>
+        ⚠️ <strong style="color:var(--amber);">Acceptable response</strong> — partial points. Technically safe but not ideal.<br>
+        ❌ <strong style="color:var(--danger);">Poor response</strong> — zero points. Creates a security risk.
+      </div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN SCENARIOS</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+
+<!-- RESULTS -->
+<div class="screen" id="s5">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">TAILGATING</div><div class="concept-def">Unauthorized access gained by following an authorized person through a controlled entry. Prevented by mantraps, security culture, and challenging strangers.</div></div>
+    <div class="concept-card"><div class="concept-term">PRETEXTING</div><div class="concept-def">Creating a fabricated scenario to manipulate a target into providing information or access. The "pretext" is the invented cover story.</div></div>
+    <div class="concept-card"><div class="concept-term">VISHING</div><div class="concept-def">Voice phishing — using phone calls to socially engineer targets. Attackers exploit authority, urgency, and helpfulness to bypass verification procedures.</div></div>
+    <div class="concept-card"><div class="concept-term">VERIFICATION PROTOCOL</div><div class="concept-def">The correct response to any unusual access request: verify the person's identity through an independent channel, not through the channel the attacker is using.</div></div>
+    <div class="concept-card"><div class="concept-term">URGENCY AS A RED FLAG</div><div class="concept-def">Urgency is the attacker's most powerful tool — it pressures victims into skipping verification. In security, the more urgent the request seems, the more carefully you should verify it.</div></div>
+    <div class="concept-card"><div class="concept-term">SECURITY CULTURE</div><div class="concept-def">An organization where every employee feels empowered to challenge strangers and question unusual requests without fear of embarrassment. The most effective defense against social engineering.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ RUN AGAIN</button>
+    <button class="btn btn-G" onclick="window.location.href='sim2_hub.html'">← UNIT 2 HUB</button>
+  </div>
+</div>
+
+</div>
+<script src="apsim_record.js"></script>
+<script>
+const SCENARIOS = [
+  {
+    type:"TAILGATING ATTEMPT",
+    location:"Corporate Office — Badge-Access Lobby",
+    situation:"You badge into the office building at 8:45 AM. As the door opens, a person in business attire carrying a coffee and a laptop bag walks in directly behind you. They smile and say <strong>'Thanks so much — forgot my badge at my desk upstairs, this happens every Monday!'</strong> They look like they could be an employee.",
+    cue_icon:"🚪",
+    cue:"The person seems credible but has NOT badged in. Company policy requires every individual to badge separately.",
+    redflags:["Did not use their own badge to enter","Volunteered an excuse before being asked","Creating social pressure through casual conversation"],
+    choices:[
+      {letter:"A",text:"Hold the door and let them through — they clearly work here, no need to make it awkward.",result:"❌ This is exactly how tailgating succeeds. 'Looking like an employee' is not verification. Attackers dress the part intentionally.",pts:0,tag:"bad"},
+      {letter:"B",text:"Politely explain you can't let them through without badging, and offer to call the front desk to help them get access.",result:"✅ This is the correct response. Professional, not accusatory, and follows protocol. You're not calling them a criminal — you're following the rule.",pts:25,tag:"best"},
+      {letter:"C",text:"Let them in but walk with them to the front desk to verify their identity.",result:"⚠️ Better than just letting them through — but they're already inside. Interception at the door is the right moment.",pts:10,tag:"ok"},
+      {letter:"D",text:"Ask them to wait outside and go find a security guard to escort them.",result:"⚠️ Correct instinct but impractical. Calling the front desk from the lobby (option B) is faster and equally effective.",pts:10,tag:"ok"}
+    ],
+    best:"B",
+    debrief:"The correct response is always to not allow access without proper verification — regardless of how credible or friendly the person appears. Social engineers specifically cultivate likability and normalcy. Professional denial of access followed by offering a legitimate path forward (calling the front desk) is the gold standard."
+  },
+  {
+    type:"VISHING — HELP DESK IMPERSONATION",
+    location:"Employee Workstation",
+    situation:"You receive a phone call from someone identifying themselves as 'Marcus from IT Security.' He says your account has triggered a security alert and he needs your temporary password reset code to verify your identity before your access is locked. He has your employee ID number and knows your manager's name. The call sounds urgent.",
+    cue_icon:"📞",
+    cue:"Caller knows your employee ID and manager's name — but this information is often available on company directories or LinkedIn. He's asking you to provide credentials.",
+    redflags:["Unsolicited call asking for credentials","Creating urgency ('access will be locked')","Using available personal details to build false trust","Legitimate IT will NEVER ask for your password"],
+    choices:[
+      {letter:"A",text:"Provide the reset code — he has your employee ID and knows your manager, so he's clearly legitimate IT staff.",result:"❌ Knowing your employee ID and manager's name is not proof of identity. This information is often publicly available. Never provide credentials over an unsolicited call.",pts:0,tag:"bad"},
+      {letter:"B",text:"Tell him you'll call IT directly through the company's official number to verify the issue, then hang up and call IT.",result:"✅ Perfect. Hang up and call IT through the official number — not a number he provides. This breaks the attacker's channel and forces them to be present in the actual IT system.",pts:25,tag:"best"},
+      {letter:"C",text:"Ask him to verify himself by stating your full name and job title, then if correct, provide the code.",result:"❌ Your full name and title are also likely publicly available. Asking the caller to verify YOU with information about YOU is not identity verification of the CALLER.",pts:0,tag:"bad"},
+      {letter:"D",text:"Tell him you're busy and will call IT back, then never follow up.",result:"⚠️ Good instinct — you didn't give credentials. But if there's a real security issue, ignoring it entirely is also a problem. Calling IT back to verify is the right completion.",pts:10,tag:"ok"}
+    ],
+    best:"B",
+    debrief:"The key principle: verify through an independent channel. The attacker controls the phone call — they can say anything. Hanging up and calling IT through the official number puts you in control. Legitimate IT security teams do not call employees and ask for passwords or reset codes."
+  },
+  {
+    type:"IMPERSONATION — CONTRACTOR",
+    location:"Server Room Entrance",
+    situation:"A person in coveralls with a company logo you don't recognize approaches the server room door. They say they're from a vendor contracted to service the HVAC system and they need access 'for just 10 minutes.' They have a clipboard with a work order that looks official. You don't see them on today's visitor log.",
+    cue_icon:"🔧",
+    cue:"The person has a professional appearance and a work order, but they're not in the visitor log and you weren't notified of scheduled maintenance.",
+    redflags:["Not on visitor log","No advance notification of scheduled maintenance","Wants access to a sensitive area with no verification","'Just 10 minutes' minimizes the request to reduce scrutiny"],
+    choices:[
+      {letter:"A",text:"The work order looks legitimate and they're in uniform — let them in and keep an eye on them.",result:"❌ Uniforms and work orders are trivially easy to fake. Visual credibility is not identity verification. The Target 2013 breach started exactly this way — an HVAC vendor with legitimate-looking credentials.",pts:0,tag:"bad"},
+      {letter:"B",text:"Tell them you need to verify the work order with facilities management before granting access, and ask them to wait.",result:"✅ This is correct. Call facilities management through the internal directory — not a number on their paperwork — and verify the work order is scheduled and authorized before granting any access.",pts:25,tag:"best"},
+      {letter:"C",text:"Let them in but stay with them the entire time and watch everything they do.",result:"⚠️ Better than unsupervised access — but you shouldn't be in the server room babysitting an unverified person. Verification before access is always the right sequence.",pts:10,tag:"ok"},
+      {letter:"D",text:"Turn them away and tell them to come back with better credentials.",result:"⚠️ Good instinct on denying access — but the right step is to verify, not just deny. There may be a legitimate maintenance need that requires coordination.",pts:10,tag:"ok"}
+    ],
+    best:"B",
+    debrief:"The Target 2013 breach — 40 million credit cards stolen — began with an HVAC vendor's credentials being compromised. Physical access to sensitive areas must be verified independently through your organization's own systems, not through documents the visitor provides. 'Verify before you grant access' is the rule."
+  },
+  {
+    type:"PRETEXTING — EXECUTIVE IMPERSONATION",
+    location:"Help Desk Phone Queue",
+    situation:"You're staffing the IT help desk. A caller identifies themselves as the company's CFO and says they're traveling internationally and need an emergency password reset for their email. They're extremely frustrated and say they have a board meeting in one hour and will 'make sure your manager knows about this.' They can confirm their name, email address, and department.",
+    cue_icon:"💼",
+    cue:"The caller is using authority and urgency simultaneously — two of the most powerful social engineering techniques. Standard policy requires identity verification before any password reset.",
+    redflags:["Extreme urgency and time pressure","Authority threat ('make sure your manager knows')","Calling in from an unusual situation (traveling internationally)","Pressure to skip the verification process"],
+    choices:[
+      {letter:"A",text:"Reset the password — the CFO confirmed their name and email, and an angry executive complaint is worse than breaking protocol once.",result:"❌ This is how attackers successfully exploit authority. Confirming a name and email proves nothing — both are easily found. Fear of an angry executive is the exact pressure the attacker is counting on.",pts:0,tag:"bad"},
+      {letter:"B",text:"Explain you must follow the verification process for all password resets regardless of seniority, and offer to escalate to your manager while following protocol.",result:"✅ Correct. Policy applies equally to everyone, including executives. Offering to escalate shows you're taking the request seriously while not abandoning process. A real CFO will understand — an attacker will push harder.",pts:25,tag:"best"},
+      {letter:"C",text:"Tell them you'll reset the password if they can answer three security questions.",result:"⚠️ Better than no verification — but security question answers are often findable (LinkedIn, social media). Proper out-of-band verification (callback to a number on file, manager approval) is more reliable.",pts:10,tag:"ok"},
+      {letter:"D",text:"Tell the caller you'll have your manager call them back to handle the request.",result:"⚠️ Good instinct — involving a manager adds oversight. But this delays legitimate help. Following the standard verification process yourself is the right answer.",pts:10,tag:"ok"}
+    ],
+    best:"B",
+    debrief:"Authority is one of the six principles of social engineering (Cialdini). The combination of authority + urgency + threat is a textbook attack pattern. The correct response: policy applies to everyone. Offer to escalate while following protocol — this demonstrates you're taking the request seriously, not dismissing it. Real executives who understand security will respect this."
+  }
+];
+
+let score=0,results=[];
+const total=SCENARIOS.length;
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){
+    const el=document.getElementById('p'+i);
+    if(!el)continue;
+    el.classList.remove('active','done');
+    if(i<n)el.classList.add('done');
+    else if(i===n)el.classList.add('active');
+  }
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildRound(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildRound(idx){
+  const sc=SCENARIOS[idx];
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// SCENARIO ${idx+1} OF ${total}</div>
+    <div class="sec-title">What do you do?</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Scenario ${idx+1}/${total}</span>
+    </div>
+    <div class="scene-card">
+      <div class="scene-header">
+        <span class="scene-type">${sc.type}</span>
+        <span class="scene-loc">📍 ${sc.location}</span>
+      </div>
+      <div class="scene-body">
+        <div class="scene-situation">${sc.situation}</div>
+        <div class="scene-cue"><span class="scene-cue-icon">${sc.cue_icon}</span><div class="scene-cue-text">${sc.cue}</div></div>
+        <div class="red-flags">
+          <div class="rf-label">// RED FLAGS IN THIS SCENARIO</div>
+          <div class="rf-list">${sc.redflags.map(f=>`<div class="rf-item">${f}</div>`).join('')}</div>
+        </div>
+      </div>
+    </div>
+    <div class="choices" id="choices-${idx}">
+      ${sc.choices.map((c,ci)=>`
+        <div class="choice-btn" onclick="pick(this,${idx},${ci})">
+          <span class="choice-letter">${c.letter}</span>
+          <div class="choice-text">${c.text}</div>
+          <div class="choice-result">${c.result}</div>
+        </div>`).join('')}
+    </div>
+    <div class="lock-row">
+      <button class="btn btn-acc" id="lock-${idx}" disabled onclick="lockIn(${idx})">🔒 Lock in answer</button>
+      <span class="lock-hint" id="hint-${idx}">Choose an answer, then lock it in. You get one attempt, and the correct answer and reasoning appear only after you lock in.</span>
+    </div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav">
+      <div></div>
+      <button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT SCENARIO →'}</button>
+    </div>`;
+}
+
+let sel=[],locked=[];
+function pick(el,idx,ci){
+  if(locked[idx])return;
+  sel[idx]=ci;
+  document.querySelectorAll('#choices-'+idx+' .choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+idx).disabled=false;
+  document.getElementById('hint-'+idx).textContent='Option '+SCENARIOS[idx].choices[ci].letter+' selected. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockIn(idx){
+  if(locked[idx]||sel[idx]==null)return;
+  locked[idx]=true;
+  const sc=SCENARIOS[idx],c=sc.choices[sel[idx]];
+  const all=document.getElementById('choices-'+idx).querySelectorAll('.choice-btn');
+  all.forEach(x=>x.style.pointerEvents='none');
+  sc.choices.forEach((ch,i)=>{all[i].classList.remove('picked');all[i].classList.add(ch.tag);});
+  const yours=document.createElement('span');yours.className='yours';yours.textContent='YOUR ANSWER';
+  all[sel[idx]].querySelector('.choice-text').appendChild(yours);
+  document.querySelector('#s'+(idx+1)+' .lock-row').style.display='none';
+  const pts=c.pts,tag=c.tag,letter=c.letter;
+  score+=pts;
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  results[idx]={pts,tag,letter};
+  const fb=document.getElementById('fb-'+idx);
+  const cls=tag==='best'?'correct':tag==='ok'?'partial':'wrong-fb';
+  const lbl=tag==='best'?['ok','// LOCKED IN — BEST RESPONSE']:tag==='ok'?['warn','// LOCKED IN — ACCEPTABLE, BUT NOT IDEAL']:['no','// LOCKED IN — POOR RESPONSE, SECURITY RISK'];
+  fb.className='feedback show '+cls;
+  fb.innerHTML=`<div class="fb-lbl ${lbl[0]}">${lbl[1]}</div>${sc.debrief}`;
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const maxScore=total*25;
+  const pct=Math.round((score/maxScore)*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Security Aware Professional 🎭','You chose protocol over convenience in every scenario. That mindset is what separates a security-aware culture from one that gets breached.'],mid:['Good Instincts, Needs Refinement 🎯','You avoided the worst responses — but review where you chose "acceptable" over "best." The difference matters on the AP exam and in real practice.'],low:['Keep Building Security Instincts 📚','Social engineering is the hardest attack to defend against because it exploits human nature. Review each scenario and notice the pattern: verify independently, follow protocol, never skip steps under pressure.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=SCENARIOS.map((sc,i)=>{
+    const r=results[i]||{pts:0,tag:'bad'};
+    const icon=r.tag==='best'?'✅':r.tag==='ok'?'⚠️':'❌';
+    return `<div class="b-row"><div class="b-check">${icon}</div><div class="b-text"><strong>${sc.type}</strong> — ${r.tag==='best'?'Best response selected':r.tag==='ok'?'Acceptable response selected':'Poor response selected'}</div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+
+function restart(){score=0;results=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+/* ---- Student record hook (apsim_record.js) ---- */
+const _u2results=buildResults;
+buildResults=function(){_u2results();
+APSim.finish({unit:2,sim:'se',screenId:'s5',score:score,max:total*25,items:SCENARIOS.map(function(sc,i){var r=results[i]||{pts:0,tag:'bad',letter:''};return {label:sc.type,result:r.tag==='best'?'best':r.tag==='ok'?'acceptable':'poor',pts:r.pts,max:25,response:r.letter};})});
+};
+const _u2restart=restart;
+restart=function(){sel=[];locked=[];APSim.start(2,'se');_u2restart();};
+APSim.start(2,'se');
+
+goTo(0);
+</script>
+</body>
+</html>

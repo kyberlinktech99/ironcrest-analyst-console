@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="1" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim_attack_surface">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Attack Surface Mapper — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--accent:#f97316;--I:#00ff9d;--warn:#ffd166;--danger:#ff4757;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-orange) 3%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-orange) 3%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--accent);color:white;font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--accent);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--accent);box-shadow:0 0 8px var(--accent);}
+.prog-step.done{background:var(--I);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.sec-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-main{background:var(--accent);color:var(--on-acc);font-weight:700;}
+.btn-main:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-orange) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-orange) 8%,transparent);}
+.btn-I{background:var(--I);color:var(--on-acc);font-weight:700;}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:32px 20px 24px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:spin 6s linear infinite;}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.intro-title{font-family:var(--display);font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px;color:var(--accent);}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 28px;line-height:1.65;}
+
+/* DIAGRAM GAME */
+.org-desc{background:var(--panel);border:1px solid var(--border2);padding:16px 18px;margin-bottom:18px;font-size:14px;line-height:1.7;color:var(--text);}
+.org-label{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.15em;margin-bottom:8px;}
+
+/* attack surface items - click to tag */
+.surface-title{font-size:14px;font-weight:500;color:var(--text2);margin-bottom:12px;}
+.items-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.surf-item{background:var(--panel);border:1px solid var(--border);padding:14px;cursor:pointer;transition:all .2s;position:relative;text-align:center;}
+.surf-item:hover{border-color:var(--accent);background:var(--panel2);}
+.surf-item.tagged-vuln{border-color:var(--danger);background:color-mix(in srgb,var(--red) 8%,transparent);}
+.surf-item.tagged-ok{border-color:var(--I);background:color-mix(in srgb,var(--green) 6%,transparent);}
+.surf-item.tagged-vuln::after{content:'⚠ VULNERABLE';position:absolute;top:6px;right:6px;font-family:var(--mono);font-size:8px;color:var(--danger);letter-spacing:.05em;}
+.surf-item.tagged-ok::after{content:'✓ SECURED';position:absolute;top:6px;right:6px;font-family:var(--mono);font-size:8px;color:var(--I);letter-spacing:.05em;}
+.surf-emoji{font-size:24px;display:block;margin-bottom:6px;}
+.surf-name{font-size:12px;font-weight:500;margin-bottom:3px;}
+.surf-detail{font-size:10px;color:var(--text3);line-height:1.4;}
+
+.tag-controls{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap;}
+.tag-btn{padding:7px 14px;font-family:var(--mono);font-size:11px;cursor:pointer;border:none;letter-spacing:.06em;transition:all .2s;}
+.tag-btn.vuln{background:color-mix(in srgb,var(--red) 15%,transparent);border:1px solid var(--danger);color:var(--danger);}
+.tag-btn.vuln.active,.tag-btn.vuln:hover{background:var(--danger);color:var(--on-acc);}
+.tag-btn.secure{background:color-mix(in srgb,var(--green) 10%,transparent);border:1px solid var(--I);color:var(--I);}
+.tag-btn.secure.active,.tag-btn.secure:hover{background:var(--I);color:var(--on-acc);}
+.tag-lbl{font-size:12px;color:var(--text3);font-style:italic;}
+
+.tally{display:flex;gap:16px;padding:12px 16px;background:var(--bg3);border:1px solid var(--border);margin-bottom:16px;font-family:var(--mono);font-size:12px;}
+.tally-v{color:var(--danger);}
+.tally-s{color:var(--I);}
+.tally-u{color:var(--text3);}
+
+/* reveal */
+.reveal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.reveal-card{background:var(--panel);border:1px solid var(--border);padding:14px;text-align:center;}
+.reveal-card.is-vuln{border-color:var(--danger);}
+.reveal-card.is-ok{border-color:var(--I);}
+.reveal-emoji{font-size:22px;display:block;margin-bottom:5px;}
+.reveal-name{font-size:12px;font-weight:500;margin-bottom:4px;}
+.reveal-verdict{font-family:var(--mono);font-size:9px;letter-spacing:.1em;margin-bottom:5px;}
+.reveal-card.is-vuln .reveal-verdict{color:var(--danger);}
+.reveal-card.is-ok .reveal-verdict{color:var(--I);}
+.reveal-reason{font-size:10px;color:var(--text2);line-height:1.4;}
+.reveal-student{font-size:9px;font-family:var(--mono);}
+.reveal-card.correct-tag .reveal-student{color:var(--I);}
+.reveal-card.wrong-tag .reveal-student{color:var(--danger);}
+
+.q-feedback{padding:14px 16px;background:var(--panel);border:1px solid var(--border2);font-size:13px;line-height:1.65;color:var(--text2);margin-bottom:14px;}
+.q-feedback strong{color:var(--text);}
+
+/* results */
+.result-hero{text-align:center;padding:32px 0 24px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--I);text-shadow:0 0 30px color-mix(in srgb,var(--green) 40%,transparent);}
+.result-score.mid{color:var(--warn);}
+.result-score.low{color:var(--danger);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:22px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:15px;width:20px;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--accent);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.items-grid,.reveal-grid,.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--accent:var(--c-orange);--I:var(--green);--warn:var(--amber);--danger:var(--red);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">AP Cyber</div>
+  <div><div class="hdr-title">Attack Surface Mapper</div><div class="hdr-sub">UNIT 1 · INTRO TO SECURITY · VULNERABILITIES</div></div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">ORG 1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">ORG 2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">ORG 3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p4"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🗺️</span>
+    <div class="intro-title">Attack Surface Mapper</div>
+    <div class="intro-desc">An <strong>attack surface</strong> is every point where an attacker could try to enter or extract data from a system. Your job: study three organizations, tag each component as <span style="color:var(--danger)">Vulnerable</span> or <span style="color:var(--I)">Secured</span>, then see how well you mapped their real risk.</div>
+    <button class="btn btn-main" onclick="goTo(1)">▶ START MAPPING</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+
+<div class="screen" id="s4">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl" style="margin-bottom:10px;">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">ATTACK SURFACE</div><div class="concept-def">The total set of points where an attacker can attempt entry. Larger surfaces = more risk. Goal: reduce it.</div></div>
+    <div class="concept-card"><div class="concept-term">VULNERABILITY</div><div class="concept-def">A weakness that could be exploited. Can be technical (unpatched software), human (weak passwords), or physical (unlocked server room).</div></div>
+    <div class="concept-card"><div class="concept-term">EXPLOIT</div><div class="concept-def">Code or action that takes advantage of a vulnerability to cause unauthorized behavior.</div></div>
+    <div class="concept-card"><div class="concept-term">SURFACE REDUCTION</div><div class="concept-def">Eliminating unnecessary services, closing unused ports, disabling old accounts — all shrink the attack surface.</div></div>
+    <div class="concept-card"><div class="concept-term">PRINCIPLE OF LEAST PRIVILEGE</div><div class="concept-def">Users and systems should have only the minimum access they need — reducing the damage if any one component is compromised.</div></div>
+    <div class="concept-card"><div class="concept-term">RISK = LIKELIHOOD × IMPACT</div><div class="concept-def">Not all vulnerabilities are equal. Prioritize based on how likely exploitation is AND how bad the result would be.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ RUN AGAIN</button>
+    <button class="btn btn-I" onclick="window.location.href='sim_hub.html'">← BACK TO HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const ORGS = [
+  {
+    name:"WESTLAKE SCHOOL DISTRICT",
+    desc:"A suburban school district serving 8,000 students. They recently moved to a cloud-based student information system but still maintain some on-premises servers. Budget is limited and the IT department has one full-time staff member.",
+    items:[
+      {emoji:"🖥️",name:"Student Info System",detail:"Cloud-hosted, last updated 3 months ago",vuln:false,reason:"Cloud-hosted and recently updated — lower risk than on-prem, though vendor security practices matter."},
+      {emoji:"🔑",name:"Admin Passwords",detail:"12-character minimum, changed yearly, no MFA",vuln:true,reason:"No MFA on admin accounts is a critical vulnerability. Passwords alone can be phished or cracked."},
+      {emoji:"📶",name:"Guest Wi-Fi",detail:"Separate network from staff systems, password posted on cafeteria wall",vuln:true,reason:"Password posted publicly defeats the purpose of a password. Guests can easily share it or photograph it."},
+      {emoji:"🖨️",name:"Office Printers",detail:"Network-connected, default factory passwords still active",vuln:true,reason:"Default passwords are one of the most common and exploited vulnerabilities — attackers know them all."},
+      {emoji:"💾",name:"Data Backups",detail:"Daily automated backups stored off-site",vuln:false,reason:"Regular off-site backups are a security best practice — this protects Availability in case of ransomware."},
+      {emoji:"🚪",name:"Server Room",detail:"Keycard access, logged, only IT staff authorized",vuln:false,reason:"Physical access controls are properly implemented here — logged keycard access limits and tracks entry."},
+    ],
+    feedback:"The district's biggest risks are the admin accounts with no MFA and the default printer passwords. Physical security and backups are well-handled. One IT staffer for 8,000 students means human factors are the likely breach point."
+  },
+  {
+    name:"METRO URGENT CARE CLINIC",
+    desc:"A small medical clinic with 45 staff. They handle sensitive patient records (HIPAA-protected), process insurance claims, and have a patient-facing online portal. They share a building with other businesses.",
+    items:[
+      {emoji:"🏥",name:"Patient Portal",detail:"HTTPS, requires patient password + email verification",vuln:false,reason:"HTTPS plus email verification provides reasonable authentication for patient-facing access."},
+      {emoji:"📋",name:"Shared Staff Workstations",detail:"3 computers in break room, shared login 'staff/clinic123'",vuln:true,reason:"Shared accounts make it impossible to track who did what — a HIPAA violation and audit nightmare."},
+      {emoji:"📱",name:"Staff Personal Phones",detail:"Used to check work email; no MDM policy",vuln:true,reason:"Personal devices with no Mobile Device Management policy are uncontrolled endpoints — if lost or compromised, they expose work email and patient data."},
+      {emoji:"🔒",name:"Billing Software",detail:"Vendor-supported, automatic security patches enabled",vuln:false,reason:"Auto-patching keeps known vulnerabilities closed quickly — a simple but important control."},
+      {emoji:"🗂️",name:"Paper Records Archive",detail:"Locked filing room, key hanging on hook in hallway",vuln:true,reason:"Physical security fails if the key is unsecured. Anyone who sees the hook knows where to find it."},
+      {emoji:"🌐",name:"Building Wi-Fi",detail:"Shared with other businesses in the building",vuln:true,reason:"Sharing a network with unknown tenants is a significant risk — other businesses' security posture affects yours."},
+    ],
+    feedback:"This clinic has serious vulnerabilities in physical security and device management. Shared workstations and the key-on-a-hook are immediate priorities. The billing software and patient portal are well-managed. HIPAA violations here could result in large fines in addition to the security risk."
+  },
+  {
+    name:"REGIONAL ELECTRIC COOPERATIVE",
+    desc:"A utility company serving 50,000 customers. Operates both IT systems (billing, customer service) and OT systems (industrial control systems that manage the power grid). Connected to the national grid.",
+    items:[
+      {emoji:"⚡",name:"SCADA/ICS Systems",detail:"Controls grid operations; air-gapped from internet",vuln:false,reason:"Air-gapping (physically isolating from external networks) is a strong control for critical infrastructure — but not foolproof."},
+      {emoji:"💻",name:"Employee Laptops",detail:"Fully patched, encrypted drives, VPN required for remote work",vuln:false,reason:"Patched, encrypted, VPN-required laptops represent solid baseline endpoint security."},
+      {emoji:"🔌",name:"IT/OT Network Bridge",detail:"Allows billing system to pull usage data from grid sensors",vuln:true,reason:"Any connection between IT (internet-connected) and OT (industrial) networks is a critical risk point. Nation-state attackers specifically target these bridges."},
+      {emoji:"📧",name:"Customer Email System",detail:"No email filtering; staff receive all external email",vuln:true,reason:"No email filtering means phishing attempts reach every inbox. Spear phishing is a primary attack vector against utilities."},
+      {emoji:"👷",name:"Third-Party Contractors",detail:"Have remote access to maintenance systems; no access review conducted in 2 years",vuln:true,reason:"Contractor access that isn't regularly reviewed is a common breach vector — former contractors may retain access long after a job ends."},
+      {emoji:"📡",name:"Smart Meters",detail:"Customer-facing IoT devices, firmware auto-updated",vuln:false,reason:"Auto-updated firmware is a good practice for IoT devices — closes known vulnerabilities quickly."},
+    ],
+    feedback:"The IT/OT bridge is the highest-priority risk here — it's the path from the internet into industrial control systems. Unreviewed contractor access is a classic insider threat setup. The air-gapped SCADA and auto-updated meters are well-managed. Utilities are prime nation-state targets."
+  }
+];
+
+let score=0,results=[],userTags=[];
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<5;i++){const el=document.getElementById('p'+i);el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=3)buildOrg(n-1);
+  if(n===4)buildResults();
+}
+
+let activeTool='vuln';
+let currentTags={},locked=[],_chg=[];
+function refreshLock(idx){const n=ORGS[idx].items.length;const k=Object.keys(currentTags).length;const b=document.getElementById('reveal-'+idx);if(b)b.disabled=k<n;const h=document.getElementById('hint-'+idx);if(h)h.textContent=k<n?'Tag all '+n+' components ('+k+' tagged). You can retag until you lock in. Nothing is revealed before that.':'All components tagged. You can still change tags. Nothing is revealed until you lock in.';}
+
+function buildOrg(idx){
+  const org=ORGS[idx];
+  currentTags={};
+  const screenEl=document.getElementById('s'+(idx+1));
+
+  const itemsHtml=org.items.map((item,i)=>`
+    <div class="surf-item" id="item-${idx}-${i}" onclick="tagItem(${idx},${i})">
+      <span class="surf-emoji">${item.emoji}</span>
+      <div class="surf-name">${item.name}</div>
+      <div class="surf-detail">${item.detail}</div>
+    </div>`).join('');
+
+  screenEl.innerHTML=`
+    <div class="sec-lbl">// ORG ${idx+1} OF 3 — MAP THE ATTACK SURFACE</div>
+    <div class="sec-title">${org.name}</div>
+    <div class="org-desc"><div class="org-label">ORG PROFILE</div>${org.desc}</div>
+
+    <div class="surface-title">Tag each component: is it a vulnerability or adequately secured?</div>
+
+    <div class="tag-controls">
+      <button class="tag-btn vuln active" id="tool-vuln-${idx}" onclick="setTool('vuln',${idx})">⚠ Mark Vulnerable</button>
+      <button class="tag-btn secure" id="tool-secure-${idx}" onclick="setTool('secure',${idx})">✓ Mark Secured</button>
+      <span class="tag-lbl">Click a tool, then click a component</span>
+    </div>
+
+    <div class="tally">
+      <span class="tally-v" id="tally-v-${idx}">⚠ Vulnerable: 0</span>
+      <span class="tally-s" id="tally-s-${idx}">✓ Secured: 0</span>
+      <span class="tally-u" id="tally-u-${idx}">Untagged: ${org.items.length}</span>
+    </div>
+
+    <div class="items-grid">${itemsHtml}</div>
+
+    <div class="nav">
+      <div></div>
+      <div class="lock-row" style="margin:0;" id="lockbar-${idx}"><span class="lock-hint" id="hint-${idx}">Tag all ${org.items.length} components. You can retag until you lock in. Nothing is revealed before that.</span><button class="btn btn-main" onclick="revealOrg(${idx})" id="reveal-${idx}" disabled>🔒 LOCK IN TAGS &amp; REVEAL</button></div>
+    </div>
+    <div id="reveal-area-${idx}" style="display:none;margin-top:20px;"></div>`;
+
+  activeTool='vuln';
+}
+
+function setTool(tool,idx){
+  activeTool=tool;
+  document.getElementById('tool-vuln-'+idx).classList.toggle('active',tool==='vuln');
+  document.getElementById('tool-secure-'+idx).classList.toggle('active',tool==='secure');
+}
+
+function tagItem(orgIdx,itemIdx){
+  if(locked[orgIdx])return;
+  if(currentTags[itemIdx]&&currentTags[itemIdx]!==activeTool)_chg[orgIdx]=(_chg[orgIdx]||0)+1;
+  currentTags[itemIdx]=activeTool;
+  const el=document.getElementById('item-'+orgIdx+'-'+itemIdx);
+  el.classList.remove('tagged-vuln','tagged-ok');
+  el.classList.add(activeTool==='vuln'?'tagged-vuln':'tagged-ok');
+  updateTally(orgIdx);refreshLock(orgIdx);
+}
+
+function updateTally(orgIdx){
+  const org=ORGS[orgIdx];
+  const v=Object.values(currentTags).filter(t=>t==='vuln').length;
+  const s=Object.values(currentTags).filter(t=>t==='secure').length;
+  document.getElementById('tally-v-'+orgIdx).textContent='⚠ Vulnerable: '+v;
+  document.getElementById('tally-s-'+orgIdx).textContent='✓ Secured: '+s;
+  document.getElementById('tally-u-'+orgIdx).textContent='Untagged: '+(org.items.length-v-s);
+}
+
+function revealOrg(idx){
+  const org=ORGS[idx];
+  if(locked[idx]||Object.keys(currentTags).length<org.items.length)return;
+  locked[idx]=true;
+  document.querySelectorAll('#s'+(idx+1)+' .surf-item').forEach(e=>e.style.pointerEvents='none');
+  document.querySelectorAll('#s'+(idx+1)+' .tag-btn').forEach(e=>e.disabled=true);
+  let correct=0;
+  const revealHtml=org.items.map((item,i)=>{
+    const userTag=currentTags[i];
+    const isVuln=item.vuln;
+    const userCorrect=(userTag==='vuln'&&isVuln)||(userTag==='secure'&&!isVuln);
+    if(userCorrect)correct++;
+    const tagClass=isVuln?'is-vuln':'is-ok';
+    const verdict=isVuln?'VULNERABLE':'SECURED';
+    let studentNote='';
+    if(!userTag)studentNote='<div class="reveal-student" style="color:var(--text3);">— not tagged</div>';
+    else if(userCorrect)studentNote='<div class="reveal-student correct-tag">✓ you tagged correctly</div>';
+    else studentNote='<div class="reveal-student wrong-tag">✗ you tagged wrong</div>';
+    return `<div class="reveal-card ${tagClass}">
+      <span class="reveal-emoji">${item.emoji}</span>
+      <div class="reveal-name">${item.name}</div>
+      <div class="reveal-verdict">${verdict}</div>
+      <div class="reveal-reason">${item.reason}</div>
+      ${studentNote}
+    </div>`;
+  }).join('');
+
+  const pts=correct*4;
+  score+=pts;
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  results[idx]={correct,total:org.items.length,pts,tags:Object.assign({},currentTags)};
+
+  document.getElementById('lockbar-'+idx).style.display='none';
+  const area=document.getElementById('reveal-area-'+idx);
+  area.style.display='block';
+  area.innerHTML=`
+    <div class="sec-lbl" style="margin-bottom:10px;">// RESULTS — ${org.name}</div>
+    <div class="q-feedback"><strong>LOCKED IN — ${correct}/${org.items.length} correctly tagged (+${pts} pts)</strong><br><br>${org.feedback}</div>
+    <div class="reveal-grid">${revealHtml}</div>
+    <div class="nav"><div></div><button class="btn btn-main" onclick="goTo(${idx+2})">${idx===2?'SEE FINAL RESULTS →':'NEXT ORGANIZATION →'}</button></div>`;
+}
+
+function buildResults(){
+  const totalPts=results.reduce((a,r)=>a+(r?r.pts:0),0);
+  const maxPts=ORGS.reduce((a,o)=>a+o.items.length*4,0);
+  const pct=Math.round((totalPts/maxPts)*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Security Architect 🗺️','Excellent surface awareness. You correctly identified most vulnerabilities and wouldn\'t leave obvious attack paths open.'],mid:['Developing Analyst 🎯','Good eye for some vulnerabilities. Review the ones you missed — especially the human and physical factors.'],low:['Keep Practicing 📚','Attack surfaces include more than servers and software. Don\'t overlook physical, human, and third-party risks.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=ORGS.map((org,i)=>{
+    const r=results[i]||{correct:0,total:org.items.length,pts:0};
+    return `<div class="b-row"><div class="b-check">${r.correct===r.total?'✅':r.correct>=r.total/2?'⚡':'❌'}</div><div class="b-text"><strong>${org.name}</strong>: ${r.correct}/${r.total} correctly tagged</div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+
+function restart(){score=0;results=[];locked=[];_chg=[];currentTags={};document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:1,sim:'surface',screenId:'s4',score:score,max:ORGS.reduce(function(a,o){return a+o.items.length*4;},0),items:(function(){var o=[];ORGS.forEach(function(org,i){var r=results[i]||{tags:{}};org.items.forEach(function(it,k){var tg=(r.tags||{})[k];var ok=(tg==='vuln'&&it.vuln)||(tg==='secure'&&!it.vuln);o.push({label:org.name+' — '+it.name,result:ok?'correct':'incorrect',pts:ok?4:0,max:4,response:tg==='vuln'?'vulnerable':(tg==='secure'?'secured':'untagged'),expected:it.vuln?'vulnerable':'secured',changes:k===0?(_chg[i]||0):0});});});return o;})()});
+};
+const _apRestart=restart;
+restart=function(){locked=[];_chg=[];currentTags={};APSim.start(1,'surface');_apRestart();};
+APSim.start(1,'surface');
+
+goTo(0);
+</script>
+</body></html>

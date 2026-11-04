@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="1" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="phishing_simulation">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Spot the Phish — AP Cybersecurity</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1525;
+    --bg3: #151d35;
+    --panel: #111827;
+    --panel2: #1a2340;
+    --border: #1e2d4a;
+    --border2: #2a3f6a;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #00ff9d;
+    --warn: #ffd166;
+    --danger: #ff4757;
+    --text: #e2eaf8;
+    --text2: #8a9bc4;
+    --text3: #4a5a82;
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --display: 'Syne', sans-serif;
+    --glow: 0 0 20px rgba(0,212,255,0.15);
+    --glow2: 0 0 20px rgba(255,107,53,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(color-mix(in srgb,var(--cyan) 3%,transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb,var(--cyan) 3%,transparent) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Scanline effect */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.05) 2px,
+      rgba(0,0,0,0.05) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-badge {
+    background: var(--accent);
+    color:var(--on-acc);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .header-sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+
+  .header-right {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-track {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 28px;
+    align-items: center;
+  }
+
+  .progress-step {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    transition: background 0.4s;
+    position: relative;
+  }
+
+  .progress-step.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .progress-step.done { background: var(--accent3); }
+
+  .progress-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  /* ── SCREEN MANAGER ── */
+  .screen { display: none; animation: fadeIn 0.4s ease; }
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── INTRO SCREEN ── */
+  .intro-hero {
+    text-align: center;
+    padding: 40px 20px 32px;
+  }
+
+  .intro-icon {
+    font-size: 56px;
+    margin-bottom: 20px;
+    display: block;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px color-mix(in srgb,var(--c-orange) 0%,transparent)); }
+    50% { transform: scale(1.05); filter: drop-shadow(0 0 16px color-mix(in srgb,var(--c-orange) 60%,transparent)); }
+  }
+
+  .intro-title {
+    font-family: var(--display);
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .intro-title span { color: var(--accent2); }
+
+  .intro-desc {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 480px;
+    margin: 0 auto 32px;
+    line-height: 1.65;
+  }
+
+  .intro-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto 36px;
+  }
+
+  .intro-step {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 16px 12px;
+    text-align: center;
+  }
+
+  .step-num {
+    font-family: var(--mono);
+    font-size: 24px;
+    color: var(--accent);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .step-label {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color:var(--on-acc);
+    font-weight: 700;
+  }
+
+  .btn-primary:hover {
+    background: var(--cyan);
+    box-shadow: 0 0 24px color-mix(in srgb,var(--cyan) 40%,transparent);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  .btn-secondary:hover {
+    background: color-mix(in srgb,var(--cyan) 8%,transparent);
+  }
+
+  .btn-danger {
+    background: var(--accent2);
+    color: white;
+    font-weight: 700;
+  }
+
+  .btn-danger:hover {
+    background: var(--c-orange);
+    box-shadow: 0 0 24px color-mix(in srgb,var(--c-orange) 40%,transparent);
+    transform: translateY(-1px);
+  }
+
+  .btn-success {
+    background: var(--accent3);
+    color:var(--on-acc);
+    font-weight: 700;
+  }
+
+  .btn-success:hover {
+    box-shadow: 0 0 24px color-mix(in srgb,var(--green) 40%,transparent);
+    transform: translateY(-1px);
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    margin-bottom: 20px;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-family: var(--display);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .section-desc {
+    font-size: 14px;
+    color: var(--text2);
+    margin-top: 6px;
+    line-height: 1.6;
+  }
+
+  /* ── EMAIL CLIENT ── */
+  .email-client {
+    background: var(--panel);
+    border: 1px solid var(--border2);
+    overflow: hidden;
+    box-shadow: var(--glow);
+  }
+
+  .email-chrome {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border2);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .chrome-dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f56; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #27c93f; }
+
+  .chrome-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    flex: 1;
+    text-align: center;
+  }
+
+  .email-headers {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    gap: 6px;
+  }
+
+  .email-header-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  .email-header-key {
+    font-family: var(--mono);
+    color: var(--text3);
+    font-size: 11px;
+    padding-top: 1px;
+  }
+
+  .email-header-val { color: var(--text); }
+  .email-header-val.suspicious { color: var(--text); /* same as normal — no red giveaway */ }
+
+  .email-body {
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .email-body p { margin-bottom: 12px; }
+
+  .email-link {
+    color: var(--c-sky);
+    text-decoration: underline;
+    cursor: default;
+  }
+
+  /* ── HOTSPOT HIGHLIGHTING ── */
+  .hotspot {
+    position: relative;
+    display: inline;
+    cursor: text;
+    transition: background 0.15s;
+    padding: 1px 2px;
+    border-radius: 2px;
+    /* No visual indicator — looks like normal text */
+  }
+
+  .hotspot:hover {
+    background: color-mix(in srgb,var(--text) 4%,transparent);
+    cursor: pointer;
+  }
+
+  .hotspot.found {
+    background: color-mix(in srgb,var(--c-orange) 18%,transparent);
+    border-bottom: 2px solid var(--accent2);
+    color: var(--warn);
+    cursor: pointer;
+  }
+
+  .hotspot.found::after {
+    content: ' ⚑';
+    color: var(--accent2);
+    font-size: 12px;
+  }
+
+  /* ── TOOLTIP ── */
+  .tooltip-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tooltip-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+
+  .tooltip-box {
+    background: var(--panel2);
+    border: 1px solid var(--accent2);
+    max-width: 420px;
+    width: 90%;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 0 40px color-mix(in srgb,var(--c-orange) 30%,transparent);
+  }
+
+  .tooltip-header {
+    background: var(--accent2);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tooltip-icon { font-size: 20px; }
+  .tooltip-title { font-family: var(--display); font-weight: 700; color: white; font-size: 15px; }
+  .tooltip-close { margin-left: auto; cursor: pointer; color: white; font-size: 18px; opacity: 0.8; background: none; border: none; }
+  .tooltip-close:hover { opacity: 1; }
+
+  .tooltip-body { padding: 16px; }
+  .tooltip-tactic {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent2);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .tooltip-text { font-size: 13px; color: var(--text2); line-height: 1.65; margin-bottom: 12px; }
+  .tooltip-lesson {
+    background: var(--bg3);
+    border-left: 3px solid var(--accent);
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ── FLAGS COUNTER ── */
+  .flags-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+  }
+
+  .flags-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+  }
+
+  .flags-count {
+    font-family: var(--mono);
+    font-size: 22px;
+    color: var(--accent2);
+    font-weight: 700;
+    min-width: 2ch;
+  }
+
+  .flags-dots {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .flag-pip {
+    width: 28px;
+    height: 6px;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+
+  .flag-pip.lit {
+    background: var(--accent2);
+    box-shadow: 0 0 8px var(--accent2);
+  }
+
+  .flags-hint {
+    font-size: 12px;
+    color: var(--text3);
+    font-style: italic;
+  }
+
+  .flags-next-btn { display: none; }
+  .flags-next-btn.show { display: inline-flex; }
+
+  /* ── THREAT ACTOR SCREEN ── */
+  .actor-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .actor-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .actor-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--border2);
+    transition: background 0.3s;
+  }
+
+  .actor-card:hover { border-color: var(--accent); background: var(--panel2); }
+  .actor-card:hover::before { background: var(--accent); }
+
+  .actor-card.selected { border-color: var(--accent3); background: color-mix(in srgb,var(--green) 5%,transparent); }
+  .actor-card.selected::before { background: var(--accent3); box-shadow: 0 0 12px var(--accent3); }
+
+  .actor-card.wrong { border-color: var(--danger); background: color-mix(in srgb,var(--red) 5%,transparent); animation: shake 0.4s ease; }
+  .actor-card.wrong::before { background: var(--danger); }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .actor-emoji { font-size: 32px; margin-bottom: 10px; display: block; }
+  .actor-name { font-family: var(--display); font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .actor-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+  .actor-feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    line-height: 1.65;
+    display: none;
+  }
+
+  .actor-feedback.show { display: block; animation: fadeIn 0.3s; }
+  .actor-feedback.correct { border-color: var(--accent3); background: color-mix(in srgb,var(--green) 6%,transparent); color: var(--text); }
+  .actor-feedback.incorrect { border-color: var(--danger); background: color-mix(in srgb,var(--red) 6%,transparent); color: var(--text); }
+
+  .feedback-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+  }
+
+  .feedback-label.correct { color: var(--accent3); }
+  .feedback-label.incorrect { color: var(--danger); }
+
+  /* ── DEFENSE SCREEN ── */
+  .defense-scenario {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warn);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.65;
+  }
+
+  .defense-scenario strong { color: var(--warn); }
+
+  .defense-grid {
+    display: grid;
+    gap: 10px;
+  }
+
+  .defense-option {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 16px 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: all 0.2s;
+  }
+
+  .defense-option:hover { border-color: var(--accent); background: var(--panel2); }
+
+  .defense-option.selected-best { border-color: var(--accent3); background: color-mix(in srgb,var(--green) 5%,transparent); }
+  .defense-option.selected-ok { border-color: var(--warn); background: color-mix(in srgb,var(--amber) 5%,transparent); }
+  .defense-option.selected-bad { border-color: var(--danger); background: color-mix(in srgb,var(--red) 5%,transparent); }
+  .defense-option.not-selected { opacity: 0.4; }
+
+  .defense-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+  .defense-content { flex: 1; }
+  .defense-title { font-weight: 500; font-size: 14px; margin-bottom: 3px; }
+  .defense-subtitle { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+  .defense-result-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3px 8px;
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: none;
+    align-self: flex-start;
+  }
+
+  .defense-option.selected-best .defense-result-tag,
+  .defense-option.selected-ok .defense-result-tag,
+  .defense-option.selected-bad .defense-result-tag { display: block; }
+
+  .tag-best { background: var(--accent3); color:var(--on-acc); }
+  .tag-ok { background: var(--warn); color:var(--on-acc); }
+  .tag-bad { background: var(--danger); color: white; }
+
+  .defense-explain {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.65;
+    display: none;
+  }
+
+  .defense-explain.show { display: block; animation: fadeIn 0.3s; }
+
+  /* ── RESULTS SCREEN ── */
+  .results-hero {
+    text-align: center;
+    padding: 40px 20px 32px;
+  }
+
+  .results-score {
+    font-family: var(--mono);
+    font-size: 72px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .results-score.high { color: var(--accent3); text-shadow: 0 0 30px color-mix(in srgb,var(--green) 40%,transparent); }
+  .results-score.mid { color: var(--warn); text-shadow: 0 0 30px color-mix(in srgb,var(--amber) 40%,transparent); }
+  .results-score.low { color: var(--danger); text-shadow: 0 0 30px color-mix(in srgb,var(--red) 40%,transparent); }
+
+  .results-label {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .results-sub {
+    font-size: 14px;
+    color: var(--text2);
+    max-width: 440px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+
+  .results-breakdown {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .result-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+  }
+
+  .result-check {
+    font-size: 18px;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+  }
+
+  .result-text { font-size: 13px; color: var(--text2); flex: 1; line-height: 1.5; }
+  .result-text strong { color: var(--text); }
+
+  .result-points {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* ── CONCEPT CARDS ── */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .concept-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 16px;
+  }
+
+  .concept-term {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .concept-def {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.55;
+  }
+
+  /* ── NAV ROW ── */
+  .nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 600px) {
+    .intro-steps { grid-template-columns: 1fr; }
+    .actor-grid { grid-template-columns: 1fr; }
+    .concept-grid { grid-template-columns: 1fr; }
+    .intro-title { font-size: 30px; }
+    .results-score { font-size: 56px; }
+  }
+
+  /* ── TERMINAL BLINK ── */
+  .blink {
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .hotspot.marked{background:color-mix(in srgb,var(--accent) 16%,transparent);border-bottom:2px solid var(--accent);cursor:pointer;}
+  .hotspot.marked::after{content:' ⚑';font-size:12px;color:var(--accent);}
+  .hotspot.locked{cursor:default;}
+  .hotspot.locked.found{background:color-mix(in srgb,var(--green) 20%,transparent);border-bottom:2px solid var(--green);cursor:pointer;color:inherit;}
+  .hotspot.locked.found::after{content:' ✓ red flag';color:var(--green);font-size:11px;}
+  .hotspot.locked.fp{background:color-mix(in srgb,var(--red) 14%,transparent);border-bottom:2px dashed var(--red);}
+  .hotspot.locked.fp::after{content:' ✗ not a flag';color:var(--red);font-size:11px;}
+  .hotspot.locked.missed{background:color-mix(in srgb,var(--amber) 22%,transparent);border-bottom:2px dashed var(--amber);cursor:pointer;}
+  .hotspot.locked.missed::after{content:' ⚠ missed';color:var(--amber);font-size:11px;}
+  .actor-card.picked,.defense-option.picked{border-color:var(--accent)!important;background:color-mix(in srgb,var(--accent) 9%,var(--panel))!important;}
+  .defense-grid.reveal .defense-result-tag{display:block;}
+  .defense-option.locked,.actor-card.locked{cursor:default;}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--accent:var(--cyan);--accent2:var(--c-orange);--accent3:var(--green);--warn:var(--amber);--danger:var(--red);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-badge">AP Cyber</div>
+    <div>
+      <div class="header-title">Phishing Simulation Lab</div>
+      <div class="header-sub">UNIT 1 · THREAT ACTORS · SOCIAL ENGINEERING</div>
+    </div>
+    <div class="header-right">
+      <div class="header-sub" id="score-display" style="color:var(--accent); font-size:13px;">SCORE: 0 pts</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-track">
+    <span class="progress-label">INTRO</span>
+    <div class="progress-step active" id="prog-0"></div>
+    <span class="progress-label">SPOT IT</span>
+    <div class="progress-step" id="prog-1"></div>
+    <span class="progress-label">IDENTIFY</span>
+    <div class="progress-step" id="prog-2"></div>
+    <span class="progress-label">DEFEND</span>
+    <div class="progress-step" id="prog-3"></div>
+    <span class="progress-label">RESULTS</span>
+    <div class="progress-step" id="prog-4"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 0: INTRO
+  ══════════════════════════════════════════════ -->
+  <div class="screen active" id="screen-0">
+    <div class="intro-hero">
+      <span class="intro-icon">🎣</span>
+      <div class="intro-title">Spot the <span>Phish</span></div>
+      <div class="intro-desc">
+        A suspicious email just landed in your inbox. Your job: find the red flags, identify who sent it, and choose the best defense. Think like a security analyst.
+      </div>
+      <div class="intro-steps">
+        <div class="intro-step">
+          <span class="step-num">01</span>
+          <div class="step-label">Find every red flag hidden in the email</div>
+        </div>
+        <div class="intro-step">
+          <span class="step-num">02</span>
+          <div class="step-label">Identify the threat actor type</div>
+        </div>
+        <div class="intro-step">
+          <span class="step-num">03</span>
+          <div class="step-label">Choose the best defensive control</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="goTo(1)">▶ START SIMULATION</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 1: SPOT THE FLAGS
+  ══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-1">
+    <div class="section-header">
+      <div class="section-label">// PHASE 01 — ANALYZE</div>
+      <div class="section-title">Examine the Email</div>
+      <div class="section-desc">Read the email carefully. Click anything that looks suspicious to mark it (click again to unmark). Not everything you mark is a real red flag, and you will not be told how many there are. Lock in your marks when you are done; nothing is revealed before that.</div>
+    </div>
+
+    <!-- EMAIL CLIENT -->
+    <div class="email-client">
+      <div class="email-chrome">
+        <div class="chrome-dots">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+        </div>
+        <div class="chrome-title">📬 Inbox — jordan.m@westlakehs.com</div>
+      </div>
+      <div class="email-headers">
+        <div class="email-header-row">
+          <div class="email-header-key">FROM</div>
+          <div class="email-header-val">
+            <span class="hotspot" data-flag="0" onclick="markFlag(this)">noreply@ev1te-invitations.com</span>
+          </div>
+        </div>
+        <div class="email-header-row">
+          <div class="email-header-key">TO</div>
+          <div class="email-header-val"><span class="hotspot" data-decoy="to" onclick="markFlag(this)">jordan.m@westlakehs.com</span></div>
+        </div>
+        <div class="email-header-row">
+          <div class="email-header-key">SUBJECT</div>
+          <div class="email-header-val">
+            <span class="hotspot" data-flag="1" onclick="markFlag(this)">You're invited!! 🎉 Confirm your spot before it's too late!!</span>
+          </div>
+        </div>
+        <div class="email-header-row">
+          <div class="email-header-key">DATE</div>
+          <div class="email-header-val"><span class="hotspot" data-decoy="date" onclick="markFlag(this)">Monday, June 2, 2026 &nbsp;·&nbsp; 8:47 AM</span></div>
+        </div>
+      </div>
+      <div class="email-body">
+        <p><span class="hotspot" data-flag="2" onclick="markFlag(this)">Hey bestie!! 💕</span></p>
+        <p><span class="hotspot" data-decoy="body" onclick="markFlag(this)">Your friend <strong>Sophia R.</strong> added you to the guest list for her <strong>Sweet 16 Birthday Bash</strong> this Saturday at Skyline Rooftop — it's going to be LEGENDARY 🎂✨</span></p>
+        <p><span class="hotspot" data-flag="3" onclick="markFlag(this)">⚠️ SPOTS ARE FILLING FAST — you must confirm your RSVP in the next <strong>2 HOURS</strong> or your spot will be given away automatically!!</span></p>
+        <p>To confirm your spot and get the exclusive address + dress code, just log in with your Google or Instagram account:</p>
+        <p><span class="hotspot" data-flag="4" onclick="markFlag(this)"><span class="email-link">www.ev1te-invitations.com/sophia-sweet16/rsvp-confirm</span></span></p>
+        <p><span class="hotspot" data-flag="5" onclick="markFlag(this)">🎁 First 10 to confirm get a FREE party favor bag — don't miss out, this link expires soon!!</span></p>
+        <p style="color: var(--text2); font-size:13px; margin-top:16px; padding-top:12px; border-top: 1px solid var(--border);">
+          Evite Party Planning · ev1te-invitations.com<br>To unsubscribe, click here
+        </p>
+      </div>
+    </div>
+
+    <!-- FLAGS BAR -->
+    <div class="flags-bar">
+      <div class="flags-label">MARKED</div>
+      <div class="flags-count" id="flag-count">0</div>
+      <div class="flags-hint" id="flags-hint">Click suspicious parts of the email ↑ then lock in your marks.</div>
+      <button class="btn btn-primary" id="flags-lock" disabled onclick="lockFlags()">🔒 LOCK IN MARKED FLAGS</button>
+      <button class="btn btn-primary flags-next-btn" id="flags-next" onclick="goTo(2)">CONTINUE →</button>
+      <div id="flags-result" style="width:100%;font-size:13px;color:var(--text2);line-height:1.6;display:none;"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 2: THREAT ACTOR
+  ══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-2">
+    <div class="section-header">
+      <div class="section-label">// PHASE 02 — IDENTIFY</div>
+      <div class="section-title">Who Sent This?</div>
+      <div class="section-desc">Based on the tactics and targets you observed, which threat actor type most likely sent this email?</div>
+    </div>
+
+    <div class="actor-grid">
+      <div class="actor-card" onclick="pickActor(this, false, 'Nation-states run highly targeted operations against government, military, or infrastructure targets. A mass party invite phishing campaign targeting random teenagers has no strategic value for a nation-state — they want intelligence, not Instagram logins.')">
+        <span class="actor-emoji">🏛️</span>
+        <div class="actor-name">Nation-State</div>
+        <div class="actor-desc">Government-sponsored. Highly sophisticated, targeted attacks. Motivated by espionage, disruption, or political goals.</div>
+      </div>
+      <div class="actor-card" onclick="pickActor(this, true, 'Correct. Cybercriminals send mass phishing campaigns like this to steal social media and Google credentials at scale. Your Instagram or Google account is worth a lot: it gives attackers access to your contacts, your DMs, your linked apps, and the ability to impersonate you to target your actual friends. The fake domain, FOMO tactics, and credential-harvesting login are all hallmarks of financially-motivated cybercrime.')">
+        <span class="actor-emoji">💰</span>
+        <div class="actor-name">Cybercriminal</div>
+        <div class="actor-desc">Financially motivated. Runs mass campaigns targeting credentials, financial data, or ransomware deployment.</div>
+      </div>
+      <div class="actor-card" onclick="pickActor(this, false, 'Hacktivists want to make a public political statement — defacement, leaks, or disruption. Quietly stealing teen Instagram credentials through a fake party invite has no ideological payoff. There's no cause being served here.')">
+        <span class="actor-emoji">✊</span>
+        <div class="actor-name">Hacktivist</div>
+        <div class="actor-desc">Ideologically motivated. Uses attacks to make political statements. Targets organizations that conflict with their beliefs.</div>
+      </div>
+      <div class="actor-card" onclick="pickActor(this, false, 'A script kiddie might set up a basic phishing page for fun, but the infrastructure here — a typosquatted domain, a fake OAuth login page, a mass campaign — requires more organization and a clear profit motive. This looks like professional cybercrime, not mischief.')">
+        <span class="actor-emoji">💻</span>
+        <div class="actor-name">Script Kiddie</div>
+        <div class="actor-desc">Low skill, uses existing tools. Often attacks for notoriety or curiosity rather than financial gain.</div>
+      </div>
+    </div>
+
+    <div class="lock-row"><button class="btn btn-primary" id="lock-actor" disabled onclick="lockActor()">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="hint-actor">Choose an answer. You can change it until you lock in. Nothing is revealed before that.</span></div>
+
+    <div class="actor-feedback" id="actor-feedback"></div>
+
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goTo(1)">← BACK</button>
+      <button class="btn btn-primary" id="actor-next" style="display:none" onclick="goTo(3)">CONTINUE →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 3: DEFENSE
+  ══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-3">
+    <div class="section-header">
+      <div class="section-label">// PHASE 03 — MITIGATE</div>
+      <div class="section-title">Choose Your Defense</div>
+    </div>
+
+    <div class="defense-scenario">
+      <strong>Situation:</strong> You're the security lead at a school district. A student just clicked the link and logged in with their Google school account — giving the attacker access to their email, Google Drive, and Classroom. You need to respond and prevent it from happening to thousands of other students. <strong>Which single control would be most effective going forward?</strong>
+    </div>
+
+    <div class="defense-grid" id="defense-grid">
+      <div class="defense-option" onclick="pickDefense(this, 'ok', 'Good instinct — email filtering would block many phishing emails before students see them. But attackers constantly register fresh domains that haven\'t been flagged yet. Filtering reduces exposure but doesn\'t stop everything. A student who gets through via another channel (like a link shared by a compromised friend) is still unprotected.')">
+        <div class="defense-icon">📧</div>
+        <div class="defense-content">
+          <div class="defense-title">Email Filtering</div>
+          <div class="defense-subtitle">Configure spam filters to block suspicious domains and flag external emails</div>
+        </div>
+        <div class="defense-result-tag tag-ok">GOOD</div>
+      </div>
+
+      <div class="defense-option" onclick="pickDefense(this, 'best', 'Excellent. MFA is the strongest single control here because it breaks the attacker\'s kill chain even after credentials are stolen. Even if a student enters their Google password on a fake page, the attacker can\'t log in without the second factor (a code sent to the student\'s phone). The stolen credential becomes useless. This is why MFA is the #1 recommended control against phishing — it protects even when a user clicks.')">
+        <div class="defense-icon">🔐</div>
+        <div class="defense-content">
+          <div class="defense-title">Multi-Factor Authentication (MFA)</div>
+          <div class="defense-subtitle">Require a second verification step beyond username and password for all accounts</div>
+        </div>
+        <div class="defense-result-tag tag-best">BEST</div>
+      </div>
+
+      <div class="defense-option" onclick="pickDefense(this, 'ok', 'Teaching students to recognize phishing is valuable — and frankly, this scenario is a great example of why. But even well-trained people click under FOMO pressure. Training reduces risk; it doesn\'t eliminate it. The best defenses layer training WITH technical controls like MFA, so a single click isn\'t catastrophic.')">
+        <div class="defense-icon">🎓</div>
+        <div class="defense-content">
+          <div class="defense-title">Security Awareness Training</div>
+          <div class="defense-subtitle">Train all staff to recognize phishing tactics, fake domains, and urgency manipulation</div>
+        </div>
+        <div class="defense-result-tag tag-ok">GOOD</div>
+      </div>
+
+      <div class="defense-option" onclick="pickDefense(this, 'bad', 'Blocking all external email would prevent students from receiving college emails, scholarship notices, and communications from parents and employers. A control that completely breaks legitimate workflows will get disabled or bypassed — providing zero protection. Security must balance protection with usability. This trade-off is wrong.')">
+        <div class="defense-icon">🚫</div>
+        <div class="defense-content">
+          <div class="defense-title">Block All External Email</div>
+          <div class="defense-subtitle">Configure the mail server to reject all messages from outside the school domain</div>
+        </div>
+        <div class="defense-result-tag tag-bad">WRONG TRADE-OFF</div>
+      </div>
+    </div>
+
+    <div class="lock-row"><button class="btn btn-primary" id="lock-def" disabled onclick="lockDef()">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="hint-def">Choose a defense. You can change it until you lock in. Nothing is revealed before that.</span></div>
+
+    <div class="defense-explain" id="defense-explain"></div>
+
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goTo(2)">← BACK</button>
+      <button class="btn btn-primary" id="defense-next" style="display:none" onclick="showResults()">SEE RESULTS →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 4: RESULTS
+  ══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-4">
+    <div class="results-hero">
+      <div class="results-score" id="final-score"></div>
+      <div class="results-label" id="final-label"></div>
+      <div class="results-sub" id="final-sub"></div>
+    </div>
+
+    <div class="results-breakdown" id="results-breakdown"></div>
+
+    <div class="section-header" style="margin-top:8px">
+      <div class="section-label">// KEY CONCEPTS FROM THIS LAB</div>
+    </div>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-term">SPOOFING</div>
+        <div class="concept-def">Faking a trusted identity — domain name, sender name, or branding — to appear legitimate.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">URGENCY TACTIC</div>
+        <div class="concept-def">Creating artificial time pressure to bypass rational thinking and trigger impulsive action.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">SOCIAL ENGINEERING</div>
+        <div class="concept-def">Manipulating human psychology rather than exploiting technical vulnerabilities.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">TYPOSQUATTING</div>
+        <div class="concept-def">Registering a domain that looks like a trusted one at a glance (ev1te-invitations.com vs evite.com). One character swap is all it takes.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">MFA</div>
+        <div class="concept-def">Multi-Factor Authentication: requires 2+ forms of verification, so stolen passwords alone aren't enough.</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-term">DEFENSE-IN-DEPTH</div>
+        <div class="concept-def">Using multiple layered controls so that failure of one doesn't mean total compromise.</div>
+      </div>
+    </div>
+
+    <div class="nav-row" style="justify-content: center; gap: 16px;">
+      <button class="btn btn-secondary" onclick="restart()">↺ RUN AGAIN</button>
+      
+    </div>
+
+      </div>
+
+</div>
+
+<!-- TOOLTIP OVERLAY -->
+<div class="tooltip-overlay" id="tooltip">
+  <div class="tooltip-box">
+    <div class="tooltip-header">
+      <span class="tooltip-icon" id="tt-icon"></span>
+      <span class="tooltip-title" id="tt-title"></span>
+      <button class="tooltip-close" onclick="closeTooltip()">✕</button>
+    </div>
+    <div class="tooltip-body">
+      <div class="tooltip-tactic" id="tt-tactic"></div>
+      <div class="tooltip-text" id="tt-text"></div>
+      <div class="tooltip-lesson" id="tt-lesson"></div>
+    </div>
+  </div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+  // ── STATE ──────────────────────────────────────────
+  let foundFlags = new Set();
+  let actorCorrect = false;
+  let defenseChoice = null;
+  let score = 0;
+
+  const FLAGS = [
+    {
+      icon: "🔍",
+      title: "Spoofed Sender Domain",
+      tactic: "TYPOSQUATTING",
+      text: "The sender's domain is 'ev1te-invitations.com' — notice the number '1' replacing the letter 'i' in evite. This is typosquatting: registering a lookalike domain to impersonate a trusted brand at a glance.",
+      lesson: "The real Evite sends from evite.com. Always check the full email address — not just the display name. One character difference means a completely different server."
+    },
+    {
+      icon: "🎉",
+      title: "Fake Excitement + Vague Invite",
+      tactic: "SOCIAL BAIT",
+      text: "The subject line uses excitement ('You're invited!!') and urgency ('before it's too late!!') to get you to open immediately without thinking. Notice it doesn't say who's inviting you or to what — because the attacker doesn't know those details.",
+      lesson: "If someone really invited you to their party, you'd probably already know about it. Unexpected invites from strangers that create excitement or urgency are a classic social engineering hook."
+    },
+    {
+      icon: "👤",
+      title: "Fake Familiarity",
+      tactic: "SOCIAL ENGINEERING",
+      text: "'Hey bestie!!' sounds personal and warm — but the attacker doesn't know you at all. This is designed to lower your guard by mimicking how a real friend texts or emails. Notice they never actually use your name.",
+      lesson: "Attackers mimic casual, friendly language to feel like someone you know. Real party invites from friends usually come through text, DMs, or Snapchat — not a mass email from an unfamiliar address."
+    },
+    {
+      icon: "⏱️",
+      title: "Fake Countdown + Scarcity",
+      tactic: "URGENCY & FOMO",
+      text: "The 2-hour countdown and 'your spot will be given away' creates FOMO (fear of missing out) — one of the most powerful psychological triggers for teens. It's designed to make you click before you stop to think or check with your friend.",
+      lesson: "Real party invites don't expire in 2 hours. If you actually got invited, text your friend directly and ask. The goal of the timer is to prevent you from doing exactly that."
+    },
+    {
+      icon: "🔗",
+      title: "Credential-Harvesting Link",
+      tactic: "URL DECEPTION + CREDENTIAL THEFT",
+      text: "The link goes to 'ev1te-invitations.com' — not the real evite.com. Worse, it asks you to log in with your Google or Instagram account. That login page is fake: it sends your username and password directly to the attacker.",
+      lesson: "Never log in with Google or Instagram through a link in an email. Go directly to the app or website instead. Harvesting social media credentials is extremely valuable — attackers can impersonate you to target your real friends next."
+    },
+    {
+      icon: "🎁",
+      title: "Fake Reward + Expiring Offer",
+      tactic: "SCARCITY & REWARD BAIT",
+      text: "'First 10 to confirm get a free party favor bag' and 'this link expires soon' stack two manipulation tactics: reward (get something free) and scarcity (only a few left). Together they push you to act before your skepticism kicks in.",
+      lesson: "Legitimate party invites don't come with expiring prize offers. When an email feels like it's working hard to make you click right now, that effort itself is a red flag."
+    }
+  ];
+
+  // ── NAVIGATION ─────────────────────────────────────
+  function goTo(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + n).classList.add('active');
+
+    for (let i = 0; i < 5; i++) {
+      const el = document.getElementById('prog-' + i);
+      el.classList.remove('active', 'done');
+      if (i < n) el.classList.add('done');
+      else if (i === n) el.classList.add('active');
+    }
+
+    window.scrollTo(0, 0);
+  }
+
+  // ── FLAG SYSTEM (mark, then lock in) ───────────────
+  let flagsLocked=false, actorPick=null, actorLocked=false, defPick=null, defLocked=false;
+  let _chgFlags=0,_chgActor=0,_chgDef=0, tp=0, fp=0, missed=0;
+  function markFlag(el){
+    if(flagsLocked){
+      if(el.dataset.flag!==undefined) showTooltip(+el.dataset.flag);
+      return;
+    }
+    if(el.classList.toggle('marked')===false)_chgFlags++;
+    const n=document.querySelectorAll('.hotspot.marked').length;
+    document.getElementById('flag-count').textContent=n;
+    document.getElementById('flags-lock').disabled=(n<1);
+  }
+  function lockFlags(){
+    if(flagsLocked) return;
+    const marked=document.querySelectorAll('.hotspot.marked').length;
+    if(!marked) return;
+    flagsLocked=true;
+    tp=0;fp=0;missed=0;
+    foundFlags.clear();
+    document.querySelectorAll('.hotspot').forEach(h=>{
+      const real=h.dataset.flag!==undefined;
+      const m=h.classList.contains('marked');
+      h.classList.remove('marked');
+      h.classList.add('locked');
+      if(real&&m){h.classList.add('found');tp++;foundFlags.add(+h.dataset.flag);}
+      else if(real&&!m){h.classList.add('missed');missed++;}
+      else if(!real&&m){h.classList.add('fp');fp++;}
+    });
+    score=Math.max(0,tp*10-fp*5);
+    updateScore();
+    document.getElementById('flags-lock').style.display='none';
+    document.getElementById('flags-hint').textContent='Locked in. Click any green or amber phrase to review why it is a red flag.';
+    const r=document.getElementById('flags-result');
+    r.style.display='block';
+    r.innerHTML='<strong>'+tp+' of 6</strong> real red flags found'+(fp?', <strong>'+fp+'</strong> false alarm'+(fp>1?'s':'')+' (-5 pts each)':'')+(missed?', <strong>'+missed+'</strong> missed':'')+'. Score: '+score+' / 60.';
+    document.getElementById('flags-next').classList.add('show');
+  }
+
+  function showTooltip(id) {
+    const f = FLAGS[id];
+    document.getElementById('tt-icon').textContent = f.icon;
+    document.getElementById('tt-title').textContent = f.title;
+    document.getElementById('tt-tactic').textContent = '// TACTIC: ' + f.tactic;
+    document.getElementById('tt-text').textContent = f.text;
+    document.getElementById('tt-lesson').textContent = '💡 ' + f.lesson;
+    document.getElementById('tooltip').classList.add('show');
+  }
+
+  function closeTooltip() {
+    document.getElementById('tooltip').classList.remove('show');
+  }
+
+  // ── THREAT ACTOR (pick, then lock in) ──────────────
+  function pickActor(el,correct,feedback){
+    if(actorLocked) return;
+    if(actorPick&&actorPick.el!==el) _chgActor++;
+    actorPick={el:el,correct:correct,feedback:feedback,name:el.querySelector('.actor-name').textContent};
+    document.querySelectorAll('.actor-card').forEach(c=>c.classList.remove('picked'));
+    el.classList.add('picked');
+    document.getElementById('lock-actor').disabled=false;
+    document.getElementById('hint-actor').textContent='Selected: '+actorPick.name+'. You can still change it. Nothing is revealed until you lock in.';
+  }
+  function lockActor(){
+    if(actorLocked||!actorPick) return;
+    actorLocked=true;
+    const el=actorPick.el, fb=document.getElementById('actor-feedback');
+    document.querySelectorAll('.actor-card').forEach(c=>{c.classList.remove('picked');c.classList.add('locked');});
+    document.getElementById('lock-actor').style.display='none';
+    document.getElementById('hint-actor').textContent='Locked in.';
+    if(actorPick.correct){
+      el.classList.add('selected'); actorCorrect=true; score+=20; updateScore();
+      fb.className='actor-feedback show correct';
+      fb.innerHTML='<div class="feedback-label correct">// CORRECT — CYBERCRIMINAL</div>'+actorPick.feedback;
+    } else {
+      el.classList.add('wrong');
+      document.querySelectorAll('.actor-card').forEach(c=>{if(c!==el&&c.querySelector('.actor-name').textContent==='Cybercriminal')c.classList.add('selected');});
+      fb.className='actor-feedback show incorrect';
+      fb.innerHTML='<div class="feedback-label incorrect">// NOT QUITE — THE ANSWER IS CYBERCRIMINAL</div>'+actorPick.feedback;
+    }
+    document.getElementById('actor-next').style.display='inline-flex';
+  }
+
+  // ── DEFENSE (pick, then lock in) ───────────────────
+  function pickDefense(el,level,explain){
+    if(defLocked) return;
+    if(defPick&&defPick.el!==el) _chgDef++;
+    defPick={el:el,level:level,explain:explain,name:el.querySelector('.defense-title').textContent};
+    document.querySelectorAll('.defense-option').forEach(o=>o.classList.remove('picked'));
+    el.classList.add('picked');
+    document.getElementById('lock-def').disabled=false;
+    document.getElementById('hint-def').textContent='Selected: '+defPick.name+'. You can still change it. Nothing is revealed until you lock in.';
+  }
+  function lockDef(){
+    if(defLocked||!defPick) return;
+    defLocked=true;
+    const el=defPick.el, level=defPick.level, explain=defPick.explain;
+    defenseChoice=level;
+    document.querySelectorAll('.defense-option').forEach(o=>{o.classList.remove('picked');o.classList.add('locked');if(o!==el)o.classList.add('not-selected');});
+    document.getElementById('defense-grid').classList.add('reveal');
+    document.getElementById('lock-def').style.display='none';
+    document.getElementById('hint-def').textContent='Locked in.';
+    if(level==='best'){el.classList.add('selected-best');score+=30;}
+    else if(level==='ok'){el.classList.add('selected-ok');score+=15;}
+    else el.classList.add('selected-bad');
+    updateScore();
+    const fb=document.getElementById('defense-explain');
+    const label=level==='best'?'✓ BEST CHOICE':level==='ok'?'~ GOOD, BUT...':'✗ WRONG TRADE-OFF';
+    fb.className='defense-explain show';
+    fb.innerHTML=`<strong style="font-family:var(--mono);font-size:11px;letter-spacing:0.1em;color:${level==='best'?'var(--accent3)':level==='ok'?'var(--warn)':'var(--danger)'}">${label}</strong><br><br>${explain}`;
+    document.getElementById('defense-next').style.display='inline-flex';
+  }
+
+  // ── RESULTS ───────────────────────────────────────
+  function score_flags(){return Math.max(0,tp*10-fp*5);}
+  function showResults() {
+    goTo(4);
+
+    const pct = Math.round((score / 110) * 100);
+    const scoreEl = document.getElementById('final-score');
+    scoreEl.textContent = pct + '%';
+    scoreEl.className = 'results-score ' + (pct >= 80 ? 'high' : pct >= 50 ? 'mid' : 'low');
+
+    const labels = {
+      high: ['Security Analyst 🔐', 'You think like a defender. You spotted every manipulation tactic — the FOMO, the fake domain, the credential-harvesting link — and chose a control that breaks the attack even after someone clicks.'],
+      mid: ['On Your Way 🎯', 'Good instincts. You caught the key tactics and made reasonable decisions. Review the concepts below and think about why MFA beats training alone as a single control.'],
+      low: ['Keep Learning 📚', "Phishing is designed to be deceptive — that's the point. Review each red flag below and think about what made each one hard to catch. Run the simulation again."]
+    };
+
+    const tier = pct >= 80 ? 'high' : pct >= 50 ? 'mid' : 'low';
+    document.getElementById('final-label').textContent = labels[tier][0];
+    document.getElementById('final-sub').textContent = labels[tier][1];
+
+    const breakdown = document.getElementById('results-breakdown');
+    const flagScore = score_flags();
+    const actorScore = actorCorrect ? 20 : 0;
+    const defScore = defenseChoice === 'best' ? 30 : defenseChoice === 'ok' ? 15 : 0;
+
+    breakdown.innerHTML = `
+      <div class="result-row">
+        <div class="result-check">${(tp===6&&!fp) ? '✅' : '⚠️'}</div>
+        <div class="result-text"><strong>Red Flags:</strong> ${tp}/6 found${fp?', '+fp+' false alarm'+(fp>1?'s':''):''} — ${(tp<6||fp)?'Review the amber and red marks and run again':'Perfect! You found every manipulation tactic with no false alarms'}</div>
+        <div class="result-points">+${flagScore} pts</div>
+      </div>
+      <div class="result-row">
+        <div class="result-check">${actorCorrect ? '✅' : '❌'}</div>
+        <div class="result-text"><strong>Threat Actor:</strong> ${actorCorrect ? 'Correctly identified as a Cybercriminal — stealing social media and Google credentials at scale' : 'The attacker was a Cybercriminal — your social media and Google credentials are valuable and resaleable'}</div>
+        <div class="result-points">+${actorScore} pts</div>
+      </div>
+      <div class="result-row">
+        <div class="result-check">${defenseChoice === 'best' ? '✅' : defenseChoice === 'ok' ? '⚡' : '❌'}</div>
+        <div class="result-text"><strong>Defense Choice:</strong> ${defenseChoice === 'best' ? 'MFA — the best control because stolen credentials become useless without the second factor' : defenseChoice === 'ok' ? 'A good control, but MFA is stronger because it protects even when a user clicks' : 'Blocking all external email is too disruptive — security must balance protection with usability'}</div>
+        <div class="result-points">+${defScore} pts</div>
+      </div>
+    `;
+  }
+
+  function updateScore() {
+    document.getElementById('score-display').textContent = 'SCORE: ' + score + ' pts';
+  }
+
+  function restart() {
+    foundFlags.clear();
+    flagsLocked=false;actorPick=null;actorLocked=false;defPick=null;defLocked=false;_chgFlags=0;_chgActor=0;_chgDef=0;tp=fp=missed=0;
+    actorCorrect = false;
+    defenseChoice = null;
+    score = 0;
+    updateScore();
+
+    // Reset flags
+    document.getElementById('flag-count').textContent = '0';
+    document.getElementById('flags-hint').textContent = 'Click suspicious parts of the email ↑ then lock in your marks.';
+    document.getElementById('flags-next').classList.remove('show');
+    const _fl=document.getElementById('flags-lock');_fl.style.display='';_fl.disabled=true;
+    const _fr=document.getElementById('flags-result');_fr.style.display='none';_fr.innerHTML='';
+    document.querySelectorAll('.hotspot').forEach(h=>h.classList.remove('marked','locked','found','fp','missed'));
+
+    // Reset actor
+    document.querySelectorAll('.actor-card').forEach(c => c.classList.remove('selected', 'wrong','picked','locked'));
+    const _la=document.getElementById('lock-actor');_la.style.display='';_la.disabled=true;document.getElementById('hint-actor').textContent='Choose an answer. You can change it until you lock in. Nothing is revealed before that.';
+    document.getElementById('actor-feedback').className = 'actor-feedback';
+    document.getElementById('actor-next').style.display = 'none';
+
+    // Reset defense
+    document.querySelectorAll('.defense-option').forEach(o => {
+      o.classList.remove('selected-best', 'selected-ok', 'selected-bad', 'not-selected','picked','locked');
+    });
+    document.getElementById('defense-grid').classList.remove('reveal');
+    const _ld=document.getElementById('lock-def');_ld.style.display='';_ld.disabled=true;document.getElementById('hint-def').textContent='Choose a defense. You can change it until you lock in. Nothing is revealed before that.';
+    document.getElementById('defense-explain').className = 'defense-explain';
+    document.getElementById('defense-next').style.display = 'none';
+
+    
+    goTo(0);
+  }
+
+  // Close tooltip on overlay click
+  document.getElementById('tooltip').addEventListener('click', function(e) {
+    if (e.target === this) closeTooltip();
+  });
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apShow=showResults;
+showResults=function(){_apShow();
+APSim.finish({unit:1,sim:'phish',screenId:'screen-4',score:score,max:110,items:[
+ {label:'Identify the red flags in the email',result:(tp===6&&!fp)?'correct':(tp>0?'partial':'incorrect'),pts:Math.max(0,tp*10-fp*5),max:60,response:tp+' of 6 found, '+fp+' false alarm'+(fp===1?'':'s'),expected:'All 6 red flags, no false alarms',changes:_chgFlags},
+ {label:'Identify the threat actor',result:actorCorrect?'correct':'incorrect',pts:actorCorrect?20:0,max:20,response:actorPick?actorPick.name:'',expected:'Cybercriminal',changes:_chgActor},
+ {label:'Choose the best defense',result:defenseChoice==='best'?'correct':(defenseChoice==='ok'?'partial':'incorrect'),pts:defenseChoice==='best'?30:(defenseChoice==='ok'?15:0),max:30,response:defPick?defPick.name:'',expected:'Multi-Factor Authentication (MFA)',changes:_chgDef}
+]});
+};
+const _apRestart=restart;
+restart=function(){_apRestart();APSim.start(1,'phish');};
+APSim.start(1,'phish');
+
+</script>
+</body>
+</html>

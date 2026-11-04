@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="3" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim3_topology">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Network Topology Defender — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#22c55e;--red:#ef4444;--amber:#ffd166;--cyan:#00d4ff;--purple:#c084fc;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-green) 2%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-green) 2%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-green) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-green) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* TOPOLOGY SVG WRAPPER */
+.topo-wrap{background:var(--panel);border:1px solid var(--border2);padding:20px;margin-bottom:16px;position:relative;}
+.topo-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:12px;}
+.topo-svg{width:100%;max-width:800px;display:block;margin:0 auto;}
+
+/* CONTROL PALETTE */
+.palette{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+.pal-item{padding:12px 10px;border:1px solid var(--border);background:var(--panel);cursor:pointer;text-align:center;transition:all .2s;user-select:none;}
+.pal-item:hover{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 6%,transparent);}
+.pal-item.selected-pal{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 12%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--c-green) 20%,transparent);}
+.pal-icon{font-size:24px;display:block;margin-bottom:6px;}
+.pal-name{font-family:var(--mono);font-size:10px;color:var(--text);letter-spacing:.06em;margin-bottom:3px;}
+.pal-desc{font-size:10px;color:var(--text3);line-height:1.35;}
+
+/* PLACEMENT ZONES */
+.zone-btn{cursor:pointer;transition:all .2s;}
+.zone-btn:hover rect,.zone-btn:hover circle{filter:brightness(1.4);}
+.zone-btn.placed rect{stroke:var(--acc);stroke-width:2;}
+.placed-control{pointer-events:none;}
+
+/* SCENARIO */
+.scenario-box{background:var(--panel);border:1px solid var(--border2);padding:16px 18px;margin-bottom:14px;}
+.scenario-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:6px;}
+.scenario-text{font-size:14px;line-height:1.7;color:var(--text);}
+.scenario-text strong{color:var(--acc);}
+
+/* REQUIREMENTS */
+.req-list{display:grid;gap:5px;margin-bottom:16px;}
+.req-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--panel);border:1px solid var(--border);font-size:12px;color:var(--text2);}
+.req-item.met{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);color:var(--text);}
+.req-item.unmet{border-color:var(--border);}
+.req-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.req-item.met .req-dot{background:var(--acc);}
+.req-item.unmet .req-dot{background:var(--text3);}
+
+/* MCQ */
+.choices{display:grid;gap:8px;margin-bottom:12px;}
+.choice-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 15px;cursor:pointer;text-align:left;transition:all .2s;}
+.choice-btn:hover:not(.locked){border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.choice-btn.correct-ans{border-color:var(--acc)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.choice-btn.wrong-ans{border-color:var(--red)!important;background:color-mix(in srgb,var(--red) 6%,transparent)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.choice-btn.locked{pointer-events:none;opacity:.5;}
+.choice-btn.correct-ans,.choice-btn.wrong-ans{opacity:1!important;}
+.cl{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px;display:block;}
+.ct{font-size:13px;color:var(--text);line-height:1.45;}
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--acc);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--acc);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.palette{grid-template-columns:repeat(2,1fr);}.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--c-green);--red:var(--red);--amber:var(--amber);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 3</div>
+  <div>
+    <div class="hdr-title">Network Topology Defender</div>
+    <div class="hdr-sub">UNIT 3 · SECURING NETWORKS · PLACE CONTROLS · SEGMENT NETWORKS</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">S1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">S2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">S3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p4"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🗺️</span>
+    <div class="intro-title">Network Topology Defender</div>
+    <div class="intro-desc">Three vulnerable network diagrams. For each one, read the scenario, study the topology, then answer the critical question: where do the controls go and why? Understanding network placement is as important as understanding what each control does.</div>
+    <div class="palette" style="max-width:560px;margin:0 auto 24px;">
+      <div class="pal-item"><span class="pal-icon">🔥</span><div class="pal-name">FIREWALL</div><div class="pal-desc">Controls inbound/outbound traffic by rules</div></div>
+      <div class="pal-item"><span class="pal-icon">🔀</span><div class="pal-name">DMZ</div><div class="pal-desc">Isolated zone for public-facing servers</div></div>
+      <div class="pal-item"><span class="pal-icon">🌐</span><div class="pal-name">IDS/IPS</div><div class="pal-desc">Detects and optionally blocks attacks</div></div>
+      <div class="pal-item"><span class="pal-icon">🔒</span><div class="pal-name">VPN</div><div class="pal-desc">Encrypted tunnel for remote access</div></div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+
+<div class="screen" id="s4">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">DMZ (DEMILITARIZED ZONE)</div><div class="concept-def">A network segment between the internet and the internal network. Public-facing servers (web, mail, DNS) live here. If compromised, attackers can't directly reach internal systems — they're still blocked by the inner firewall.</div></div>
+    <div class="concept-card"><div class="concept-term">PERIMETER VS INTERNAL FIREWALL</div><div class="concept-def">The perimeter firewall controls internet-to-DMZ traffic. The internal firewall controls DMZ-to-internal traffic. Two firewalls means an attacker must compromise both to reach internal systems from the internet.</div></div>
+    <div class="concept-card"><div class="concept-term">NETWORK SEGMENTATION</div><div class="concept-def">Dividing a network into isolated zones limits lateral movement. A compromised device in one segment can't directly attack devices in another — they must pass through a firewall or router with rules.</div></div>
+    <div class="concept-card"><div class="concept-term">IDS VS IPS PLACEMENT</div><div class="concept-def">An IDS (detection only) is placed out-of-band — it monitors a copy of traffic. An IPS (blocks attacks) must be inline — traffic flows through it. Wrong placement defeats the purpose of the control.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ TRY AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim3_hub.html'">← UNIT 3 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const SCENARIOS=[
+  {
+    label:"SCENARIO 01 — WEB SERVER EXPOSURE",
+    desc:"A company runs a web server (<strong>192.168.1.100</strong>) directly on their internal network. The web server is accessible from the internet. If it gets compromised, attackers have direct access to all internal systems including HR and finance databases.",
+    svg:`<svg class="topo-svg" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--border2)"/></marker></defs>
+      <!-- Internet -->
+      <rect x="20" y="110" width="100" height="60" rx="4" fill="var(--bg2)" stroke="var(--border2)" stroke-width="1.5"/>
+      <text x="70" y="135" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="10">☁️ INTERNET</text>
+      <text x="70" y="152" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="9">0.0.0.0/0</text>
+      <!-- Arrow internet to web server -->
+      <line x1="120" y1="140" x2="240" y2="140" stroke="var(--red)" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arr)"/>
+      <text x="180" y="130" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="9">EXPOSED!</text>
+      <!-- Web Server -->
+      <rect x="240" y="110" width="120" height="60" rx="4" fill="var(--panel2)" stroke="var(--red)" stroke-width="2"/>
+      <text x="300" y="135" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="10">🌐 WEB SERVER</text>
+      <text x="300" y="152" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="9">192.168.1.100</text>
+      <!-- Arrow web to internal -->
+      <line x1="360" y1="140" x2="460" y2="140" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <!-- Internal Network -->
+      <rect x="460" y="80" width="210" height="140" rx="4" fill="var(--bg2)" stroke="var(--border)" stroke-width="1"/>
+      <text x="565" y="104" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="9">INTERNAL NETWORK</text>
+      <rect x="480" y="110" width="80" height="40" rx="2" fill="var(--panel)" stroke="var(--border)"/>
+      <text x="520" y="130" text-anchor="middle" fill="var(--text2)" font-family="Share Tech Mono" font-size="9">💾 HR DB</text>
+      <rect x="575" y="110" width="80" height="40" rx="2" fill="var(--panel)" stroke="var(--border)"/>
+      <text x="615" y="130" text-anchor="middle" fill="var(--text2)" font-family="Share Tech Mono" font-size="9">💰 FINANCE</text>
+      <!-- Problem label -->
+      <text x="300" y="195" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="9">⚠ WEB SERVER ON SAME</text>
+      <text x="300" y="208" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="9">NETWORK AS DATABASES</text>
+    </svg>`,
+    q:{text:"The web server is directly internet-accessible and shares a network segment with sensitive databases. A successful web server exploit gives the attacker direct access to HR and finance data. <strong>What is the BEST architectural solution?</strong>",
+    choices:[
+      {l:"A",t:"Install antivirus on the web server to detect exploits before they succeed"},
+      {l:"B",t:"Move the web server into a DMZ, with a firewall between the internet and DMZ, and another firewall between the DMZ and internal network"},
+      {l:"C",t:"Change the web server's IP address to make it harder for attackers to find"},
+      {l:"D",t:"Add more RAM to the web server to handle attack traffic better"}
+    ],
+    answer:"B",
+    explanation:"A DMZ (Demilitarized Zone) isolates public-facing servers from the internal network. Two firewalls create two layers of protection: Firewall 1 controls internet→DMZ traffic (allows HTTP/HTTPS to web server only). Firewall 2 controls DMZ→internal traffic (very restrictive — web server should only need database queries, not full network access). If the web server is compromised, the attacker is still blocked from the internal network by Firewall 2.",
+    trap:"Antivirus and IP changes provide minimal protection against targeted exploits. The architectural problem is that one breach gives full internal access — that's fixed by segmentation, not by endpoint controls on the exposed server."}
+  },
+  {
+    label:"SCENARIO 02 — FLAT HOSPITAL NETWORK",
+    desc:"A hospital has one flat network — patient monitoring devices, doctors' workstations, administrative PCs, and the guest Wi-Fi all share <strong>192.168.0.0/16</strong>. A compromised guest device can communicate directly with patient monitors and EHR servers.",
+    svg:`<svg class="topo-svg" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="arr2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--border2)"/></marker></defs>
+      <!-- Central switch -->
+      <rect x="290" y="120" width="120" height="50" rx="4" fill="var(--panel2)" stroke="var(--red)" stroke-width="2"/>
+      <text x="350" y="142" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="10">🔀 FLAT SWITCH</text>
+      <text x="350" y="158" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="9">192.168.0.0/16</text>
+      <!-- Devices -->
+      <rect x="20" y="30" width="110" height="44" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+      <text x="75" y="52" text-anchor="middle" fill="var(--text2)" font-family="Share Tech Mono" font-size="9">👤 GUEST WiFi</text>
+      <text x="75" y="66" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="8">192.168.0.x</text>
+      <line x1="130" y1="52" x2="290" y2="140" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr2)"/>
+      <rect x="20" y="130" width="110" height="44" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+      <text x="75" y="152" text-anchor="middle" fill="var(--text2)" font-family="Share Tech Mono" font-size="9">🏥 PATIENT MONITOR</text>
+      <text x="75" y="166" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="8">192.168.0.x</text>
+      <line x1="130" y1="152" x2="290" y2="145" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <rect x="20" y="230" width="110" height="44" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+      <text x="75" y="252" text-anchor="middle" fill="var(--text2)" font-family="Share Tech Mono" font-size="9">💻 ADMIN PC</text>
+      <text x="75" y="266" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="8">192.168.0.x</text>
+      <line x1="130" y1="252" x2="290" y2="160" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <rect x="570" y="30" width="110" height="44" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+      <text x="625" y="52" text-anchor="middle" fill="var(--text2)" font-family="Share Tech Mono" font-size="9">📋 EHR SERVER</text>
+      <text x="625" y="66" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="8">192.168.0.x</text>
+      <line x1="410" y1="140" x2="570" y2="52" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <rect x="570" y="230" width="110" height="44" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+      <text x="625" y="252" text-anchor="middle" fill="var(--text2)" font-family="Share Tech Mono" font-size="9">🌐 INTERNET GW</text>
+      <text x="625" y="266" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="8">192.168.0.1</text>
+      <line x1="410" y1="155" x2="570" y2="252" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <!-- Danger arrow -->
+      <text x="350" y="240" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="9">⚠ GUEST → PATIENT MONITOR: DIRECT PATH!</text>
+    </svg>`,
+    q:{text:"All devices share one flat network. A guest user browsing on the hospital Wi-Fi can directly communicate with patient monitoring devices and EHR servers. <strong>Which control MOST effectively reduces this risk?</strong>",
+    choices:[
+      {l:"A",t:"Require all guest users to sign acceptable use agreements before connecting"},
+      {l:"B",t:"Implement VLANs to segment the network — Guest, Clinical, Admin, and IoT on separate VLANs with inter-VLAN firewall rules"},
+      {l:"C",t:"Install antivirus on all patient monitoring devices"},
+      {l:"D",t:"Limit guest Wi-Fi to 10 Mbps to reduce the risk of data exfiltration"}
+    ],
+    answer:"B",
+    explanation:"VLANs (Virtual LANs) create logical network segments even on shared physical infrastructure. Guest devices go on the Guest VLAN, clinical devices on the Clinical VLAN, and so on. Inter-VLAN routing rules on a Layer 3 switch or firewall control what can talk to what — Guest VLAN should be able to reach the internet but NOT the Clinical VLAN. This is network segmentation implemented without replacing the physical infrastructure.",
+    trap:"Acceptable use agreements are administrative controls that rely on human compliance — they don't technically prevent a compromised guest device from attacking a patient monitor. Speed limiting doesn't prevent lateral movement. Antivirus on IoT devices is often impractical and still doesn't prevent the network-level exposure."}
+  },
+  {
+    label:"SCENARIO 03 — REMOTE ACCESS WITHOUT VPN",
+    desc:"Employees work from home and access the corporate network by RDP directly to their office workstations on <strong>10.0.0.0/8</strong>. Port 3389 (RDP) is open on the perimeter firewall to ANY source IP. RDP brute force attacks are triggering daily alerts.",
+    svg:`<svg class="topo-svg" viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="arr3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--border2)"/></marker><marker id="arr3r" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--red)"/></marker></defs>
+      <!-- Internet -->
+      <rect x="20" y="100" width="100" height="60" rx="4" fill="var(--bg2)" stroke="var(--border2)"/>
+      <text x="70" y="125" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="10">☁️ INTERNET</text>
+      <!-- Legit employee -->
+      <rect x="20" y="20" width="100" height="50" rx="3" fill="var(--panel)" stroke="var(--c-green)" stroke-width="1"/>
+      <text x="70" y="42" text-anchor="middle" fill="var(--c-green)" font-family="Share Tech Mono" font-size="9">👤 EMPLOYEE</text>
+      <text x="70" y="57" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="8">HOME</text>
+      <!-- Attacker -->
+      <rect x="20" y="190" width="100" height="50" rx="3" fill="var(--panel2)" stroke="var(--red)" stroke-width="1"/>
+      <text x="70" y="212" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="9">🎯 ATTACKER</text>
+      <text x="70" y="227" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="8">ANYWHERE</text>
+      <!-- Firewall -->
+      <rect x="250" y="100" width="100" height="60" rx="4" fill="var(--bg2)" stroke="var(--amber)" stroke-width="2"/>
+      <text x="300" y="128" text-anchor="middle" fill="var(--amber)" font-family="Share Tech Mono" font-size="10">🔥 FIREWALL</text>
+      <text x="300" y="146" text-anchor="middle" fill="var(--amber)" font-family="Share Tech Mono" font-size="8">3389 OPEN TO ANY!</text>
+      <!-- Connections -->
+      <line x1="120" y1="45" x2="250" y2="125" stroke="var(--c-green)" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr3)"/>
+      <line x1="120" y1="130" x2="250" y2="130" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arr3)"/>
+      <line x1="120" y1="215" x2="250" y2="148" stroke="var(--red)" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arr3r)"/>
+      <text x="175" y="200" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="9">BRUTE FORCE</text>
+      <!-- Internal -->
+      <line x1="350" y1="130" x2="440" y2="130" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arr3)"/>
+      <rect x="440" y="90" width="230" height="80" rx="4" fill="var(--bg2)" stroke="var(--border)"/>
+      <text x="555" y="115" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="9">INTERNAL NETWORK</text>
+      <rect x="460" y="120" width="80" height="35" rx="2" fill="var(--panel)" stroke="var(--border)"/>
+      <text x="500" y="142" text-anchor="middle" fill="var(--text2)" font-family="Share Tech Mono" font-size="9">💻 WORKSTATIONS</text>
+      <rect x="570" y="120" width="80" height="35" rx="2" fill="var(--panel)" stroke="var(--border)"/>
+      <text x="610" y="142" text-anchor="middle" fill="var(--text2)" font-family="Share Tech Mono" font-size="9">📁 FILE SERVER</text>
+    </svg>`,
+    q:{text:"RDP port 3389 is open to the entire internet on the perimeter firewall. Both legitimate employees AND attackers can attempt connections. Daily brute force alerts suggest automated password-guessing attacks. <strong>What is the correct architectural fix?</strong>",
+    choices:[
+      {l:"A",t:"Increase the RDP session timeout to disconnect brute force attempts faster"},
+      {l:"B",t:"Block port 3389 entirely and deploy a VPN server — employees connect via VPN first, then use RDP internally on the private network"},
+      {l:"C",t:"Change the RDP port from 3389 to a different port number to hide it from attackers"},
+      {l:"D",t:"Add a warning banner to the RDP login screen to deter unauthorized access"}
+    ],
+    answer:"B",
+    explanation:"The correct fix is to close RDP to the internet and instead expose only a VPN endpoint. Employees authenticate to the VPN first (which should require MFA), establish an encrypted tunnel into the network, and then use RDP on the internal network — where it's not visible from the internet at all. This eliminates the attack surface entirely rather than trying to defend an inherently exposed protocol. VPN + internal RDP is the industry-standard remote access pattern.",
+    trap:"Port security through obscurity (changing to a non-standard port) provides minimal protection — port scanners find open ports regardless of port number. Warning banners and timeouts don't stop automated brute force tools. The problem is architectural: RDP should never be directly internet-facing."}
+  }
+];
+
+let score=0,results=[],total=SCENARIOS.length,sel=[],locked=[],_chg=[];
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildScenario(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildScenario(idx){
+  const sc=SCENARIOS[idx];
+  const q=sc.q;
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// SCENARIO ${idx+1} OF ${total}</div>
+    <div class="sec-title">Analyze & Fix the Topology</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Scenario ${idx+1}/${total}</span>
+    </div>
+    <div class="scenario-box">
+      <div class="scenario-label">${sc.label}</div>
+      <div class="scenario-text">${sc.desc}</div>
+    </div>
+    <div class="topo-wrap">
+      <div class="topo-label">// CURRENT NETWORK TOPOLOGY — RED = VULNERABILITY</div>
+      ${sc.svg}
+    </div>
+    <div class="q-box" style="background:var(--panel);border:1px solid var(--border2);padding:16px 18px;margin-bottom:14px;">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:10px;">// TOPOLOGY QUESTION</div>
+      <div style="font-size:14px;line-height:1.7;color:var(--text);margin-bottom:14px;">${q.text}</div>
+      <div class="choices" id="ch-${idx}">
+        ${q.choices.map(c=>`<div class="choice-btn" onclick="pick(this,'${c.l}',${idx})"><span class="cl">${c.l}</span><div class="ct">${c.t}</div></div>`).join('')}
+      </div>
+      <div class="lock-row"><button class="btn btn-acc" id="lock-${idx}" disabled onclick="lockIn(${idx})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="hint-${idx}">Choose an answer. You can change it until you lock in. Nothing is revealed before that.</span></div>
+      <div class="feedback" id="fb-${idx}"></div>
+    </div>
+    <div class="nav"><div></div><button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT TOPOLOGY →'}</button></div>`;
+}
+
+function pick(el,letter,idx){
+  if(locked[idx])return;
+  if(sel[idx]&&sel[idx]!==letter)_chg[idx]=(_chg[idx]||0)+1;
+  sel[idx]=letter;
+  document.getElementById('ch-'+idx).querySelectorAll('.choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+idx).disabled=false;
+  document.getElementById('hint-'+idx).textContent='Selected: '+letter+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockIn(idx){
+  if(locked[idx]||!sel[idx])return;
+  locked[idx]=true;
+  const q=SCENARIOS[idx].q,letter=sel[idx],ok=letter===q.answer;
+  const all=document.getElementById('ch-'+idx).querySelectorAll('.choice-btn');
+  document.querySelector('#s'+(idx+1)+' .lock-row').style.display='none';
+  all.forEach(c=>{
+    const l=c.querySelector('.cl').textContent;
+    c.classList.remove('picked');c.classList.add('locked');
+    if(l===q.answer)c.classList.add('correct-ans');
+    if(l===letter){if(!ok)c.classList.add('wrong-ans');c.querySelector('.ct').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx]={correct:ok,choice:letter};
+  const fb=document.getElementById('fb-'+idx);
+  if(ok){
+    score+=25;document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+    fb.className='feedback show correct';
+    fb.innerHTML=`<div class="fb-lbl ok">// LOCKED IN — CORRECT</div>${q.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 Why the others don't work: ${q.trap}</em>`;
+  } else {
+    fb.className='feedback show wrong';
+    fb.innerHTML=`<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: ${q.answer}</div>${q.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 Why the others don't work: ${q.trap}</em>`;
+  }
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*25))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Network Architect 🗺️','You identified the right architectural fix in all three topologies. Understanding WHERE to place controls is as important as knowing WHAT each control does.'],mid:['Good Instincts 🎯','You found most architectural issues. Review DMZ design and why VPN is preferred over direct RDP exposure.'],low:['Keep Building 📚','Focus on network segmentation principles — the goal is to limit what can communicate with what, so one breach doesn\'t mean full access.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=SCENARIOS.map((sc,i)=>{
+    const r=results[i]||{correct:false};
+    return `<div class="b-row"><div class="b-check">${r.correct?'✅':'❌'}</div><div class="b-text"><strong>${sc.label.split('—')[1].trim()}</strong></div><div class="b-pts">${r.correct?'+25':'+0'} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];sel=[];locked=[];_chg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:3,sim:'topo',screenId:'s4',score:score,max:total*25,items:SCENARIOS.map(function(sc,i){var r=results[i]||{correct:false};return {label:sc.label.split('—')[1].trim(),result:r.correct?'correct':'incorrect',pts:r.correct?25:0,max:25,response:r.choice||'',expected:sc.q.answer,changes:_chg[i]||0};})});
+};
+const _apRestart=restart;
+restart=function(){sel=[];locked=[];_chg=[];APSim.start(3,'topo');_apRestart();};
+APSim.start(3,'topo');
+
+goTo(0);
+</script>
+</body>
+</html>

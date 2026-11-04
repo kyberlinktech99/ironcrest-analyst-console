@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="2" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="rfid">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | RFID Vulnerability Lab — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#ef4444;--green:#00ff9d;--amber:#ffd166;--cyan:#00d4ff;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--acc) 2%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--acc) 2%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:var(--green);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.sec-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:#fff;font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--acc) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--acc) 8%,transparent);}
+.btn-G{background:var(--green);color:#000;font-weight:700;}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:24px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px;color:var(--acc);}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* RFID ANIMATION */
+.rfid-demo{position:relative;width:100%;max-width:480px;margin:0 auto 28px;height:180px;background:var(--panel);border:1px solid var(--border2);overflow:hidden;}
+.rfid-card{position:absolute;left:20px;top:50%;transform:translateY(-50%);width:80px;height:50px;background:linear-gradient(135deg,#1e3a5f,#2a4f8a);border:1px solid var(--cyan);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;color:var(--cyan);text-align:center;line-height:1.3;z-index:2;}
+.rfid-reader{position:absolute;left:200px;top:50%;transform:translateY(-50%);width:40px;height:70px;background:var(--bg3);border:2px solid var(--border2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.rfid-attacker{position:absolute;right:20px;top:50%;transform:translateY(-50%);width:70px;height:50px;background:color-mix(in srgb,var(--acc) 15%,transparent);border:1px solid var(--acc);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;color:var(--acc);text-align:center;gap:3px;}
+.rfid-wave{position:absolute;top:50%;left:90px;transform:translateY(-50%);pointer-events:none;}
+.wave-ring{position:absolute;top:50%;left:0;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:1px solid var(--cyan);animation:expand 2s ease-out infinite;}
+.wave-ring:nth-child(2){animation-delay:.5s;}
+.wave-ring:nth-child(3){animation-delay:1s;}
+@keyframes expand{0%{width:10px;height:10px;opacity:.8;left:0;transform:translate(0,-50%)}100%{width:100px;height:100px;opacity:0;left:-45px;transform:translateY(-50%)}}
+.capture-wave{position:absolute;top:50%;right:120px;transform:translateY(-50%);pointer-events:none;}
+.capture-ring{position:absolute;top:50%;right:0;transform:translateY(-50%);border-radius:50%;border:1px solid var(--acc);animation:capture 3s ease-out infinite 1.5s;}
+@keyframes capture{0%{width:10px;height:10px;opacity:.8;right:0;transform:translateY(-50%)}100%{width:80px;height:80px;opacity:0;right:-35px;transform:translateY(-50%)}}
+.demo-label{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;}
+
+/* QUESTIONS */
+.q-box{background:var(--panel);border:1px solid var(--border2);padding:20px;margin-bottom:18px;}
+.q-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:10px;}
+.q-text{font-size:15px;line-height:1.7;color:var(--text);margin-bottom:18px;}
+.q-text strong{color:var(--cyan);}
+.choices{display:grid;gap:8px;}
+.choice-btn{background:var(--bg3);border:1px solid var(--border);padding:13px 16px;cursor:pointer;text-align:left;transition:all .2s;font-family:var(--sans);}
+.choice-btn:hover:not(.locked){border-color:var(--acc);background:color-mix(in srgb,var(--acc) 5%,transparent);}
+.choice-btn.correct-ans{border-color:var(--green)!important;background:color-mix(in srgb,var(--green) 5%,transparent)!important;}
+.choice-btn.wrong-ans{border-color:var(--acc)!important;background:color-mix(in srgb,var(--acc) 5%,transparent)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.choice-btn.locked{pointer-events:none;opacity:.5;}
+.choice-btn.correct-ans{opacity:1!important;}
+.cl{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px;display:block;}
+.ct{font-size:13px;color:var(--text);line-height:1.45;}
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--green) 5%,transparent);}
+.feedback.wrong{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}.fb-lbl.no{color:var(--acc);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:var(--green);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+
+/* TECH COMPARE */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.tech-card{padding:14px;border:1px solid var(--border);background:var(--panel);}
+.tech-freq{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:5px;letter-spacing:.08em;}
+.tech-name{font-family:var(--display);font-size:16px;font-weight:700;margin-bottom:5px;}
+.tech-secure{font-family:var(--mono);font-size:9px;padding:2px 7px;display:inline-block;margin-bottom:8px;}
+.tech-card.vulnerable .tech-name{color:var(--acc);}.tech-card.vulnerable .tech-secure{background:color-mix(in srgb,var(--acc) 15%,transparent);color:var(--acc);}
+.tech-card.moderate .tech-name{color:var(--amber);}.tech-card.moderate .tech-secure{background:color-mix(in srgb,var(--amber) 15%,transparent);color:var(--amber);}
+.tech-card.secure .tech-name{color:var(--green);}.tech-card.secure .tech-secure{background:color-mix(in srgb,var(--green) 15%,transparent);color:var(--green);}
+.tech-detail{font-size:11px;color:var(--text3);line-height:1.5;}
+
+/* results */
+.result-hero{text-align:center;padding:32px 0 24px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--green) 40%,transparent);}
+.result-score.mid{color:var(--amber);text-shadow:0 0 30px color-mix(in srgb,var(--amber) 40%,transparent);}
+.result-score.low{color:var(--acc);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.tech-grid,.concept-grid{grid-template-columns:1fr;}.rfid-demo{height:120px;}.rfid-attacker{display:none;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 2</div>
+  <div>
+    <div class="hdr-title">RFID Vulnerability Lab</div>
+    <div class="hdr-sub">UNIT 2 · SECURING SPACES · ACCESS CARDS · REPLAY ATTACKS</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">Q1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">Q2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">Q3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">Q4</span><div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">Q5</span><div class="prog-step" id="p5"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p6"></div>
+</div>
+
+<!-- INTRO -->
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">📡</span>
+    <div class="intro-title">RFID Vulnerability Lab</div>
+    <div class="intro-desc">Most office buildings use RFID access cards. What most people don't know: standard 125kHz proximity cards broadcast your unique ID in plaintext — to anyone with a reader, up to 3 feet away. Let's understand how this attack works and how to defend against it.</div>
+
+    <div class="rfid-demo">
+      <div class="rfid-card">ACCESS<br>CARD<br><span style="color:var(--text3);font-size:8px;">ID: 0x4F2A8C</span></div>
+      <div class="rfid-wave">
+        <div class="wave-ring"></div><div class="wave-ring"></div><div class="wave-ring"></div>
+      </div>
+      <div class="rfid-reader">🚪</div>
+      <div class="capture-wave">
+        <div class="capture-ring"></div>
+      </div>
+      <div class="rfid-attacker">📱<br>ATTACKER<br>CAPTURES ID</div>
+      <div class="demo-label">125kHz RFID: Card broadcasts ID in plaintext → anyone can capture it</div>
+    </div>
+
+    <div class="tech-grid">
+      <div class="tech-card vulnerable">
+        <div class="tech-freq">125 kHz</div>
+        <div class="tech-name">Prox Cards</div>
+        <div class="tech-secure">VULNERABLE</div>
+        <div class="tech-detail">HID Prox, EM4100 — broadcast ID in plaintext. No encryption, no mutual auth. Clonable in seconds.</div>
+      </div>
+      <div class="tech-card moderate">
+        <div class="tech-freq">13.56 MHz</div>
+        <div class="tech-name">MIFARE Classic</div>
+        <div class="tech-secure">MODERATE</div>
+        <div class="tech-detail">Early encryption — CRYPTO1 cipher is broken. Still better than 125kHz but cloneable with more effort.</div>
+      </div>
+      <div class="tech-card secure">
+        <div class="tech-freq">13.56 MHz</div>
+        <div class="tech-name">MIFARE DESFire</div>
+        <div class="tech-secure">SECURE</div>
+        <div class="tech-detail">AES-128 encryption + mutual authentication. Current best practice. Card and reader verify each other.</div>
+      </div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN LAB</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+<div class="screen" id="s5"></div>
+
+<!-- RESULTS -->
+<div class="screen" id="s6">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">RFID CLONING ATTACK</div><div class="concept-def">Reading a 125kHz card's ID wirelessly and writing it to a blank card. Requires no physical access to the card — just proximity. Tools like the Flipper Zero or custom readers can do this in seconds.</div></div>
+    <div class="concept-card"><div class="concept-term">REPLAY ATTACK</div><div class="concept-def">Capturing a valid credential transmission and replaying it later to gain unauthorized access. Works on any system where the credential doesn't change (non-cryptographic RFID, static tokens).</div></div>
+    <div class="concept-card"><div class="concept-term">MUTUAL AUTHENTICATION</div><div class="concept-def">Both parties verify each other's identity before access is granted. In RFID: the card proves it's legitimate to the reader, AND the reader proves it's legitimate to the card. Prevents cloning attacks.</div></div>
+    <div class="concept-card"><div class="concept-term">DEFENSE IN DEPTH — PHYSICAL</div><div class="concept-def">No single control is sufficient. RFID + PIN (multi-factor physical authentication), camera (detective), security culture (administrative), and encrypted cards (technical) work together.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ RUN AGAIN</button>
+    <button class="btn btn-G" onclick="window.location.href='sim2_hub.html'">← UNIT 2 HUB</button>
+  </div>
+</div>
+</div>
+<script src="apsim_record.js"></script>
+<script>
+const QS=[
+  {
+    label:"QUESTION 01",
+    text:"A standard 125kHz proximity access card grants entry to an office building. A security researcher stands near the elevator holding what looks like a smartphone. When an employee walks past, the researcher's device records data. <strong>What has the researcher most likely captured?</strong>",
+    choices:[
+      {l:"A",t:"The employee's biometric data stored on the card"},
+      {l:"B",t:"The card's unique ID number, transmitted in plaintext over radio"},
+      {l:"C",t:"The encrypted PIN the employee uses to access the building"},
+      {l:"D",t:"The building's access control server credentials"}
+    ],
+    answer:"B",
+    explanation:"125kHz proximity cards broadcast their unique ID number in plaintext (unencrypted) over radio frequency. Any device that can receive 125kHz RF signals can capture this ID. No PIN is involved with standard proximity cards — they only transmit the ID. The researcher captured enough to clone the card.",
+    trap:"Option A is wrong because standard proximity cards don't store biometric data — they store only a numeric ID. Option D requires network access, not radio capture."
+  },
+  {
+    label:"QUESTION 02",
+    text:"An attacker successfully clones an employee's access card and uses the clone to enter a secure server room after hours. The server room only has a keycard reader — no PIN, no camera. <strong>Which type of attack best describes what just occurred?</strong>",
+    choices:[
+      {l:"A",t:"A man-in-the-middle attack — the attacker intercepted communication between the card and reader"},
+      {l:"B",t:"A replay attack — a previously captured valid credential was replayed to gain access"},
+      {l:"C",t:"A brute force attack — the attacker tried every possible card ID until finding the right one"},
+      {l:"D",t:"A denial of service attack — the attacker disrupted the normal access control system"}
+    ],
+    answer:"B",
+    explanation:"This is a replay attack — the attacker captured the legitimate credential (card ID) and replayed it using a cloned card to gain access. The system had no way to distinguish the clone from the original because the credential never changes and isn't encrypted. The attack succeeded because there's no mutual authentication.",
+    trap:"A MITM attack intercepts communication between two parties in real time. Here, the attacker recorded and replayed — two separate events. Brute force would require trying thousands of IDs. This was a single captured valid credential."
+  },
+  {
+    label:"QUESTION 03",
+    text:"A company is upgrading its access control system. The security team proposes replacing 125kHz proximity cards with MIFARE DESFire cards using AES-128 encryption and mutual authentication. <strong>Which vulnerability does this upgrade MOST directly address?</strong>",
+    choices:[
+      {l:"A",t:"Social engineering attacks — employees giving their cards to unauthorized people"},
+      {l:"B",t:"Tailgating — unauthorized people following employees through secure doors"},
+      {l:"C",t:"Credential cloning — copying card data wirelessly without physical access"},
+      {l:"D",t:"Lost card attacks — unauthorized use of a found or stolen card"}
+    ],
+    answer:"C",
+    explanation:"AES-128 encryption and mutual authentication specifically prevent cloning attacks. Encrypted cards don't broadcast their ID in plaintext — instead, they perform a cryptographic challenge-response with the reader. Even if someone captures the radio transmission, they cannot extract the original card data. Social engineering, tailgating, and lost card attacks require different controls (training, mantraps, instant card deactivation).",
+    trap:"A lost card (option D) remains a risk with encrypted cards — the physical card itself still grants access until deactivated. Encryption prevents cloning, not theft. These are different attacks requiring different defenses."
+  },
+  {
+    label:"QUESTION 04",
+    text:"A hospital's security assessment finds that their RFID access control system only requires a card swipe — no PIN or biometric. An attacker who clones one employee's card would have the same access as that employee. <strong>Which additional control would MOST effectively prevent unauthorized access even if a card is cloned?</strong>",
+    choices:[
+      {l:"A",t:"Install security cameras at all card readers to record who uses them"},
+      {l:"B",t:"Require a PIN to be entered at the keycard reader in addition to the card swipe"},
+      {l:"C",t:"Change all employee card IDs monthly to reduce the window of card clone use"},
+      {l:"D",t:"Implement a clean desk policy requiring employees to keep cards in their pockets"}
+    ],
+    answer:"B",
+    explanation:"Adding a PIN requirement implements two-factor physical authentication — something you have (the card) + something you know (the PIN). A cloned card alone provides the 'have' factor but not the 'know' factor. This directly prevents the cloned card from being useful for unauthorized access. Cameras (option A) are detective, not preventive. Monthly ID changes (option C) are operationally impractical and don't close the cloning window.",
+    trap:"Cameras are detective controls — they record the attack happening but don't prevent it. The question asks about PREVENTING unauthorized access even after a successful clone, which requires an additional authentication factor."
+  },
+  {
+    label:"QUESTION 05",
+    text:"During a penetration test, a security team uses a Flipper Zero (a multi-tool security research device) to capture and replay an RFID badge credential. The client asks: <strong>'Which CIA Triad pillar is MOST at risk from RFID cloning attacks on a physical access control system?'</strong>",
+    choices:[
+      {l:"A",t:"Confidentiality — the card's encrypted data is exposed to the attacker"},
+      {l:"B",t:"Integrity — the access control logs show incorrect entry records"},
+      {l:"C",t:"Availability — the cloned card prevents legitimate employees from entering"},
+      {l:"D",t:"Confidentiality — unauthorized physical access enables access to protected information and systems"}
+    ],
+    answer:"D",
+    explanation:"The primary CIA concern with physical access attacks is Confidentiality — an attacker who gains physical access to a server room, filing cabinet, or restricted area can access protected data, systems, and information. The cloning attack is a means to an end: unauthorized physical access leads to unauthorized data access (Confidentiality violation). Integrity may be secondarily violated if logs are incomplete, but that's a consequence, not the primary risk.",
+    trap:"Option A is wrong because 125kHz cards don't encrypt data — there's nothing to 'expose.' Option B (Integrity of logs) is a secondary effect. Option C would require the attacker to use the card instead of the employee, which isn't how cloning attacks typically work."
+  }
+];
+let score=0,results=[],total=QS.length;
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildQ(n-1);
+  if(n===total+1)buildResults();
+}
+function buildQ(idx){
+  const q=QS[idx];
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// QUESTION ${idx+1} OF ${total}</div>
+    <div class="sec-title">RFID Security Analysis</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Q${idx+1}/${total}</span>
+    </div>
+    <div class="q-box">
+      <div class="q-label">${q.label}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="choices" id="ch-${idx}">
+        ${q.choices.map(c=>`<div class="choice-btn" onclick="pick(this,'${c.l}',${idx})"><span class="cl">${c.l}</span><div class="ct">${c.t}</div></div>`).join('')}
+      </div>
+    <div class="lock-row">
+      <button class="btn btn-acc" id="lock-${idx}" disabled onclick="lockIn(${idx})">🔒 Lock in answer</button>
+      <span class="lock-hint" id="hint-${idx}">Choose an answer, then lock it in. You get one attempt, and the correct answer and reasoning appear only after you lock in.</span>
+    </div>
+      <div class="feedback" id="fb-${idx}"></div>
+    </div>
+    <div class="nav"><div></div><button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT →'}</button></div>`;
+}
+let sel=[],locked=[],_chg=[];
+function pick(el,letter,idx){
+  if(locked[idx])return;
+  if(sel[idx]&&sel[idx]!==letter)_chg[idx]=(_chg[idx]||0)+1;
+  sel[idx]=letter;
+  document.querySelectorAll('#ch-'+idx+' .choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+idx).disabled=false;
+  document.getElementById('hint-'+idx).textContent='Option '+letter+' selected. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockIn(idx){
+  if(locked[idx]||!sel[idx])return;
+  locked[idx]=true;
+  const q=QS[idx],letter=sel[idx],ok=letter===q.answer;
+  const all=document.querySelectorAll('#ch-'+idx+' .choice-btn');
+  all.forEach(c=>{c.classList.remove('picked');c.classList.add('locked');});
+  const at=l=>all[q.choices.findIndex(c=>c.l===l)];
+  const yours=document.createElement('span');yours.className='yours';yours.textContent='YOUR ANSWER';
+  at(letter).querySelector('.ct').appendChild(yours);
+  at(q.answer).classList.remove('locked');at(q.answer).classList.add('correct-ans');
+  if(!ok){at(letter).classList.remove('locked');at(letter).classList.add('wrong-ans');at(letter).style.opacity='1';}
+  document.querySelector('#s'+(idx+1)+' .lock-row').style.display='none';
+  results[idx]={correct:ok,choice:letter};
+  const fb=document.getElementById('fb-'+idx);
+  if(ok){
+    score+=20;document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+    fb.className='feedback show correct';
+    fb.innerHTML=`<div class="fb-lbl ok">// LOCKED IN — CORRECT</div>${q.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 Common trap: ${q.trap}</em>`;
+  } else {
+    fb.className='feedback show wrong';
+    fb.innerHTML=`<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: ${q.answer}</div>You chose <strong>${letter}</strong>. ${q.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 Common trap: ${q.trap}</em>`;
+  }
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*20))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['RFID Security Expert 📡','You understand why 125kHz cards are vulnerable, what makes newer systems more secure, and how this connects to the CIA Triad. This knowledge shows up directly on the AP exam.'],mid:['Solid Technical Foundation 🎯','You understand the basics of RFID vulnerabilities. Review mutual authentication and how encryption prevents replay attacks.'],low:['Keep Building 📚','Focus on why plaintext transmission enables cloning, and how cryptographic protocols prevent it. The CIA Triad connection (physical access → data access → Confidentiality) is key.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=QS.map((q,i)=>{
+    const r=results[i]||{correct:false};
+    return `<div class="b-row"><div class="b-check">${r.correct?'✅':'❌'}</div><div class="b-text"><strong>${q.label}</strong> — ${r.correct?'Correct':'Incorrect'} (Answer: ${q.answer})</div><div class="b-pts">${r.correct?'+20':'+0'} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+/* ---- Student record hook (apsim_record.js) ---- */
+const _u2results=buildResults;
+buildResults=function(){_u2results();
+APSim.finish({unit:2,sim:'rfid',screenId:'s6',score:score,max:total*20,items:QS.map(function(q,i){var r=results[i]||{correct:false};return {label:q.label,result:r.correct?'correct':'incorrect',pts:r.correct?20:0,max:20,expected:q.answer,response:r.choice||'',changes:_chg[i]||0};})});
+};
+const _u2restart=restart;
+restart=function(){sel=[];locked=[];_chg=[];APSim.start(2,'rfid');_u2restart();};
+APSim.start(2,'rfid');
+
+goTo(0);
+</script>
+</body>
+</html>

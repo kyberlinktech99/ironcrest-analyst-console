@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="3" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim3_wireshark">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Wireshark Packet Analyzer — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#22c55e;--red:#ef4444;--amber:#ffd166;--cyan:#00d4ff;--purple:#c084fc;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-green) 2%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-green) 2%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-green) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-green) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* WIRESHARK CAPTURE */
+.capture-window{background:#0d1117;border:1px solid var(--border2);margin-bottom:18px;overflow:hidden;}
+.capture-toolbar{background:#161b22;border-bottom:1px solid var(--border);padding:8px 12px;display:flex;align-items:center;gap:10px;}
+.capture-toolbar-btn{font-family:var(--mono);font-size:9px;color:var(--text3);padding:3px 8px;border:1px solid var(--border);background:transparent;cursor:default;}
+.capture-title{font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.1em;}
+.capture-filter{flex:1;font-family:var(--mono);font-size:10px;background:var(--bg3);border:1px solid var(--border);color:var(--acc);padding:4px 8px;}
+.packet-header{display:grid;font-family:var(--mono);font-size:10px;color:var(--text3);padding:5px 10px;border-bottom:1px solid var(--border);letter-spacing:.06em;}
+.packet-row{display:grid;font-family:var(--mono);font-size:11px;padding:5px 10px;border-bottom:1px solid color-mix(in srgb,var(--text) 3%,transparent);cursor:pointer;transition:background .15s;line-height:1.4;}
+.packet-row:hover{background:color-mix(in srgb,var(--c-green) 6%,transparent);}
+.packet-row.selected{background:color-mix(in srgb,var(--c-green) 10%,transparent);border-left:2px solid var(--acc);}
+.packet-row.highlighted{background:color-mix(in srgb,var(--red) 8%,transparent);}
+.pkt-no{color:var(--text3);}
+.pkt-time{color:var(--text3);}
+.pkt-src{color:var(--cyan);}
+.pkt-dst{color:var(--purple);}
+.pkt-proto{font-weight:700;}
+.pkt-proto.tcp{color:var(--acc);}
+.pkt-proto.udp{color:var(--amber);}
+.pkt-proto.arp{color:var(--red);}
+.pkt-proto.icmp{color:var(--cyan);}
+.pkt-len{color:var(--text3);}
+.pkt-info{color:var(--text2);}
+
+/* DETAIL PANEL */
+.detail-panel{background:#0d1117;border:1px solid var(--border);padding:12px;font-family:var(--mono);font-size:11px;margin-bottom:16px;min-height:80px;color:var(--text2);line-height:1.8;}
+.detail-panel .dl{color:var(--acc);}
+.detail-panel .dv{color:var(--text);}
+.detail-empty{color:var(--text3);font-style:italic;}
+
+/* QUESTIONS */
+.q-box{background:var(--panel);border:1px solid var(--border2);padding:18px 20px;margin-bottom:16px;}
+.q-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:10px;}
+.q-text{font-size:14px;line-height:1.7;color:var(--text);margin-bottom:14px;}
+.q-text strong{color:var(--cyan);}
+.choices{display:grid;gap:8px;}
+.choice-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 15px;cursor:pointer;text-align:left;transition:all .2s;font-family:var(--sans);}
+.choice-btn:hover:not(.locked){border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.choice-btn.correct-ans{border-color:var(--acc)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.choice-btn.wrong-ans{border-color:var(--red)!important;background:color-mix(in srgb,var(--red) 6%,transparent)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.choice-btn.locked{pointer-events:none;opacity:.5;}
+.choice-btn.correct-ans,.choice-btn.wrong-ans{opacity:1!important;}
+.cl{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px;display:block;}
+.ct{font-size:13px;color:var(--text);line-height:1.45;}
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--acc);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--acc);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--c-green);--red:var(--red);--amber:var(--amber);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<style>/*apsim-island*//* WIRESHARK CAPTURE */
+.capture-window,.capture-toolbar,/* DETAIL PANEL */
+.detail-panel{--bg:#0c111f;--bg2:#101728;--bg3:#151e34;--panel:#131b2f;--panel2:#1a2441;--border:#232f4d;--border2:#344470;--text:#e9effc;--text2:#a3b0d0;--text3:#7384ab;--on-acc:#0b1020;--green:#34d399;--amber:#fbbf24;--warn:#fbbf24;--danger:#f87171;--red:#f87171;--cyan:#22d3ee;--purple:#a78bfa;--c-orange:#fb923c;--c-purple:#c084fc;--c-red:#f87171;--c-sky:#38bdf8;--c-lime:#a3e635;--c-amber:#fbbf24;--c-green:#34d399;--c-teal:#2dd4bf;color-scheme:dark;color:var(--text);--acc:var(--c-green);--red:var(--red);--amber:var(--amber);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 3</div>
+  <div>
+    <div class="hdr-title">Wireshark Packet Analyzer</div>
+    <div class="hdr-sub">UNIT 3 · SECURING NETWORKS · READ CAPTURES · IDENTIFY ATTACKS</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">CAP 1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">CAP 2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">CAP 3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">CAP 4</span><div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p5"></div>
+</div>
+
+<!-- INTRO -->
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🦈</span>
+    <div class="intro-title">Packet Analyzer</div>
+    <div class="intro-desc">Four simulated Wireshark captures. Read the packets, identify the attack pattern, and answer the investigation questions. Real security analysts do exactly this — every day. Click rows to inspect packet details.</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:480px;margin:0 auto 24px;text-align:left;">
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);font-family:var(--mono);font-size:10px;"><span style="color:var(--acc);">TCP</span><br><span style="color:var(--text3);">Connection-based</span></div>
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);font-family:var(--mono);font-size:10px;"><span style="color:var(--amber);">UDP</span><br><span style="color:var(--text3);">Connectionless</span></div>
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);font-family:var(--mono);font-size:10px;"><span style="color:var(--red);">ARP</span><br><span style="color:var(--text3);">Address resolution</span></div>
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);font-family:var(--mono);font-size:10px;"><span style="color:var(--cyan);">SYN</span><br><span style="color:var(--text3);">Connection start</span></div>
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);font-family:var(--mono);font-size:10px;"><span style="color:var(--purple);">RST</span><br><span style="color:var(--text3);">Reset/refused</span></div>
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);font-family:var(--mono);font-size:10px;"><span style="color:var(--text2);">ACK</span><br><span style="color:var(--text3);">Acknowledgment</span></div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ OPEN CAPTURES</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+
+<!-- RESULTS -->
+<div class="screen" id="s5">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">SYN FLOOD (DoS)</div><div class="concept-def">Attacker sends massive SYN packets without completing the handshake. Server allocates resources for each half-open connection until it exhausts its table — Availability violation.</div></div>
+    <div class="concept-card"><div class="concept-term">ARP POISONING (MITM)</div><div class="concept-def">Attacker broadcasts false ARP replies associating their MAC with the gateway IP. Victims update their ARP cache, sending traffic to the attacker instead of the real gateway.</div></div>
+    <div class="concept-card"><div class="concept-term">PORT SCANNING (RECON)</div><div class="concept-def">Rapid SYN packets to many ports — RST responses show closed ports, SYN-ACK shows open ports. Used for reconnaissance before an attack. Not an attack itself but often a precursor.</div></div>
+    <div class="concept-card"><div class="concept-term">CLEARTEXT CREDENTIAL CAPTURE</div><div class="concept-def">HTTP and Telnet transmit data in plaintext. A Wireshark capture on the same network can read usernames, passwords, and all content. HTTPS/SSH encrypt the payload.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ NEW CAPTURES</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim3_hub.html'">← UNIT 3 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const CAPTURES=[
+  {
+    label:"CAPTURE 01 — 09:14:22",
+    filter:"tcp.flags.syn==1",
+    cols:"60px 90px 130px 130px 60px auto",
+    packets:[
+      {no:"1",time:"0.000",src:"203.0.113.47",dst:"10.0.0.80",proto:"tcp",len:"60",info:"SYN → Port 443",cls:""},
+      {no:"2",time:"0.001",src:"203.0.113.47",dst:"10.0.0.80",proto:"tcp",len:"60",info:"SYN → Port 443",cls:"highlighted"},
+      {no:"3",time:"0.001",src:"203.0.113.47",dst:"10.0.0.80",proto:"tcp",len:"60",info:"SYN → Port 443",cls:"highlighted"},
+      {no:"4",time:"0.002",src:"203.0.113.47",dst:"10.0.0.80",proto:"tcp",len:"60",info:"SYN → Port 443",cls:"highlighted"},
+      {no:"5",time:"0.002",src:"203.0.113.47",dst:"10.0.0.80",proto:"tcp",len:"60",info:"SYN → Port 443",cls:"highlighted"},
+      {no:"6",time:"0.002",src:"10.0.0.80",dst:"203.0.113.47",proto:"tcp",len:"60",info:"SYN-ACK (half-open)",cls:""},
+      {no:"7",time:"0.003",src:"203.0.113.47",dst:"10.0.0.80",proto:"tcp",len:"60",info:"SYN → Port 443",cls:"highlighted"},
+      {no:"8",time:"0.003",src:"203.0.113.47",dst:"10.0.0.80",proto:"tcp",len:"60",info:"SYN → Port 443",cls:"highlighted"},
+    ],
+    detail:{1:"Source: 203.0.113.47\nDest: 10.0.0.80:443\nFlags: SYN\nSeq: 1234567\nPayload: [none — connection initiation only]",6:"Source: 10.0.0.80\nDest: 203.0.113.47\nFlags: SYN-ACK\nNote: Server allocated resources for half-open connection. ACK never arrives."},
+    q:{text:"Packets 2–5 and 7–8 are highlighted in red. The server sends SYN-ACK responses but <strong>never receives the final ACK</strong> to complete the handshake. This pattern repeats thousands of times per second. What attack does this capture represent?",
+    choices:[
+      {l:"A",t:"ARP poisoning — the attacker is associating their MAC with the server's IP"},
+      {l:"B",t:"SYN flood — TCP three-way handshakes are initiated but never completed, exhausting server resources"},
+      {l:"C",t:"Port scanning — the attacker is mapping open ports on the server"},
+      {l:"D",t:"DNS spoofing — the attacker is intercepting DNS requests"}
+    ],
+    answer:"B",
+    explanation:"A SYN flood exploits the TCP three-way handshake. The attacker sends massive SYN packets but never sends the final ACK. Each SYN causes the server to allocate a connection slot and send SYN-ACK, waiting for the ACK that never comes. Eventually the server's connection table fills up and it can no longer accept legitimate connections — a classic Availability (DoS) attack.",
+    trap:"Port scanning also sends SYN packets, but it targets many different ports looking for responses. A SYN flood targets one port with overwhelming volume, never completing handshakes."}
+  },
+  {
+    label:"CAPTURE 02 — 11:42:08",
+    filter:"arp",
+    cols:"60px 90px 130px 130px 60px auto",
+    packets:[
+      {no:"1",time:"0.000",src:"10.0.0.1",dst:"10.0.0.15",proto:"arp",len:"42",info:"Who has 10.0.0.1? Tell 10.0.0.15",cls:""},
+      {no:"2",time:"0.001",src:"00:1A:2B:3C:4D:5E",dst:"FF:FF:FF:FF:FF:FF",proto:"arp",len:"42",info:"10.0.0.1 is at 00:1A:2B:3C:4D:5E (Router)",cls:""},
+      {no:"3",time:"0.001",src:"AA:BB:CC:11:22:33",dst:"FF:FF:FF:FF:FF:FF",proto:"arp",len:"42",info:"10.0.0.1 is at AA:BB:CC:11:22:33 ← DIFFERENT MAC",cls:"highlighted"},
+      {no:"4",time:"0.002",src:"AA:BB:CC:11:22:33",dst:"FF:FF:FF:FF:FF:FF",proto:"arp",len:"42",info:"10.0.0.1 is at AA:BB:CC:11:22:33",cls:"highlighted"},
+      {no:"5",time:"0.003",src:"AA:BB:CC:11:22:33",dst:"FF:FF:FF:FF:FF:FF",proto:"arp",len:"42",info:"10.0.0.1 is at AA:BB:CC:11:22:33",cls:"highlighted"},
+      {no:"6",time:"0.004",src:"10.0.0.15",dst:"AA:BB:CC:11:22:33",proto:"tcp",len:"180",info:"GET /banking/transfer HTTP/1.1 → (victim traffic now flowing to attacker)",cls:""},
+    ],
+    detail:{3:"ARP Reply (UNSOLICITED)\nClaims: 10.0.0.1 is at AA:BB:CC:11:22:33\nNote: 10.0.0.1 already replied with the REAL MAC in packet 2.\nThis second reply overwrites the ARP cache of all listening devices.",6:"HTTP Request from victim → now routing through attacker MAC\nAll victim traffic is now flowing through the attacker's device\nAttacker can read, modify, or replay this traffic"},
+    q:{text:"Packet 2 shows the legitimate router (10.0.0.1) responding with MAC <code style='color:var(--cyan)'>00:1A:2B</code>. Packets 3–5 show a <strong>different device</strong> repeatedly claiming to be the same IP with MAC <code style='color:var(--red)'>AA:BB:CC</code>. By Packet 6, victim traffic flows to the attacker's MAC. What attack is this?",
+    choices:[
+      {l:"A",t:"DNS poisoning — the attacker is corrupting the DNS cache"},
+      {l:"B",t:"SYN flood — the attacker is overwhelming the router with connection requests"},
+      {l:"C",t:"ARP poisoning — the attacker is broadcasting false ARP replies to hijack traffic routing"},
+      {l:"D",t:"SSL stripping — the attacker is downgrading HTTPS to HTTP"}
+    ],
+    answer:"C",
+    explanation:"ARP poisoning works by broadcasting unsolicited ARP replies that associate the attacker's MAC address with a legitimate IP (in this case, the gateway). Devices on the local network update their ARP caches with this false mapping — causing them to send traffic to the attacker instead of the real gateway. This creates a Man-in-the-Middle position. Key indicators: two different MACs claiming the same IP, repeated gratuitous ARP broadcasts.",
+    trap:"DNS poisoning corrupts DNS to point domain names to wrong IPs. ARP poisoning operates at Layer 2 (MAC/hardware) and affects local network routing — it doesn't require DNS at all."}
+  },
+  {
+    label:"CAPTURE 03 — 14:55:31",
+    filter:"tcp.flags.syn==1 && !tcp.flags.ack",
+    cols:"60px 90px 130px 130px 70px auto",
+    packets:[
+      {no:"1",time:"0.000",src:"192.168.1.105",dst:"192.168.1.1",proto:"tcp",len:"60",info:"SYN → Port 22",cls:""},
+      {no:"2",time:"0.001",src:"192.168.1.1",dst:"192.168.1.105",proto:"tcp",len:"60",info:"RST (Port 22 closed)",cls:""},
+      {no:"3",time:"0.001",src:"192.168.1.105",dst:"192.168.1.1",proto:"tcp",len:"60",info:"SYN → Port 23",cls:""},
+      {no:"4",time:"0.001",src:"192.168.1.1",dst:"192.168.1.105",proto:"tcp",len:"60",info:"RST (Port 23 closed)",cls:""},
+      {no:"5",time:"0.002",src:"192.168.1.105",dst:"192.168.1.1",proto:"tcp",len:"60",info:"SYN → Port 80",cls:""},
+      {no:"6",time:"0.002",src:"192.168.1.1",dst:"192.168.1.105",proto:"tcp",len:"60",info:"SYN-ACK (Port 80 OPEN) ✓",cls:"highlighted"},
+      {no:"7",time:"0.003",src:"192.168.1.105",dst:"192.168.1.1",proto:"tcp",len:"60",info:"SYN → Port 443",cls:""},
+      {no:"8",time:"0.003",src:"192.168.1.1",dst:"192.168.1.105",proto:"tcp",len:"60",info:"SYN-ACK (Port 443 OPEN) ✓",cls:"highlighted"},
+    ],
+    detail:{6:"Port 80 is OPEN — server responded SYN-ACK\nThis means an HTTP web server is running\nAttacker now knows: HTTP service is accessible",1:"SYN sent to Port 22 (SSH)\nRST response = port is CLOSED or filtered\nAttacker continues to next port"},
+    q:{text:"A single internal IP (<code style='color:var(--cyan)'>192.168.1.105</code>) rapidly sends SYN packets to sequential ports on 192.168.1.1. RST responses indicate closed ports. <code style='color:var(--acc)'>SYN-ACK</code> responses (packets 6 and 8) indicate <strong>open ports</strong>. What activity does this capture represent?",
+    choices:[
+      {l:"A",t:"A SYN flood DoS attack targeting the router"},
+      {l:"B",t:"Normal web browsing — the device is connecting to a web server"},
+      {l:"C",t:"Port scanning / network reconnaissance — mapping open services on a host"},
+      {l:"D",t:"A brute force authentication attack against SSH"}
+    ],
+    answer:"C",
+    explanation:"Port scanning sends SYN packets to many ports sequentially or simultaneously to determine which services are running. RST (Reset) = port closed. SYN-ACK = port open (service listening). This is reconnaissance — the attacker is mapping the attack surface before deciding which service to target. Port scanning tools like nmap automate this process. This is legal when authorized (like in your labs) and illegal without permission.",
+    trap:"A SYN flood targets one port with overwhelming volume. Port scanning targets many ports with low volume — the goal is information, not disruption. The RST/SYN-ACK pattern across sequential ports is the key indicator."}
+  },
+  {
+    label:"CAPTURE 04 — 16:22:44",
+    filter:"http",
+    cols:"60px 90px 130px 130px 60px auto",
+    packets:[
+      {no:"1",time:"0.000",src:"10.0.0.45",dst:"10.0.0.100",proto:"tcp",len:"74",info:"SYN → Port 80",cls:""},
+      {no:"2",time:"0.001",src:"10.0.0.100",dst:"10.0.0.45",proto:"tcp",len:"74",info:"SYN-ACK",cls:""},
+      {no:"3",time:"0.001",src:"10.0.0.45",dst:"10.0.0.100",proto:"tcp",len:"66",info:"ACK (handshake complete)",cls:""},
+      {no:"4",time:"0.002",src:"10.0.0.45",dst:"10.0.0.100",proto:"tcp",len:"410",info:'POST /login HTTP/1.1 [DATA: username=admin&password=P@ssw0rd123]',cls:"highlighted"},
+      {no:"5",time:"0.003",src:"10.0.0.100",dst:"10.0.0.45",proto:"tcp",len:"200",info:"HTTP/1.1 200 OK — Login successful",cls:""},
+      {no:"6",time:"0.004",src:"10.0.0.45",dst:"10.0.0.100",proto:"tcp",len:"350",info:"GET /admin/dashboard HTTP/1.1",cls:""},
+    ],
+    detail:{4:'HTTP POST Request (PLAINTEXT)\nHost: 10.0.0.100\nContent-Type: application/x-www-form-urlencoded\n\nBODY: username=admin&password=P%40ssw0rd123\n\n⚠️ CREDENTIAL CAPTURED IN PLAINTEXT\nVisible to anyone on the same network segment'},
+    q:{text:"Packet 4 is a POST request to <code style='color:var(--cyan)'>/login</code> over <code style='color:var(--red)'>HTTP (port 80)</code>, not HTTPS. The packet detail panel shows the full request body. <strong>What is the security implication of this capture?</strong>",
+    choices:[
+      {l:"A",t:"The login worked so there is no security issue — the credentials are correct"},
+      {l:"B",t:"The credentials (admin / P@ssw0rd123) were transmitted in plaintext and are visible to anyone on the same network capturing traffic"},
+      {l:"C",t:"The POST request proves the server was compromised before this login occurred"},
+      {l:"D",t:"HTTP is encrypted at the application layer so the credentials are still protected"}
+    ],
+    answer:"B",
+    explanation:"HTTP transmits ALL data — including form fields like usernames and passwords — in plaintext. Anyone on the same network running Wireshark can see the exact credentials as they travel across the wire. This is exactly why HTTPS (which encrypts the payload with TLS) exists. The CIA Triad violation is Confidentiality — the credentials should only be visible to the user and the server, but anyone on the network can read them.",
+    trap:"HTTP is NOT encrypted. The 'S' in HTTPS stands for Secure (TLS/SSL encrypted). Many students confuse the two. The fact that login was successful (HTTP 200 OK) is irrelevant to the security problem — the credentials were exposed regardless of the outcome."}
+  }
+];
+
+let score=0,results=[],total=CAPTURES.length,sel=[],locked=[],_chg=[],_view=[];
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildCapture(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildCapture(idx){
+  const cap=CAPTURES[idx];
+  const q=cap.q;
+  let detailCache=cap.detail;
+
+  const pktRows=cap.packets.map((p,pi)=>`
+    <div class="packet-row" data-cls="${p.cls}" id="prow-${idx}-${pi}" onclick="showDetail(${idx},${pi})" style="grid-template-columns:${cap.cols}">
+      <span class="pkt-no">${p.no}</span>
+      <span class="pkt-time">${p.time}</span>
+      <span class="pkt-src">${p.src}</span>
+      <span class="pkt-dst">${p.dst}</span>
+      <span class="pkt-proto ${p.proto}">${p.proto.toUpperCase()}</span>
+      <span class="pkt-info">${p.info}</span>
+    </div>`).join('');
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// CAPTURE ${idx+1} OF ${total}</div>
+    <div class="sec-title">Analyze the Packet Capture</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Capture ${idx+1}/${total}</span>
+    </div>
+    <div class="capture-window">
+      <div class="capture-toolbar">
+        <span class="capture-toolbar-btn">File</span>
+        <span class="capture-toolbar-btn">Edit</span>
+        <span class="capture-toolbar-btn">View</span>
+        <input class="capture-filter" value="${cap.filter}" readonly>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">${cap.label}</span>
+      </div>
+      <div class="packet-header" style="grid-template-columns:${cap.cols};padding:5px 10px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;display:grid;">
+        <span>No.</span><span>Time</span><span>Source</span><span>Destination</span><span>Proto</span><span>Info</span>
+      </div>
+      ${pktRows}
+    </div>
+    <div class="detail-panel" id="detail-${idx}">
+      <span class="detail-empty">Click a packet row to inspect details...</span>
+    </div>
+    <div class="q-box">
+      <div class="q-label">// INVESTIGATION QUESTION</div>
+      <div class="q-text">${q.text}</div>
+      <div class="choices" id="ch-${idx}">
+        ${q.choices.map(c=>`<div class="choice-btn" onclick="pick(this,'${c.l}',${idx})"><span class="cl">${c.l}</span><div class="ct">${c.t}</div></div>`).join('')}
+      </div>
+      <div class="lock-row"><button class="btn btn-acc" id="lock-${idx}" disabled onclick="lockIn(${idx})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="hint-${idx}">Choose an answer. You can change it until you lock in. Nothing is revealed before that.</span></div>
+    <div class="feedback" id="fb-${idx}"></div>
+    </div>
+    <div class="nav"><div></div><button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT CAPTURE →'}</button></div>`;
+
+  // Store detail data for this capture
+  document.getElementById('s'+(idx+1))._detailData=detailCache;
+}
+
+function showDetail(idx,pktIdx){
+  _view[idx]=pktIdx;
+  document.querySelectorAll(`[id^="prow-${idx}-"]`).forEach(r=>r.classList.remove('selected'));
+  document.getElementById(`prow-${idx}-${pktIdx}`).classList.add('selected');
+  const screen=document.getElementById('s'+(idx+1));
+  const data=CAPTURES[idx].detail;
+  const pktNo=CAPTURES[idx].packets[pktIdx].no;
+  const panel=document.getElementById(`detail-${idx}`);
+  if(data[pktNo]){
+    panel.innerHTML=data[pktNo].split('\n').map(line=>{
+      const parts=line.split(':');
+      if(line.startsWith('⚠️')&&!locked[idx])return '';
+      if(parts.length>=2&&!line.startsWith('⚠️')){
+        return `<span class="dl">${parts[0]}:</span><span class="dv">${parts.slice(1).join(':')}</span><br>`;
+      }
+      return `<span style="color:var(--amber);">${line}</span><br>`;
+    }).join('');
+  } else {
+    const p=CAPTURES[idx].packets[pktIdx];
+    panel.innerHTML=`<span class="dl">Source:</span><span class="dv"> ${p.src}</span><br><span class="dl">Destination:</span><span class="dv"> ${p.dst}</span><br><span class="dl">Protocol:</span><span class="dv"> ${p.proto.toUpperCase()}</span><br><span class="dl">Info:</span><span class="dv"> ${p.info}</span>`;
+  }
+}
+
+function pick(el,letter,idx){
+  if(locked[idx])return;
+  if(sel[idx]&&sel[idx]!==letter)_chg[idx]=(_chg[idx]||0)+1;
+  sel[idx]=letter;
+  document.getElementById('ch-'+idx).querySelectorAll('.choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+idx).disabled=false;
+  document.getElementById('hint-'+idx).textContent='Selected: '+letter+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockIn(idx){
+  if(locked[idx]||!sel[idx])return;
+  locked[idx]=true;
+  const q=CAPTURES[idx].q,letter=sel[idx],ok=letter===q.answer;
+  const all=document.getElementById('ch-'+idx).querySelectorAll('.choice-btn');
+  document.querySelector('#s'+(idx+1)+' .lock-row').style.display='none';
+  all.forEach(c=>{
+    const l=c.querySelector('.cl').textContent;
+    c.classList.remove('picked');c.classList.add('locked');
+    if(l===q.answer)c.classList.add('correct-ans');
+    if(l===letter){if(!ok)c.classList.add('wrong-ans');c.querySelector('.ct').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx]={correct:ok,choice:letter};
+  document.querySelectorAll('#s'+(idx+1)+' .packet-row').forEach(r=>{if(r.dataset.cls)r.classList.add(r.dataset.cls);});
+  if(_view[idx]!=null)showDetail(idx,_view[idx]);
+  const fb=document.getElementById('fb-'+idx);
+  const tail=`${q.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 Common confusion: ${q.trap}</em>`;
+  if(ok){
+    score+=25;document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+    fb.className='feedback show correct';
+    fb.innerHTML=`<div class="fb-lbl ok">// LOCKED IN — CORRECT</div>`+tail;
+  } else {
+    fb.className='feedback show wrong';
+    fb.innerHTML=`<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: ${q.answer}</div>`+tail;
+  }
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*25))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Packet Analysis Pro 🦈','You correctly identified all four attack patterns from raw packet data. This is real SOC analyst work.'],mid:['Good Eye 🎯','You caught most attacks. Review the key differences between SYN flood vs. port scan and ARP vs. DNS attacks.'],low:['Keep Analyzing 📚','Focus on what makes each attack unique: SYN flood = volume to one port; port scan = probing many ports; ARP = MAC/IP mismatch; HTTP = cleartext.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=CAPTURES.map((cap,i)=>{
+    const r=results[i]||{correct:false};
+    return `<div class="b-row"><div class="b-check">${r.correct?'✅':'❌'}</div><div class="b-text"><strong>${cap.label}</strong> — ${r.correct?'Attack identified correctly':'Incorrect identification'}</div><div class="b-pts">${r.correct?'+25':'+0'} pts</div></div>`;
+  }).join('');
+}
+
+function restart(){score=0;results=[];sel=[];locked=[];_chg=[];_view=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:3,sim:'shark',screenId:'s5',score:score,max:total*25,items:CAPTURES.map(function(q,i){var r=results[i]||{correct:false};return {label:q.label,result:r.correct?'correct':'incorrect',pts:r.correct?25:0,max:25,response:r.choice||'',expected:q.q.answer,changes:_chg[i]||0};})});
+};
+const _apRestart=restart;
+restart=function(){sel=[];locked=[];_chg=[];APSim.start(3,'shark');_apRestart();};
+APSim.start(3,'shark');
+
+goTo(0);
+</script>
+</body>
+</html>

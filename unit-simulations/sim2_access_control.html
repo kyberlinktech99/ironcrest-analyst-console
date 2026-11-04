@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="2" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="ac">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Access Control Matrix — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#38bdf8;--green:#00ff9d;--amber:#ffd166;--danger:#ff4757;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--acc) 2%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--acc) 2%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:#000;font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:var(--green);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:#000;font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--acc) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--acc) 8%,transparent);}
+.btn-G{background:var(--green);color:#000;font-weight:700;}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px;color:var(--acc);}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* MATRIX TABLE */
+.matrix-wrap{overflow-x:auto;margin-bottom:20px;}
+.matrix{width:100%;border-collapse:collapse;font-size:13px;}
+.matrix th{background:var(--panel2);border:1px solid var(--border2);padding:10px 12px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--text2);text-align:center;}
+.matrix th.role-hdr{text-align:left;color:var(--acc);width:160px;}
+.matrix td{border:1px solid var(--border);padding:0;background:var(--panel);text-align:center;}
+.matrix tr:nth-child(even) td{background:var(--bg3);}
+.matrix td.resource{font-size:12px;color:var(--text2);padding:10px 12px;text-align:left;border-right:1px solid var(--border2);}
+.matrix td.resource .res-name{font-weight:600;color:var(--text);margin-bottom:2px;}
+.matrix td.resource .res-sub{font-family:var(--mono);font-size:10px;color:var(--text3);}
+
+/* ACCESS CELL */
+.acc-cell{cursor:pointer;width:100%;height:100%;min-height:44px;display:flex;align-items:center;justify-content:center;transition:all .2s;position:relative;}
+.acc-cell:hover{background:color-mix(in srgb,var(--acc) 8%,transparent);}
+.acc-cell.none{color:var(--text3);}
+.acc-cell.read{color:var(--acc);}
+.acc-cell.write{color:var(--amber);}
+.acc-cell.full{color:var(--green);}
+.acc-cell.deny{color:var(--danger);}
+.acc-icon{font-size:18px;}
+.acc-label{font-family:var(--mono);font-size:9px;display:block;margin-top:2px;}
+.acc-cell.locked{pointer-events:none;}
+.acc-cell.wrong-flash{animation:flashRed .5s ease;}
+@keyframes flashRed{0%,100%{background:transparent}50%{background:color-mix(in srgb,var(--danger) 20%,transparent)}}
+.acc-cell.correct-flash{animation:flashGreen .5s ease;}
+@keyframes flashGreen{0%,100%{background:transparent}50%{background:color-mix(in srgb,var(--green) 15%,transparent)}}
+
+/* LEGEND */
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;background:var(--panel);border:1px solid var(--border);}
+.leg-item{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--text3);}
+.leg-icon{font-size:16px;}
+
+/* SCENARIO */
+.scenario-box{background:var(--panel);border:1px solid var(--border2);padding:18px 20px;margin-bottom:16px;}
+.scenario-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;}
+.scenario-text{font-size:14px;line-height:1.7;color:var(--text);}
+.scenario-text strong{color:var(--acc);}
+.org-context{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.org-item{padding:10px 12px;background:var(--panel);border:1px solid var(--border);}
+.org-role{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.08em;margin-bottom:4px;}
+.org-desc{font-size:12px;color:var(--text2);line-height:1.4;}
+
+/* INSTRUCTION */
+.instruction{display:flex;gap:10px;padding:12px 14px;background:color-mix(in srgb,var(--acc) 6%,transparent);border:1px solid color-mix(in srgb,var(--acc) 20%,transparent);margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.55;}
+.instruction strong{color:var(--text);}
+.inst-icon{font-size:18px;flex-shrink:0;}
+
+/* feedback */
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--green) 5%,transparent);}
+.feedback.partial{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}.fb-lbl.warn{color:var(--amber);}
+
+/* round tracker */
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:var(--green);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+
+/* results */
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:64px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--danger);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.org-context,.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 2</div>
+  <div>
+    <div class="hdr-title">Access Control Matrix Builder</div>
+    <div class="hdr-sub">UNIT 2 · SECURING SPACES · LEAST PRIVILEGE · ROLE-BASED ACCESS</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">S1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">S2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">S3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p4"></div>
+</div>
+
+<!-- INTRO -->
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🔐</span>
+    <div class="intro-title">Access Control Matrix</div>
+    <div class="intro-desc">An access control matrix defines who can do what to which resources. For each scenario, you'll assign the correct level of access to different roles — applying the principle of least privilege. Get it wrong and you either create a security risk or block legitimate work.</div>
+    <div class="legend">
+      <div class="leg-item"><span class="leg-icon" style="color:var(--danger);">🚫</span>DENY — no access at all</div>
+      <div class="leg-item"><span class="leg-icon" style="color:var(--acc);">👁️</span>READ — view only</div>
+      <div class="leg-item"><span class="leg-icon" style="color:var(--amber);">✏️</span>WRITE — can modify</div>
+      <div class="leg-item"><span class="leg-icon" style="color:var(--green);">⚙️</span>FULL — read, write, admin</div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+
+<!-- RESULTS -->
+<div class="screen" id="s4">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">LEAST PRIVILEGE</div><div class="concept-def">Users and systems should have only the minimum access necessary to perform their job functions — nothing more. This limits the damage any single compromised account can cause.</div></div>
+    <div class="concept-card"><div class="concept-term">ROLE-BASED ACCESS CONTROL</div><div class="concept-def">Access is granted based on job role, not individual identity. Everyone in the "Nurse" role gets the same access. Easier to manage than per-user permissions — and easier to audit.</div></div>
+    <div class="concept-card"><div class="concept-term">SEPARATION OF DUTIES</div><div class="concept-def">Sensitive operations require multiple people. No single role has complete control over a critical process. Prevents both fraud and errors — a key control in financial and healthcare systems.</div></div>
+    <div class="concept-card"><div class="concept-term">NEED TO KNOW</div><div class="concept-def">Even if someone has clearance for a classification level, they should only access information relevant to their current assignment. Clearance + need to know = authorized access.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ RUN AGAIN</button>
+    <button class="btn btn-G" onclick="window.location.href='sim2_hub.html'">← UNIT 2 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const SCENARIOS=[
+  {
+    label:"SCENARIO 01 — HOSPITAL",
+    context:"Regional Hospital — 3 roles, 4 resources",
+    org:[
+      {role:"Nurse",desc:"Patient care staff. Need to read and update patient records for their assigned patients."},
+      {role:"Billing Clerk",desc:"Handles insurance and billing. Needs billing data but NOT clinical details."},
+      {role:"IT Admin",desc:"Manages systems. Needs full access to IT systems but NOT patient records."}
+    ],
+    resources:["Patient Medical Records","Billing & Insurance Data","IT System Configuration","Staff Payroll Records"],
+    matrix:[
+      // Nurse, Billing Clerk, IT Admin
+      ["R","D","D"],    // Patient records
+      ["D","W","D"],    // Billing data
+      ["D","D","F"],    // IT config
+      ["D","D","D"]     // Payroll — nobody here should access this
+    ],
+    explanation:[
+      "Nurses READ patient records — they need to see and document care. WRITE seems reasonable but actual patient record editing often goes through physicians. Billing Clerks have NO need for clinical details. IT Admins manage systems, not patient care.",
+      "Billing Clerks WRITE billing data — they process and update insurance claims. Nurses have no billing function. IT Admins maintain the system infrastructure but should not see patient financial data.",
+      "IT Admin has FULL access to IT configuration — they manage the systems. Neither nurses nor billing clerks should have any system configuration access.",
+      "NOBODY in this scenario should access payroll records — that's HR's domain. All three roles should be DENIED. This tests whether students over-grant access when unsure."
+    ],
+    pts:8
+  },
+  {
+    label:"SCENARIO 02 — FINANCIAL FIRM",
+    context:"Investment Bank — 3 roles, 4 resources",
+    org:[
+      {role:"Junior Analyst",desc:"Researches market data. Needs to read market data and submit research reports."},
+      {role:"Senior Trader",desc:"Executes trades. Needs to read and execute on market data. Cannot modify audit logs."},
+      {role:"Compliance Officer",desc:"Reviews all trading activity for regulatory compliance. Cannot modify what they audit."}
+    ],
+    resources:["Market Data Feed","Trade Execution System","Audit & Compliance Logs","Client Account Data"],
+    matrix:[
+      ["R","W","R"],     // Market data
+      ["D","W","D"],     // Trade execution — only Senior Trader executes
+      ["D","D","R"],     // Audit logs — Compliance READ only, no one else
+      ["D","D","R"]      // Client accounts — Compliance can view, others cannot
+    ],
+    explanation:[
+      "Junior Analyst READS market data for research. Senior Trader can READ and act on it (WRITE = execute orders). Compliance Officer READS for oversight. Nobody should be denied market data entirely — it's the core business resource.",
+      "Only the Senior Trader WRITES (executes) to the trade system. Junior Analyst cannot execute trades — no clearance. Compliance Officer cannot execute trades — that would be a conflict of interest (auditor shouldn't also be the trader).",
+      "Compliance Officers READ audit logs — that's their entire job. Nobody else should have access to compliance logs. Critically: Compliance cannot WRITE to audit logs — that would allow them to falsify records. READ only is the correct control.",
+      "Compliance READS client account data to verify trading activity. Junior Analyst and Senior Trader have no need to see client account details beyond what they need for specific trades — separation of duties."
+    ],
+    pts:8
+  },
+  {
+    label:"SCENARIO 03 — SCHOOL DISTRICT",
+    context:"K-12 School District — 3 roles, 4 resources",
+    org:[
+      {role:"Teacher",desc:"Instructs students. Needs to view and grade student records for their own classes only."},
+      {role:"School Counselor",desc:"Student support. Needs full access to student records to provide appropriate support."},
+      {role:"Parent",desc:"Legal guardian. Should see their own child's records only — nothing else."}
+    ],
+    resources:["Student Academic Records","Student Health Records","Staff Personnel Files","District Financial Data"],
+    matrix:[
+      ["W","F","R"],    // Academic records — Teacher can grade (write), Counselor full, Parent read own child
+      ["D","R","D"],    // Health records — Counselor read only, nobody else (FERPA/HIPAA)
+      ["D","D","D"],    // Staff files — nobody here should access HR files
+      ["D","D","D"]     // Financial data — nobody here should access district finances
+    ],
+    explanation:[
+      "Teachers WRITE academic records (grades, attendance). Counselors need FULL access to support students holistically. Parents READ their own child's records — this is a FERPA right. This is the most nuanced cell: teacher access should be limited to their own students, but for this matrix we're simplifying to role-level access.",
+      "Counselors READ health records to provide appropriate support. Teachers and parents generally should NOT access student health records — these are protected under both FERPA and HIPAA. This is often the most surprising answer for students.",
+      "Personnel files belong to HR. None of these three roles have any legitimate need to access staff employment records. All should be DENIED.",
+      "District financial data is an administrative function. Teachers, counselors, and parents have no legitimate access to district budget or financial records. All DENIED."
+    ],
+    pts:8
+  }
+];
+
+const ACCESS_STATES=['D','R','W','F'];
+const ACCESS_DISPLAY={D:{icon:'🚫',label:'DENY',cls:'deny'},R:{icon:'👁️',label:'READ',cls:'read'},W:{icon:'✏️',label:'WRITE',cls:'write'},F:{icon:'⚙️',label:'FULL',cls:'full'}};
+let score=0,results=[],userMatrix={},total=SCENARIOS.length;
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildScenario(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildScenario(idx){
+  const sc=SCENARIOS[idx];
+  userMatrix[idx]=sc.resources.map(()=>sc.org.map(()=>'D'));
+  const roles=sc.org.map(o=>o.role);
+  const resources=sc.resources;
+
+  let tableHTML=`<table class="matrix">
+    <thead><tr>
+      <th class="role-hdr">RESOURCE</th>
+      ${roles.map(r=>`<th>${r}</th>`).join('')}
+    </tr></thead>
+    <tbody>
+    ${resources.map((res,ri)=>`
+      <tr>
+        <td class="resource"><div class="res-name">${res}</div></td>
+        ${roles.map((role,ci)=>{
+          const cur=userMatrix[idx][ri][ci];
+          const d=ACCESS_DISPLAY[cur];
+          return `<td><div class="acc-cell ${d.cls}" id="cell-${idx}-${ri}-${ci}" onclick="cycleAccess(${idx},${ri},${ci})">
+            <div><div class="acc-icon">${d.icon}</div><span class="acc-label">${d.label}</span></div>
+          </div></td>`;
+        }).join('')}
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// SCENARIO ${idx+1} OF ${total}</div>
+    <div class="sec-title">Build the Access Control Matrix</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Scenario ${idx+1}/${total}</span>
+    </div>
+    <div class="scenario-box">
+      <div class="scenario-label">${sc.label}</div>
+      <div class="scenario-text"><strong>${sc.context}</strong><br>Apply the principle of least privilege — each role gets only what they need to do their job, nothing more.</div>
+    </div>
+    <div class="org-context">
+      ${sc.org.map(o=>`<div class="org-item"><div class="org-role">${o.role}</div><div class="org-desc">${o.desc}</div></div>`).join('')}
+    </div>
+    <div class="instruction">
+      <span class="inst-icon">💡</span>
+      <div><strong>Click each cell to cycle through access levels:</strong> DENY → READ → WRITE → FULL → DENY. Apply least privilege — only grant what each role genuinely needs. <strong>The correct matrix and reasoning are revealed only after you lock in</strong> (one attempt per scenario).</div>
+    </div>
+    <div class="legend" style="margin-bottom:12px;">
+      <div class="leg-item"><span class="leg-icon" style="color:var(--danger);">🚫</span>DENY</div>
+      <div class="leg-item"><span class="leg-icon" style="color:var(--acc);">👁️</span>READ</div>
+      <div class="leg-item"><span class="leg-icon" style="color:var(--amber);">✏️</span>WRITE</div>
+      <div class="leg-item"><span class="leg-icon" style="color:var(--green);">⚙️</span>FULL</div>
+    </div>
+    <div class="matrix-wrap">${tableHTML}</div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav">
+      <div></div>
+      <button class="btn btn-acc" onclick="checkMatrix(${idx})">${idx===total-1?'🔒 LOCK IN & CHECK FINAL MATRIX →':'🔒 LOCK IN & CHECK MATRIX →'}</button>
+    </div>`;
+}
+
+function cycleAccess(idx,ri,ci){
+  const cur=userMatrix[idx][ri][ci];
+  const next=ACCESS_STATES[(ACCESS_STATES.indexOf(cur)+1)%ACCESS_STATES.length];
+  userMatrix[idx][ri][ci]=next;
+  const d=ACCESS_DISPLAY[next];
+  const cell=document.getElementById(`cell-${idx}-${ri}-${ci}`);
+  cell.className=`acc-cell ${d.cls}`;
+  cell.innerHTML=`<div><div class="acc-icon">${d.icon}</div><span class="acc-label">${d.label}</span></div>`;
+}
+
+function checkMatrix(idx){
+  if(results[idx])return; // already checked: never score a scenario twice
+  const _n=document.querySelector('#s'+(idx+1)+' > .nav'); if(_n)_n.style.display='none';
+  const sc=SCENARIOS[idx];
+  let correct=0,total_cells=sc.resources.length*sc.org.length;
+  const explanations=[];
+
+  sc.resources.forEach((res,ri)=>{
+    sc.org.forEach((org,ci)=>{
+      const expected=sc.matrix[ri][ci];
+      const actual=userMatrix[idx][ri][ci];
+      const cell=document.getElementById(`cell-${idx}-${ri}-${ci}`);
+      if(actual===expected){
+        correct++;
+        cell.classList.add('correct-flash');
+      } else {
+        cell.classList.add('wrong-flash');
+        const d=ACCESS_DISPLAY[expected];
+        // show correct after flash
+        setTimeout(()=>{
+          cell.className=`acc-cell ${d.cls} locked`;
+          cell.innerHTML=`<div><div class="acc-icon">${d.icon}</div><span class="acc-label">${d.label}</span></div>`;
+        },600);
+      }
+    });
+    explanations.push(`<strong>${res}:</strong> ${sc.explanation[ri]}`);
+  });
+
+  const pts=Math.round((correct/total_cells)*sc.pts*10)/10;
+  score+=pts;
+  results[idx]={correct,total:total_cells,pts};
+  document.getElementById('score-disp').textContent='SCORE: '+Math.round(score)+' pts';
+
+  const pct=Math.round((correct/total_cells)*100);
+  const fb=document.getElementById('fb-'+idx);
+  fb.className='feedback show '+(pct>=80?'correct':'partial');
+  fb.innerHTML=`<div class="fb-lbl ${pct>=80?'ok':'warn'}">${pct>=80?'// EXCELLENT MATRIX':'// CLOSE — REVIEW CORRECTIONS ABOVE'} (${correct}/${total_cells} CELLS CORRECT)</div>
+    <div style="display:grid;gap:6px;margin-top:10px;">${explanations.map(e=>`<div style="font-size:12px;color:var(--text2);line-height:1.5;">${e}</div>`).join('')}</div>`;
+
+  // lock all cells
+  document.querySelectorAll(`[id^="cell-${idx}-"]`).forEach(c=>c.classList.add('locked'));
+
+  const nextBtn=document.createElement('div');
+  nextBtn.className='nav';
+  nextBtn.style.cssText='display:flex;align-items:center;justify-content:flex-end;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);';
+  nextBtn.innerHTML=`<button class="btn btn-acc" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT SCENARIO →'}</button>`;
+  fb.after(nextBtn);
+}
+
+function buildResults(){
+  const maxScore=SCENARIOS.reduce((a,s)=>a+s.pts,0);
+  const pct=Math.round((score/maxScore)*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Access Control Expert 🔐','You correctly applied least privilege across all scenarios. This is one of the most important real-world security skills and appears regularly on the AP exam.'],mid:['Good Foundation 🎯','You got most cells right — review where you over-granted or under-granted access. Focus on separation of duties and the principle that access should match job function exactly.'],low:['Keep Building 📚','Focus on the principle: give users the minimum access they need to do their job — nothing more. When in doubt, DENY and add access when the need is demonstrated.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=SCENARIOS.map((sc,i)=>{
+    const r=results[i]||{correct:0,total:sc.resources.length*sc.org.length,pts:0};
+    const pct2=Math.round((r.correct/r.total)*100);
+    return `<div class="b-row"><div class="b-check">${pct2>=80?'✅':'⚠️'}</div><div class="b-text"><strong>${sc.label.split('—')[1].trim()}</strong> — ${r.correct}/${r.total} cells correct (${pct2}%)</div><div class="b-pts">+${Math.round(r.pts)} pts</div></div>`;
+  }).join('');
+}
+
+function restart(){
+  score=0;results=[];userMatrix={};
+  document.getElementById('score-disp').textContent='SCORE: 0 pts';
+  goTo(0);
+}
+/* ---- Student record hook (apsim_record.js) ---- */
+const _u2results=buildResults;
+buildResults=function(){_u2results();
+APSim.finish({unit:2,sim:'ac',screenId:'s4',score:score,max:SCENARIOS.reduce(function(a,s){return a+s.pts;},0),items:SCENARIOS.map(function(sc,i){var r=results[i]||{correct:0,total:sc.resources.length*sc.org.length,pts:0};return {label:sc.label.split('—')[1].trim(),result:r.correct+'/'+r.total+' cells',pts:Math.round(r.pts*10)/10,max:sc.pts,response:(userMatrix[i]||[]).map(function(row){return row.join('');}).join('|')};})});
+};
+const _u2restart=restart;
+restart=function(){APSim.start(2,'ac');_u2restart();};
+APSim.start(2,'ac');
+
+goTo(0);
+</script>
+</body>
+</html>

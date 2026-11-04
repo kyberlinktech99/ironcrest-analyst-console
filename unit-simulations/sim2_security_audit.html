@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="2" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="audit">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Physical Security Audit — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#a3e635;--red:#ef4444;--amber:#ffd166;--cyan:#00d4ff;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--acc) 2%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--acc) 2%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:#000;font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--acc) 60%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:#000;font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--acc) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--acc) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;letter-spacing:-.03em;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* FLOOR PLAN */
+.floorplan{position:relative;width:100%;max-width:600px;margin:0 auto 20px;aspect-ratio:3/2;background:var(--panel);border:2px solid var(--border2);overflow:hidden;}
+.room{position:absolute;border:1px solid var(--border2);background:var(--bg3);}
+.room-label{font-family:var(--mono);font-size:9px;color:var(--text3);padding:4px 6px;letter-spacing:.06em;}
+/* Rooms */
+.r-lobby{left:0;top:0;width:30%;height:40%;border-color:var(--cyan);}
+.r-office{left:30%;top:0;width:40%;height:40%;}
+.r-server{left:70%;top:0;width:30%;height:40%;border-color:var(--red);}
+.r-meeting{left:0;top:40%;width:35%;height:30%;}
+.r-break{left:35%;top:40%;width:35%;height:30%;}
+.r-exit{left:70%;top:40%;width:30%;height:30%;}
+.r-parking{left:0;top:70%;width:100%;height:30%;background:var(--bg2);}
+/* Hotspots */
+.hotspot{position:absolute;width:24px;height:24px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;border:2px solid transparent;z-index:2;}
+.hotspot:hover{transform:scale(1.2);}
+.hotspot.vuln{background:color-mix(in srgb,var(--red) 20%,transparent);border-color:var(--red);animation:pulse-red 2s infinite;}
+.hotspot.secure{background:color-mix(in srgb,var(--acc) 20%,transparent);border-color:var(--acc);}
+.hotspot.found{background:color-mix(in srgb,var(--red) 30%,transparent);border-color:var(--red);box-shadow:0 0 12px color-mix(in srgb,var(--red) 50%,transparent);}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--red) 40%,transparent)}50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--red) 0%,transparent)}}
+.hotspot-tooltip{position:absolute;background:var(--panel2);border:1px solid var(--border2);padding:8px 10px;font-size:12px;color:var(--text);line-height:1.4;z-index:10;width:180px;pointer-events:none;display:none;}
+.hotspot:hover .hotspot-tooltip{display:block;}
+.fp-legend{display:flex;gap:16px;justify-content:center;margin-bottom:12px;flex-wrap:wrap;}
+.fp-leg{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--text3);}
+.fp-dot{width:10px;height:10px;border-radius:50%;}
+
+/* FINDING CARDS */
+.findings-grid{display:grid;gap:10px;margin-bottom:16px;}
+.finding-card{background:var(--panel);border:1px solid var(--border);padding:16px 18px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:all .2s;}
+.finding-card:hover{border-color:var(--red);background:color-mix(in srgb,var(--red) 4%,transparent);}
+.finding-card.selected{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 5%,transparent);}
+.finding-card.wrong-pick{animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.finding-icon{font-size:22px;flex-shrink:0;}
+.finding-content{}
+.finding-name{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);letter-spacing:.06em;margin-bottom:3px;}
+.finding-desc{font-size:13px;color:var(--text2);line-height:1.5;}
+.finding-card.selected .finding-name{color:var(--acc);}
+
+/* multi select */
+.multi-instruction{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-bottom:10px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);}
+.selected-count{font-family:var(--mono);font-size:11px;color:var(--acc);margin-bottom:10px;}
+
+/* feedback */
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 5%,transparent);}
+.feedback.partial{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--acc);}.fb-lbl.warn{color:var(--amber);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--acc) 60%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+
+/* severity badge */
+.sev{display:inline-block;font-family:var(--mono);font-size:9px;padding:2px 7px;letter-spacing:.08em;margin-left:8px;}
+.sev.high{background:color-mix(in srgb,var(--red) 15%,transparent);color:var(--red);}
+.sev.med{background:color-mix(in srgb,var(--amber) 15%,transparent);color:var(--amber);}
+.sev.low{background:color-mix(in srgb,var(--acc) 10%,transparent);color:var(--acc);}
+
+/* results */
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:64px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--acc);text-shadow:0 0 30px color-mix(in srgb,var(--acc) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;margin-top:1px;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 2</div>
+  <div>
+    <div class="hdr-title">Physical Security Audit</div>
+    <div class="hdr-sub">UNIT 2 · SECURING SPACES · IDENTIFY VULNERABILITIES · RECOMMEND CONTROLS</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">SITE 1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">SITE 2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">SITE 3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p4"></div>
+</div>
+
+<!-- INTRO -->
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🔍</span>
+    <div class="intro-title">Physical Security Audit</div>
+    <div class="intro-desc">You're a physical security consultant. Three different organizations have hired you to assess their facilities. For each site, read the description, identify the real vulnerabilities, and recommend the right controls. Not every item in the list is a vulnerability — red herrings included.</div>
+    <div style="background:var(--panel);border:1px solid var(--border2);padding:14px 18px;max-width:480px;margin:0 auto 24px;text-align:left;">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.15em;margin-bottom:8px;">// YOUR ROLE</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7;">You'll read site descriptions, identify which items are genuine vulnerabilities, and for each vulnerability select the BEST remediation control. Some items may look like vulnerabilities but aren't. Choose carefully.</div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN AUDIT</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+
+<!-- RESULTS -->
+<div class="screen" id="s4">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">PHYSICAL SECURITY AUDIT</div><div class="concept-def">A systematic assessment of physical controls protecting a facility. Covers access control, surveillance, environmental controls, and procedures. Identifies gaps before attackers do.</div></div>
+    <div class="concept-card"><div class="concept-term">COMPENSATING CONTROLS</div><div class="concept-def">Alternative controls used when the primary control isn't feasible. Example: if a mantrap isn't possible, adding a security guard + camera + visitor escort is a compensating control set.</div></div>
+    <div class="concept-card"><div class="concept-term">RESIDUAL RISK</div><div class="concept-def">The risk that remains after controls are applied. No control eliminates 100% of risk — the goal is to reduce risk to an acceptable level for the organization's risk tolerance.</div></div>
+    <div class="concept-card"><div class="concept-term">RED HERRING FINDINGS</div><div class="concept-def">Not everything that looks like a vulnerability actually is one. A professional auditor must distinguish real risks from non-issues — recommending unnecessary controls wastes budget and creates friction without reducing risk.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ RUN AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim2_hub.html'">← UNIT 2 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const AUDITS=[
+  {
+    site:"SITE 01 — REGIONAL LAW FIRM",
+    desc:"A 4-floor law firm in downtown Philadelphia. Client files are stored on the 3rd floor in open filing cabinets accessible to all staff. The lobby has a receptionist but no visitor log. The server room on the 4th floor has a standard doorknob lock — the key is kept under the receptionist's desk. Security cameras cover the parking lot but not internal hallways. Employees use ID badges for the elevator but badges are never deactivated when employees leave.",
+    items:[
+      {id:"lf1",icon:"🗄️",name:"Open filing cabinets — no lock",sev:"high",real:true,finding:"Confidential client files accessible to all staff violates need-to-know and least privilege. Any employee (or visitor who wanders in) can access client information.",fix:"Install locking filing cabinets with key or combination access. Limit key holders to authorized staff only."},
+      {id:"lf2",icon:"📋",name:"No visitor log at reception",sev:"med",real:true,finding:"No record of who enters the building means no way to investigate incidents or identify unauthorized visitors. This is a basic administrative control gap.",fix:"Implement visitor log policy — name, ID, host, time in/out. Consider visitor badge system with escorted access."},
+      {id:"lf3",icon:"🔑",name:"Server room key under receptionist's desk",sev:"high",real:true,finding:"Storing the key in an obvious, accessible location defeats the purpose of having a locked server room. Anyone who knows where to look has access.",fix:"Replace doorknob lock with keycard or PIN access. Eliminate the physical key entirely. Log all server room access."},
+      {id:"lf4",icon:"📸",name:"Cameras in parking lot but not hallways",sev:"med",real:true,finding:"Internal movement — including unauthorized access to sensitive floors — isn't recorded. Detective coverage is limited to the perimeter.",fix:"Install cameras in hallways, elevator lobbies, and near the server room. Retain footage for minimum 30 days."},
+      {id:"lf5",icon:"🏢",name:"Modern office building with good lighting",sev:"low",real:false,finding:"",fix:""},
+      {id:"lf6",icon:"🪪",name:"Badges not deactivated for terminated employees",sev:"high",real:true,finding:"A terminated (or resigned) employee retains physical access indefinitely. This is a classic insider threat vector and the source of many real breaches.",fix:"Implement immediate badge deactivation as part of offboarding checklist — the same day employment ends, not after."}
+    ],
+    real_ids:["lf1","lf2","lf3","lf4","lf6"],
+    pts:20
+  },
+  {
+    site:"SITE 02 — WAREHOUSE DISTRIBUTION CENTER",
+    desc:"A large warehouse that ships electronics nationally. The loading dock has no personnel — any truck can pull in and workers load/unload. The warehouse floor is accessible from the parking lot through an unlocked side door. Inventory is tracked digitally but no physical count has been done in 8 months. The security office has one guard who monitors 12 cameras — 3 of which are broken and display static. The fire exits are marked and functional. Employees wear color-coded vests by department.",
+    items:[
+      {id:"wh1",icon:"🚛",name:"Uncontrolled loading dock — no verification",sev:"high",real:true,finding:"Any vehicle can access the dock and load/unload without verification. This enables theft, unauthorized deliveries, and potential insertion of malicious hardware.",fix:"Implement dock appointment scheduling. Require driver ID + manifest verification before dock access. Install boom gate with guard or intercom."},
+      {id:"wh2",icon:"🚪",name:"Unlocked side door from parking lot",sev:"high",real:true,finding:"An unlocked exterior door provides direct access to the warehouse floor without any access control. Effectively an unmonitored entry point.",fix:"Install keycard or PIN access on all exterior doors. Log all entries. Consider alarming after-hours."},
+      {id:"wh3",icon:"📦",name:"No physical inventory count in 8 months",sev:"med",real:true,finding:"Without periodic physical counts, theft or shrinkage may go undetected for extended periods. Digital records can be falsified — physical counts provide an independent verification.",fix:"Implement monthly physical cycle counts for high-value items. Reconcile against digital inventory system."},
+      {id:"wh4",icon:"📹",name:"3 of 12 cameras broken — showing static",sev:"high",real:true,finding:"Camera coverage gaps mean certain areas have no detective capability. Attackers can identify and exploit blind spots. Broken cameras also give a false sense of security.",fix:"Implement camera health monitoring with alerts for offline cameras. Repair cameras within defined SLA. Consider camera redundancy for high-value areas."},
+      {id:"wh5",icon:"🔥",name:"Fire exits are marked and functional",sev:"low",real:false,finding:"",fix:""},
+      {id:"wh6",icon:"👕",name:"Color-coded vests by department",sev:"low",real:false,finding:"",fix:""}
+    ],
+    real_ids:["wh1","wh2","wh3","wh4"],
+    pts:20
+  },
+  {
+    site:"SITE 03 — MEDICAL CLINIC",
+    desc:"A primary care clinic with 15 exam rooms. Patient check-in is at an open counter where staff discuss patient details loudly enough for the waiting room to hear. Prescription pads are left on counters in exam rooms. The pharmacy area has a combination lock — the combination is '1234' and has been the same for 5 years. A whiteboard in the hallway lists patients scheduled for the day with their names and appointment types. Staff use shared login credentials for the EHR system. The parking lot lights all work.",
+    items:[
+      {id:"mc1",icon:"📢",name:"Patient details discussed loudly at check-in",sev:"high",real:true,finding:"Verbal disclosure of PHI in a public area violates HIPAA. Other patients can hear names, appointment types, insurance information, and medical concerns.",fix:"Install privacy screens, lower counter heights, or implement a 'call back' system. Train staff on verbal privacy. Use private consultation areas for sensitive discussions."},
+      {id:"mc2",icon:"📝",name:"Prescription pads left unattended in exam rooms",sev:"high",real:true,finding:"Unsecured prescription pads enable drug diversion — both by staff and patients who may be left alone in exam rooms. This is a regulatory compliance and patient safety issue.",fix:"Secure prescription pads in locked drawers when not in use. Switch to electronic prescribing (ePrescribing) which eliminates physical pad risk entirely."},
+      {id:"mc3",icon:"🔢",name:"Pharmacy combination lock — code is '1234'",sev:"high",real:true,finding:"Default or trivially guessable access codes provide no real security. Anyone who has ever seen the code (which may be many people over 5 years) can access the pharmacy.",fix:"Change combination immediately. Implement quarterly rotation. Consider upgrading to electronic keypad with individual codes per employee for audit trail."},
+      {id:"mc4",icon:"📋",name:"Patient schedule whiteboard visible in hallway",sev:"high",real:true,finding:"A whiteboard listing patient names and appointment types (e.g., 'Jane Smith — HIV follow-up') in a public hallway is a HIPAA violation. Even visible to other patients, family, or visitors.",fix:"Remove whiteboard. Use digital displays accessible only to authorized staff, or use coded patient identifiers instead of names."},
+      {id:"mc5",icon:"💻",name:"Shared EHR login credentials",sev:"high",real:true,finding:"Shared credentials prevent attribution — when something goes wrong, you cannot determine which individual accessed a record. This violates HIPAA's audit requirements and enables undetected insider threats.",fix:"Issue individual credentials to every user. Enable automatic session timeouts. Implement audit logging of all PHI access."},
+      {id:"mc6",icon:"🅿️",name:"Parking lot lights all work",sev:"low",real:false,finding:"",fix:""}
+    ],
+    real_ids:["mc1","mc2","mc3","mc4","mc5"],
+    pts:20
+  }
+];
+
+let score=0,results=[],selectedItems={},total=AUDITS.length;
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildAudit(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildAudit(idx){
+  const a=AUDITS[idx];
+  selectedItems[idx]=new Set();
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// AUDIT ${idx+1} OF ${total}</div>
+    <div class="sec-title">${a.site}</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Site ${idx+1}/${total}</span>
+    </div>
+    <div class="scenario-box" style="background:var(--panel);border:1px solid var(--border2);padding:18px 20px;margin-bottom:16px;">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;">// SITE DESCRIPTION</div>
+      <div style="font-size:14px;line-height:1.75;color:var(--text);">${a.desc}</div>
+    </div>
+    <div class="multi-instruction">SELECT ALL GENUINE VULNERABILITIES — skip items that are NOT real security issues (red herrings included). Findings, severity and fixes are revealed only after you lock in.</div>
+    <div class="selected-count" id="sel-count-${idx}">0 items selected</div>
+    <div class="findings-grid" id="items-${idx}">
+      ${a.items.map(item=>`
+        <div class="finding-card" id="card-${idx}-${item.id}" onclick="toggleItem(${idx},'${item.id}')">
+          <span class="finding-icon">${item.icon}</span>
+          <div class="finding-content">
+            <div class="finding-name">${item.name}<span class="sev ${item.sev}" style="display:none">${item.sev.toUpperCase()}</span></div>
+            <div class="finding-desc">Select this if you believe it is a genuine security vulnerability.</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav">
+      <div></div>
+      <button class="btn btn-acc" onclick="submitAudit(${idx})">🔒 LOCK IN & SUBMIT FINDINGS →</button>
+    </div>`;
+}
+
+function toggleItem(idx,itemId){
+  const card=document.getElementById(`card-${idx}-${itemId}`);
+  if(selectedItems[idx].has(itemId)){
+    selectedItems[idx].delete(itemId);
+    card.classList.remove('selected');
+  } else {
+    selectedItems[idx].add(itemId);
+    card.classList.add('selected');
+  }
+  document.getElementById(`sel-count-${idx}`).textContent=selectedItems[idx].size+' item'+(selectedItems[idx].size!==1?'s':'')+' selected';
+}
+
+function submitAudit(idx){
+  if(results[idx])return; // already submitted: never score a site twice
+  const _n=document.querySelector('#s'+(idx+1)+' > .nav'); if(_n)_n.style.display='none';
+  const a=AUDITS[idx];
+  const selected=selectedItems[idx];
+  const realSet=new Set(a.real_ids);
+  let tp=0,fp=0,fn=0;
+  selected.forEach(id=>{if(realSet.has(id))tp++;else fp++;});
+  realSet.forEach(id=>{if(!selected.has(id))fn++;});
+
+  // Show correct/incorrect on cards
+  a.items.forEach(item=>{
+    const card=document.getElementById(`card-${idx}-${item.id}`);
+    card.style.pointerEvents='none';
+    if(item.real){
+      const _sv=card.querySelector('.sev'); if(_sv)_sv.style.display='';
+      card.style.borderColor='var(--acc)';
+      card.style.background='color-mix(in srgb,var(--acc) 5%,transparent)';
+      if(item.finding){
+        card.querySelector('.finding-desc').textContent=item.finding;
+        const fixEl=document.createElement('div');
+        fixEl.style.cssText='font-size:11px;color:var(--text3);margin-top:6px;font-family:var(--mono);';
+        fixEl.textContent='FIX: '+item.fix;
+        card.querySelector('.finding-content').appendChild(fixEl);
+      }
+    } else {
+      card.style.borderColor='var(--border)';
+      card.style.opacity='0.5';
+      card.querySelector('.finding-desc').textContent='✓ This is NOT a vulnerability — red herring. Good security auditors distinguish real risks from non-issues.';
+    }
+  });
+
+  const pts=Math.max(0,Math.round(((tp-fp)/realSet.size)*a.pts));
+  score+=pts;
+  results[idx]={tp,fp,fn,total:realSet.size,pts};
+  document.getElementById('score-disp').textContent='SCORE: '+Math.round(score)+' pts';
+
+  const pct=Math.round((tp/realSet.size)*100);
+  const fb=document.getElementById('fb-'+idx);
+  fb.className='feedback show '+(fp===0&&fn===0?'correct':'partial');
+  fb.innerHTML=`<div class="fb-lbl ${fp===0&&fn===0?'ok':'warn'}">${fp===0&&fn===0?'// PERFECT AUDIT':'// AUDIT COMPLETE — REVIEW ABOVE'}</div>
+    Found: ${tp}/${realSet.size} real vulnerabilities. ${fp>0?`<span style="color:var(--red)">${fp} false positive${fp>1?'s':''}</span> (items that aren't real vulnerabilities). `:''}${fn>0?`<span style="color:var(--amber)">${fn} missed vulnerability${fn>1?'s':''}</span> — see highlighted items above.`:'All vulnerabilities identified!'}
+    <br><br>+${pts} pts earned`;
+
+  const nextBtn=document.createElement('div');
+  nextBtn.className='nav';
+  nextBtn.style.cssText='display:flex;justify-content:flex-end;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);';
+  nextBtn.innerHTML=`<button class="btn btn-acc" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT SITE →'}</button>`;
+  fb.after(nextBtn);
+}
+
+function buildResults(){
+  const maxScore=AUDITS.reduce((a,b)=>a+b.pts,0);
+  const pct=Math.round((score/maxScore)*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Master Auditor 🔍','You identified real vulnerabilities and avoided red herrings. This analytical skill — distinguishing real risks from noise — is exactly what security professionals do every day.'],mid:['Solid Auditor 🎯','You found most vulnerabilities. Review what you missed and watch for red herrings — recommending unnecessary controls is almost as costly as missing real ones.'],low:['Keep Practicing 📚','Focus on the difference between real security gaps and normal (non-security) observations. Practice asking: "What attack does this enable? Who is at risk if this isn\'t fixed?"']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=AUDITS.map((a,i)=>{
+    const r=results[i]||{tp:0,fp:0,fn:a.real_ids.length,total:a.real_ids.length,pts:0};
+    return `<div class="b-row"><div class="b-check">${r.fp===0&&r.fn===0?'✅':'⚠️'}</div><div class="b-text"><strong>${a.site.split('—')[1].trim()}</strong> — Found ${r.tp}/${r.total} vulnerabilities${r.fp>0?`, ${r.fp} false positive${r.fp>1?'s':''}`:''}</div><div class="b-pts">+${Math.round(r.pts)} pts</div></div>`;
+  }).join('');
+}
+
+function restart(){
+  score=0;results=[];selectedItems={};
+  document.getElementById('score-disp').textContent='SCORE: 0 pts';
+  goTo(0);
+}
+
+// Add scenario-box style inline since it's used in buildAudit
+const style=document.createElement('style');
+style.textContent='.scenario-box{background:var(--panel);border:1px solid var(--border2);padding:18px 20px;margin-bottom:16px;}';
+document.head.appendChild(style);
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _u2results=buildResults;
+buildResults=function(){_u2results();
+APSim.finish({unit:2,sim:'audit',screenId:'s4',score:score,max:AUDITS.reduce(function(a,b){return a+b.pts;},0),items:AUDITS.map(function(a,i){var r=results[i]||{tp:0,fp:0,fn:a.real_ids.length,total:a.real_ids.length,pts:0};return {label:a.site.split('—')[1].trim(),result:r.tp+'/'+r.total+' found, '+r.fp+' false pos.',pts:r.pts,max:a.pts,response:Array.from(selectedItems[i]||[]).join(',')};})});
+};
+const _u2restart=restart;
+restart=function(){APSim.start(2,'audit');_u2restart();};
+APSim.start(2,'audit');
+
+goTo(0);
+</script>
+</body>
+</html>

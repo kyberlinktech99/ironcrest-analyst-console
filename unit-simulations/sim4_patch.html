@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="4" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim4_patch">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Patch Priority Ranker — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#f59e0b;--red:#ef4444;--green:#22c55e;--cyan:#00d4ff;--purple:#c084fc;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--amber) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--amber) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--amber) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--amber) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--amber) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* CVE CARD */
+.cve-card{background:var(--panel);border:1px solid var(--border2);margin-bottom:10px;overflow:hidden;transition:all .2s;}
+.cve-header{display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;align-items:center;padding:12px 16px;cursor:pointer;}
+.cve-header:hover{background:color-mix(in srgb,var(--text) 2%,transparent);}
+.cve-id{font-family:var(--mono);font-size:11px;color:var(--cyan);font-weight:700;min-width:120px;}
+.cve-name{font-size:13px;color:var(--text);font-weight:500;}
+.cve-score{font-family:var(--mono);font-size:14px;font-weight:700;min-width:44px;text-align:center;}
+.cve-score.critical{color:var(--red);}
+.cve-score.high{color:var(--c-orange);}
+.cve-score.medium{color:var(--acc);}
+.cve-score.low{color:var(--green);}
+.cve-sev{font-family:var(--mono);font-size:9px;padding:3px 8px;min-width:72px;text-align:center;}
+.cve-sev.critical{background:color-mix(in srgb,var(--red) 15%,transparent);color:var(--red);}
+.cve-sev.high{background:color-mix(in srgb,var(--c-orange) 15%,transparent);color:var(--c-orange);}
+.cve-sev.medium{background:color-mix(in srgb,var(--amber) 15%,transparent);color:var(--acc);}
+.cve-sev.low{background:color-mix(in srgb,var(--c-green) 15%,transparent);color:var(--green);}
+.cve-detail{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;}
+.cve-card.expanded .cve-detail{max-height:200px;padding:0 16px 14px;}
+.cve-detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:12px;}
+.cd-item{padding:8px 10px;background:var(--bg3);border:1px solid var(--border);}
+.cd-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;margin-bottom:3px;}
+.cd-val{color:var(--text);font-size:12px;line-height:1.4;}
+.cd-val.bad{color:var(--red);}
+.cd-val.good{color:var(--green);}
+.cd-val.warn{color:var(--acc);}
+
+/* RANKING AREA */
+.rank-zone{background:var(--panel);border:1px solid var(--border2);padding:14px;margin-bottom:16px;}
+.rz-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:10px;}
+.rank-slots{display:grid;gap:6px;}
+.rank-slot{border:1px dashed var(--border2);padding:10px 14px;min-height:44px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;}
+.rank-slot:hover{border-color:var(--acc);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.rank-slot.has-cve{border-style:solid;border-color:var(--border);}
+.rank-slot.correct-rank{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 6%,transparent)!important;}
+.rank-slot.wrong-rank{border-color:var(--red)!important;background:color-mix(in srgb,var(--red) 6%,transparent)!important;}
+.slot-num{font-family:var(--mono);font-size:12px;color:var(--acc);font-weight:700;min-width:28px;}
+.slot-content{flex:1;font-size:12px;color:var(--text);}
+.slot-remove{color:var(--text3);cursor:pointer;padding:0 4px;font-size:14px;}
+.slot-remove:hover{color:var(--red);}
+
+/* INSTRUCTION */
+.instruction{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-bottom:10px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);}
+
+/* FEEDBACK */
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.partial{border-color:var(--acc);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}.fb-lbl.warn{color:var(--acc);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--amber) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--acc);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.cve-detail-grid,.concept-grid{grid-template-columns:1fr 1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--amber);--red:var(--red);--green:var(--c-green);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 4</div>
+  <div>
+    <div class="hdr-title">Patch Priority Ranker</div>
+    <div class="hdr-sub">UNIT 4 · SECURING DEVICES · CVSS · VULNERABILITY TRIAGE</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">R1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">R2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p3"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🩹</span>
+    <div class="intro-title">Patch Priority Ranker</div>
+    <div class="intro-desc">Security teams can't patch everything at once. You'll review CVEs with CVSS scores and context clues, then rank them from highest to lowest priority. CVSS score alone doesn't determine priority — exploitability, asset criticality, and exposure all matter.</div>
+    <div style="overflow-x:auto;max-width:540px;margin:0 auto 24px;">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead><tr>
+          <th style="background:var(--panel2);border:1px solid var(--border2);padding:8px 12px;font-family:var(--mono);font-size:10px;color:var(--text3);">CVSS RANGE</th>
+          <th style="background:var(--panel2);border:1px solid var(--border2);padding:8px 12px;font-family:var(--mono);font-size:10px;color:var(--text3);">SEVERITY</th>
+          <th style="background:var(--panel2);border:1px solid var(--border2);padding:8px 12px;font-family:var(--mono);font-size:10px;color:var(--text3);">TYPICAL SLA</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="border:1px solid var(--border);padding:7px 12px;background:var(--panel);font-family:var(--mono);font-size:11px;color:var(--red);">9.0–10.0</td><td style="border:1px solid var(--border);padding:7px 12px;background:var(--panel);color:var(--red);font-family:var(--mono);font-size:11px;">CRITICAL</td><td style="border:1px solid var(--border);padding:7px 12px;background:var(--panel);color:var(--text2);font-size:12px;">Patch within 24–48 hours</td></tr>
+          <tr><td style="border:1px solid var(--border);padding:7px 12px;background:var(--bg3);font-family:var(--mono);font-size:11px;color:var(--c-orange);">7.0–8.9</td><td style="border:1px solid var(--border);padding:7px 12px;background:var(--bg3);color:var(--c-orange);font-family:var(--mono);font-size:11px;">HIGH</td><td style="border:1px solid var(--border);padding:7px 12px;background:var(--bg3);color:var(--text2);font-size:12px;">Patch within 7 days</td></tr>
+          <tr><td style="border:1px solid var(--border);padding:7px 12px;background:var(--panel);font-family:var(--mono);font-size:11px;color:var(--acc);">4.0–6.9</td><td style="border:1px solid var(--border);padding:7px 12px;background:var(--panel);color:var(--acc);font-family:var(--mono);font-size:11px;">MEDIUM</td><td style="border:1px solid var(--border);padding:7px 12px;background:var(--panel);color:var(--text2);font-size:12px;">Patch within 30 days</td></tr>
+          <tr><td style="border:1px solid var(--border);padding:7px 12px;background:var(--bg3);font-family:var(--mono);font-size:11px;color:var(--green);">0.1–3.9</td><td style="border:1px solid var(--border);padding:7px 12px;background:var(--bg3);color:var(--green);font-family:var(--mono);font-size:11px;">LOW</td><td style="border:1px solid var(--border);padding:7px 12px;background:var(--bg3);color:var(--text2);font-size:12px;">Patch within 90 days</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN TRIAGE</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+
+<div class="screen" id="s3">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">CVSS — WHAT IT MEASURES</div><div class="concept-def">Common Vulnerability Scoring System scores vulnerabilities from 0–10 on: Attack Vector (network vs. local), Attack Complexity, Privileges Required, User Interaction, and Impact on C/I/A. Higher = more severe, but not always highest priority.</div></div>
+    <div class="concept-card"><div class="concept-term">EXPLOITABILITY CONTEXT</div><div class="concept-def">A CVSS 9.8 with no known exploit in the wild is lower priority than a CVSS 7.5 with an active exploit kit available. Confirmed exploitation elevates any CVE's real-world priority significantly.</div></div>
+    <div class="concept-card"><div class="concept-term">ASSET CRITICALITY</div><div class="concept-def">A CVSS 6.0 on a patient monitoring system or payment server may warrant faster response than a CVSS 9.0 on an isolated test machine with no internet access. The asset's role determines exposure and impact.</div></div>
+    <div class="concept-card"><div class="concept-term">ZERO-DAY vs PATCHED</div><div class="concept-def">A zero-day has no vendor patch available — mitigations (WAF rules, network isolation, disabling the service) must be applied immediately. A known CVE with an available patch should be patched on the standard SLA timeline based on severity.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ TRY AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim4_hub.html'">← UNIT 4 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const ROUNDS=[
+  {
+    label:"ROUND 01 — HOSPITAL NETWORK",
+    context:"A regional hospital's vulnerability scanner returns 4 findings. The IT security team must prioritize patching. All systems are internet-connected except the lab analyzer.",
+    cves:[
+      {
+        id:"CVE-2024-1234",name:"OpenSSL RCE — Patient Record Server",
+        score:9.8,sev:"critical",
+        details:{
+          "Attack Vector":"Network (internet-facing)",
+          "Exploit Available":"Yes — public PoC on GitHub",
+          "Asset Criticality":"CRITICAL — contains 80,000 patient records (PHI)",
+          "Patch Available":"Yes — OpenSSL 3.2.1",
+          "Active Exploitation":"Reported in the wild"
+        },
+        priority:1
+      },
+      {
+        id:"CVE-2023-5678",name:"Windows SMB — Admin Workstations",
+        score:8.1,sev:"high",
+        details:{
+          "Attack Vector":"Network (internal only — not internet-facing)",
+          "Exploit Available":"Yes — Metasploit module available",
+          "Asset Criticality":"HIGH — admin access to all systems",
+          "Patch Available":"Yes — KB5031455",
+          "Active Exploitation":"Not confirmed"
+        },
+        priority:2
+      },
+      {
+        id:"CVE-2024-9012",name:"Medical Device Firmware — IV Pumps",
+        score:7.3,sev:"high",
+        details:{
+          "Attack Vector":"Network (internal only)",
+          "Exploit Available":"No public exploit",
+          "Asset Criticality":"CRITICAL — patient safety impact if exploited",
+          "Patch Available":"Vendor patch pending — ETA 3 weeks",
+          "Active Exploitation":"Not reported"
+        },
+        priority:3
+      },
+      {
+        id:"CVE-2022-3456",name:"Python Library — Isolated Lab Analyzer",
+        score:9.1,sev:"critical",
+        details:{
+          "Attack Vector":"Network",
+          "Exploit Available":"Yes",
+          "Asset Criticality":"LOW — air-gapped lab analyzer, no patient data",
+          "Patch Available":"Yes",
+          "Active Exploitation":"Not in this environment (no network access)"
+        },
+        priority:4
+      }
+    ],
+    explanation:"Priority 1: OpenSSL RCE on the patient record server — internet-facing, PHI at risk, active exploitation in the wild, patch available. Patch NOW. Priority 2: SMB on admin workstations — high CVSS, Metasploit module, admin-level access. Patch this week. Priority 3: IV pump firmware — patient safety concern elevates this despite no current exploit; apply mitigations while waiting for vendor patch. Priority 4: Python library on air-gapped analyzer — despite CVSS 9.1, the air-gap prevents exploitation. Patch it, but it's genuinely the lowest risk of the four."
+  },
+  {
+    label:"ROUND 02 — FINANCIAL SERVICES FIRM",
+    context:"An investment bank's vulnerability scanner returns 4 findings. The trading platform processes $2B/day. SOC must prioritize remediation.",
+    cves:[
+      {
+        id:"CVE-2024-4444",name:"Apache Log4j RCE — Trading Platform",
+        score:10.0,sev:"critical",
+        details:{
+          "Attack Vector":"Network (internet-facing API)",
+          "Exploit Available":"Yes — widely exploited (Log4Shell)",
+          "Asset Criticality":"CRITICAL — $2B daily transactions",
+          "Patch Available":"Yes — Log4j 2.17.1",
+          "Active Exploitation":"ACTIVELY EXPLOITED — ransomware campaigns"
+        },
+        priority:1
+      },
+      {
+        id:"CVE-2024-7777",name:"SQL Injection — Customer Portal",
+        score:8.8,sev:"high",
+        details:{
+          "Attack Vector":"Network (internet-facing)",
+          "Exploit Available":"No public exploit — found by internal pen test",
+          "Asset Criticality":"HIGH — customer PII and account data",
+          "Patch Available":"Developer fix in progress — 5 days",
+          "Active Exploitation":"Not detected"
+        },
+        priority:2
+      },
+      {
+        id:"CVE-2023-2222",name:"Privilege Escalation — Windows Server",
+        score:7.8,sev:"high",
+        details:{
+          "Attack Vector":"Local (requires existing foothold)",
+          "Exploit Available":"Yes — but requires local access first",
+          "Asset Criticality":"HIGH — internal file server",
+          "Patch Available":"Yes — KB5030219",
+          "Active Exploitation":"Not reported"
+        },
+        priority:3
+      },
+      {
+        id:"CVE-2024-1111",name:"XSS — Internal HR Intranet",
+        score:5.4,sev:"medium",
+        details:{
+          "Attack Vector":"Network (internal only — behind VPN)",
+          "Exploit Available":"No public exploit",
+          "Asset Criticality":"LOW — internal HR forms, no financial data",
+          "Patch Available":"Yes — vendor patch available",
+          "Active Exploitation":"Not reported"
+        },
+        priority:4
+      }
+    ],
+    explanation:"Priority 1: Log4j RCE on trading platform — CVSS 10.0, actively exploited by ransomware, internet-facing, catastrophic financial impact. Priority 2: SQL injection on customer portal — internet-facing, PII at risk, no public exploit yet but needs immediate developer fix. Priority 3: Windows privesc — requires local access first, reducing real-world risk despite decent CVSS. Priority 4: Internal XSS — medium severity, VPN-protected, no financial data. Lowest risk of the four."
+  }
+];
+
+let score=0,results=[],total=ROUNDS.length;
+let selectedCVE={},rankSlots={},locked=[],_chg=[];
+function refreshLock(idx){const ok=rankSlots[idx].every(v=>v!==null);const b=document.getElementById('lock-'+idx);if(b)b.disabled=!ok;const h=document.getElementById('hint-'+idx);if(h)h.textContent=ok?'Ranking complete. You can still rearrange it. Nothing is revealed until you lock in.':'Rank every CVE. You can rearrange until you lock in. Nothing is checked or revealed before that.';}
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildRound(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildRound(idx){
+  const round=ROUNDS[idx];
+  selectedCVE[idx]=null;
+  rankSlots[idx]=new Array(round.cves.length).fill(null);
+
+  const cveCards=round.cves.map((cve,ci)=>{
+    const detailRows=Object.entries(cve.details).map(([k,v])=>`<div class="cd-item"><div class="cd-label">${k}</div><div class="cd-val" data-cls="${v.includes('CRITICAL')||v.includes('YES')||v.includes('ACTIVELY')||v.includes('public')?'bad':v.includes('No ')||v.includes('LOW')||v.includes('Not ')?'good':''}">${v}</div></div>`).join('');
+    return `<div class="cve-card" id="cve-${idx}-${ci}" onclick="selectCVE(${idx},${ci},event)">
+      <div class="cve-header">
+        <span class="cve-id">${cve.id}</span>
+        <span class="cve-name">${cve.name}</span>
+        <span class="cve-score ${cve.sev}">${cve.score}</span>
+        <span class="cve-sev ${cve.sev}">${cve.sev.toUpperCase()}</span>
+      </div>
+      <div class="cve-detail">
+        <div class="cve-detail-grid">${detailRows}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const rankSlotEls=round.cves.map((_,i)=>`
+    <div class="rank-slot" id="rslot-${idx}-${i}" onclick="placeInRank(${idx},${i})">
+      <span class="slot-num">#${i+1}</span>
+      <span class="slot-content" id="rslot-content-${idx}-${i}" style="color:var(--text3);font-style:italic;">Select a CVE above, then click here</span>
+    </div>`).join('');
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// ROUND ${idx+1} OF ${total}</div>
+    <div class="sec-title">Rank by Patch Priority</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Round ${idx+1}/${total}</span>
+    </div>
+    <div style="background:var(--panel);border:1px solid var(--border2);padding:12px 16px;margin-bottom:14px;">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:4px;">// CONTEXT</div>
+      <div style="font-size:13px;color:var(--text2);">${round.context}</div>
+    </div>
+    <div class="instruction">STEP 1: Click a CVE to expand details and select it · STEP 2: Click a rank slot to place it · #1 = PATCH FIRST</div>
+    <div id="cves-${idx}">${cveCards}</div>
+    <div class="rank-zone" style="margin-top:16px;">
+      <div class="rz-label">// DRAG TO RANK — #1 PATCH FIRST, #4 PATCH LAST</div>
+      <div class="rank-slots" id="rslots-${idx}">${rankSlotEls}</div>
+    </div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav" id="lockbar-${idx}">
+      <button class="btn btn-ghost" onclick="clearRanks(${idx})">CLEAR</button>
+      <div class="lock-row" style="margin:0;"><span class="lock-hint" id="hint-${idx}">Rank every CVE. You can rearrange until you lock in. Nothing is checked or revealed before that.</span><button class="btn btn-acc" id="lock-${idx}" disabled onclick="submitRanks(${idx})">🔒 LOCK IN RANKING</button></div>
+    </div>`;
+}
+
+function selectCVE(idx,ci,e){
+  e.stopPropagation();
+  // Toggle expand
+  const card=document.getElementById(`cve-${idx}-${ci}`);
+  const wasExpanded=card.classList.contains('expanded');
+  document.querySelectorAll(`[id^="cve-${idx}-"]`).forEach(c=>c.classList.remove('expanded'));
+  if(!wasExpanded)card.classList.add('expanded');
+
+  // Select for ranking
+  if(selectedCVE[idx]!==null){
+    document.getElementById(`cve-${idx}-${selectedCVE[idx]}`)?.style.setProperty('outline','none');
+  }
+  selectedCVE[idx]=ci;
+  card.style.outline='2px solid var(--acc)';
+}
+
+function placeInRank(idx,slotIdx){
+  if(locked[idx]||selectedCVE[idx]===null)return;
+  const ci=selectedCVE[idx];
+  const round=ROUNDS[idx];
+
+  // If slot occupied, return that CVE
+  if(rankSlots[idx][slotIdx]!==null){
+    _chg[idx]=(_chg[idx]||0)+1;
+    const oldCi=rankSlots[idx][slotIdx];
+    document.getElementById(`cve-${idx}-${oldCi}`).style.opacity='1';
+  }
+  // If this CVE was in another slot, clear it
+  const prevSlot=rankSlots[idx].indexOf(ci);
+  if(prevSlot!==-1){
+    _chg[idx]=(_chg[idx]||0)+1;
+    rankSlots[idx][prevSlot]=null;
+    const ps=document.getElementById(`rslot-${idx}-${prevSlot}`);
+    ps.classList.remove('has-cve');
+    ps.innerHTML=`<span class="slot-num">#${prevSlot+1}</span><span class="slot-content" style="color:var(--text3);font-style:italic;">Select a CVE above, then click here</span>`;
+    ps.onclick=()=>placeInRank(idx,prevSlot);
+  }
+
+  rankSlots[idx][slotIdx]=ci;
+  const cve=round.cves[ci];
+  const slot=document.getElementById(`rslot-${idx}-${slotIdx}`);
+  slot.classList.add('has-cve');
+  slot.innerHTML=`<span class="slot-num">#${slotIdx+1}</span><span class="slot-content">${cve.id} — ${cve.name} (CVSS ${cve.score})</span><span class="slot-remove" onclick="removeFromRank(${idx},${slotIdx},event)">✕</span>`;
+  document.getElementById(`cve-${idx}-${ci}`).style.opacity='.5';
+  document.getElementById(`cve-${idx}-${ci}`).style.outline='none';
+  selectedCVE[idx]=null;refreshLock(idx);
+}
+
+function removeFromRank(idx,slotIdx,e){
+  e.stopPropagation();
+  if(locked[idx])return;
+  _chg[idx]=(_chg[idx]||0)+1;
+  const ci=rankSlots[idx][slotIdx];
+  rankSlots[idx][slotIdx]=null;
+  document.getElementById(`cve-${idx}-${ci}`).style.opacity='1';
+  const slot=document.getElementById(`rslot-${idx}-${slotIdx}`);
+  slot.classList.remove('has-cve');
+  slot.innerHTML=`<span class="slot-num">#${slotIdx+1}</span><span class="slot-content" id="rslot-content-${idx}-${slotIdx}" style="color:var(--text3);font-style:italic;">Select a CVE above, then click here</span>`;
+  slot.onclick=()=>placeInRank(idx,slotIdx);
+  refreshLock(idx);
+}
+
+function clearRanks(idx){
+  if(locked[idx])return;
+  const round=ROUNDS[idx];
+  if(rankSlots[idx].some(v=>v!==null))_chg[idx]=(_chg[idx]||0)+1;
+  rankSlots[idx]=new Array(round.cves.length).fill(null);
+  round.cves.forEach((_,ci)=>{
+    const card=document.getElementById(`cve-${idx}-${ci}`);
+    if(card){card.style.opacity='1';card.style.outline='none';}
+  });
+  round.cves.forEach((_,si)=>{
+    const slot=document.getElementById(`rslot-${idx}-${si}`);
+    slot.classList.remove('has-cve','correct-rank','wrong-rank');
+    slot.innerHTML=`<span class="slot-num">#${si+1}</span><span class="slot-content" style="color:var(--text3);font-style:italic;">Select a CVE above, then click here</span>`;
+    slot.onclick=()=>placeInRank(idx,si);
+  });
+  selectedCVE[idx]=null;refreshLock(idx);
+}
+
+function submitRanks(idx){
+  const round=ROUNDS[idx];
+  if(locked[idx]||!rankSlots[idx].every(v=>v!==null))return;
+  locked[idx]=true;
+  document.getElementById('lockbar-'+idx).style.display='none';
+  document.querySelectorAll('#s'+(idx+1)+' .cd-val').forEach(e=>{if(e.dataset.cls)e.classList.add(e.dataset.cls);});
+  let correct=0;
+  round.cves.forEach((cve,ci)=>{
+    const userRank=rankSlots[idx].indexOf(ci);
+    const correctRank=cve.priority-1;
+    const slot=document.getElementById(`rslot-${idx}-${userRank}`);
+    if(userRank===correctRank){correct++;if(slot)slot.classList.add('correct-rank');}
+    else{if(slot)slot.classList.add('wrong-rank');}
+  });
+
+  // Lock
+  document.querySelectorAll(`[id^="rslot-${idx}-"]`).forEach(s=>s.style.pointerEvents='none');
+  document.querySelectorAll(`[id^="cve-${idx}-"]`).forEach(c=>c.style.pointerEvents='none');
+
+  const pct=Math.round((correct/round.cves.length)*100);
+  const pts=Math.round((correct/round.cves.length)*25);
+  score+=pts;results[idx]={correct,total:round.cves.length,pts,order:rankSlots[idx].map(ci=>round.cves[ci].id)};
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+
+  const fb=document.getElementById('fb-'+idx);
+  fb.className='feedback show '+(pct===100?'correct':pct>=50?'partial':'wrong');
+  fb.innerHTML=`<div class="fb-lbl ${pct===100?'ok':pct>=50?'warn':'no'}">LOCKED IN — ${pct===100?'PERFECT TRIAGE':'PARTIAL — SEE CORRECTIONS'} (${correct}/${round.cves.length} CORRECT)</div>${round.explanation}<br><br><strong>Correct priority order:</strong><br>${round.cves.map(c=>c).sort((a,b)=>a.priority-b.priority).map((c,k)=>(k+1)+'. '+c.id+' — '+c.name).join('<br>')}`;
+
+  const nextBtn=document.createElement('div');
+  nextBtn.className='nav';
+  nextBtn.style.cssText='display:flex;justify-content:flex-end;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);';
+  nextBtn.innerHTML=`<button class="btn btn-acc" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT ROUND →'}</button>`;
+  fb.after(nextBtn);
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*25))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Vulnerability Triage Expert 🩹','You correctly prioritized patches by combining CVSS scores with real-world context — exploitability, asset criticality, and active exploitation. That\'s how professional security teams actually work.'],mid:['Good Triage Instincts 🎯','Review the scenarios where context overrode CVSS score — an air-gapped system with CVSS 9.1 is lower priority than an internet-facing system with CVSS 8.1.'],low:['Keep Building 📚','Remember: CVSS score is a starting point. Ask: Is it exploited in the wild? Is the asset internet-facing? What data/systems are at risk? Those answers change priority.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=ROUNDS.map((r,i)=>{
+    const res=results[i]||{correct:0,total:r.cves.length,pts:0};
+    return `<div class="b-row"><div class="b-check">${res.correct===res.total?'✅':'⚠️'}</div><div class="b-text"><strong>${r.label.split('—')[1].trim()}</strong> — ${res.correct}/${res.total} correct</div><div class="b-pts">+${res.pts} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];selectedCVE={};rankSlots={};locked=[];_chg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:4,sim:'patch',screenId:''+('s'+(total+1))+'',score:score,max:total*25,items:ROUNDS.map(function(rd,i){var r=results[i]||{correct:0,total:rd.cves.length,pts:0,order:[]};return {label:rd.label.split('—')[1].trim(),result:r.correct===r.total?'correct':(r.correct>0?'partial':'incorrect'),pts:r.pts,max:25,response:r.correct+'/'+r.total+' ranked correctly. Order: '+(r.order||[]).map(function(s,k){return (k+1)+') '+s;}).join(' '),expected:rd.cves.slice().sort(function(a,b){return a.priority-b.priority;}).map(function(c,k){return (k+1)+') '+c.id;}).join(' '),changes:_chg[i]||0};})});
+};
+const _apRestart=restart;
+restart=function(){locked=[];_chg=[];APSim.start(4,'patch');_apRestart();};
+APSim.start(4,'patch');
+
+goTo(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="0" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="frq">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Free-Response Question — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#fbbf24;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--acc) 2%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--acc) 2%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:24px 20px 80px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.badge{background:var(--acc);color:#000;font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.back{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text3);text-decoration:none;border:1px solid var(--border);padding:8px 14px;}
+.back:hover{color:var(--text2);border-color:var(--border2);}
+.intro{background:var(--panel2);border:1px solid var(--border2);padding:16px 20px;font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:18px;}
+.intro b{color:var(--text);font-weight:500;}
+.steps{margin:8px 0 0 18px;}
+.prog{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;margin-bottom:14px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.pip{flex:1;min-width:46px;text-decoration:none;text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--text3);border:1px solid var(--border);padding:6px 4px;border-top:3px solid var(--border);}
+.pip.part{border-top-color:var(--acc);color:var(--text2);}
+.pip.done{border-top-color:var(--green);color:var(--green);}
+.tot{font-family:var(--mono);font-size:11px;color:var(--text2);white-space:nowrap;}
+.frq{background:var(--panel);border:1px solid var(--border);border-top:3px solid var(--acc);padding:22px;margin-bottom:20px;scroll-margin-top:60px;}
+.frq-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.frq-icon{font-size:26px;}
+.frq-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--acc);}
+.frq-title{font-family:var(--display);font-size:20px;font-weight:700;letter-spacing:-.01em;}
+.scen{background:var(--bg3);border:1px solid var(--border);padding:14px 16px;font-size:14px;line-height:1.7;margin-bottom:16px;}
+.scen b{color:var(--acc);font-weight:500;}
+.part{margin-bottom:16px;}
+.part-q{font-size:14px;line-height:1.65;margin-bottom:8px;}
+.part-q .k{font-family:var(--mono);color:var(--acc);margin-right:6px;}
+.part-q .pts{font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:6px;white-space:nowrap;}
+textarea.ans{width:100%;min-height:110px;resize:vertical;background:var(--bg);color:var(--text);border:1px solid var(--border2);padding:11px 13px;font-family:var(--sans);font-size:14px;line-height:1.6;}
+textarea.ans:focus{outline:none;border-color:var(--acc);}
+.wc{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:right;margin-top:3px;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px;}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:10px 16px;cursor:pointer;border:1px solid var(--acc);background:transparent;color:var(--acc);transition:all .2s;}
+.btn:hover{background:color-mix(in srgb,var(--acc) 8%,transparent);}
+.btn.primary{background:var(--acc);color:#000;font-weight:700;}
+.btn.primary:hover{filter:brightness(1.08);}
+.btn.quiet{border-color:var(--border2);color:var(--text2);}
+.status{font-family:var(--mono);font-size:11px;color:var(--green);min-height:16px;}
+.status.err{color:var(--amber);}
+.final{background:var(--panel);border:1px solid var(--border2);border-top:3px solid var(--green);padding:22px;}
+.final h2{font-family:var(--display);font-size:20px;margin-bottom:6px;}
+.final p,.final li{font-size:13px;color:var(--text2);line-height:1.7;}
+.final li{margin-left:18px;}
+.final b{color:var(--text);font-weight:500;}
+.opt{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);margin:12px 0 4px;}
+.preview{width:100%;height:160px;margin-top:12px;background:var(--bg);color:var(--text2);border:1px solid var(--border);font-family:var(--mono);font-size:11px;padding:10px;resize:vertical;}
+.saved{font-family:var(--mono);font-size:10px;color:var(--text3);}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div class="badge" id="hBadge">Unit</div>
+    <div>
+      <div class="hdr-title" id="hTitle">Final Assessment: Free Response</div>
+      <div class="hdr-sub" id="hSub"></div>
+    </div>
+    <a class="back" id="hHub" href="sim_hub.html">← UNIT HUB</a>
+  </div>
+
+  <div class="intro">
+    <b id="introLead">One free-response question for each simulation in this unit.</b> Answer every part in complete sentences, using the vocabulary from the labs (control type vs. function, CIA triad, least privilege, and so on).
+    <ol class="steps">
+      <li>Write your answers below. Everything saves on this device as you type.</li>
+      <li>When you finish, scroll to the bottom and press <b>Copy for Schoology</b>.</li>
+      <li>Open the Schoology assignment and <b>paste</b> into the submission box, then submit there.</li>
+    </ol>
+  </div>
+
+  <div class="prog" id="prog"></div>
+  <div id="frqs"></div>
+
+  <div class="final" id="final">
+    <h2>Ready to submit?</h2>
+    <p>Pressing the button copies your name, every question, and your answers as plain text, ready to paste into Schoology.</p>
+    <div class="opt"><input type="checkbox" id="inclQ" checked> <label for="inclQ">Include the question text above each answer (recommended)</label></div>
+    <div class="row">
+      <button class="btn primary" id="copyAll">📋 Copy for Schoology</button>
+      <button class="btn" id="dl">⬇ Download as .txt</button>
+    </div>
+    <div class="status" id="finalStatus" style="margin-top:10px;"></div>
+    <textarea class="preview" id="preview" readonly style="display:none" onclick="this.select()"></textarea>
+  </div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>(function(){var u=+new URLSearchParams(location.search).get("u")||2;document.write('<script src="frq_u'+u+'.js"><\/script>');})();</script>
+<script>
+(function(){
+const UNIT=+new URLSearchParams(location.search).get('u')||2;
+const ALL=window.APSIM_FRQ[UNIT], KEY=APSim.frqKey, UDEF=APSim.units[UNIT];
+const PFX='u'+UNIT+'_';
+const qid=new URLSearchParams(location.search).get('frq');
+const ONLY=ALL.findIndex(f=>f.id===qid);          // -1 => show all five
+const FRQ=ONLY>=0?[ALL[ONLY]]:ALL;
+const NUM=f=>ALL.indexOf(f)+1;
+let mem={};
+function load(){if(window.IRONCREST_TRAINING)return IRONCREST_TRAINING.read('sim-frq',{});try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}return mem;}
+function save(d){mem=d;if(window.IRONCREST_TRAINING){IRONCREST_TRAINING.write('sim-frq',d);return;}try{localStorage.setItem(KEY,JSON.stringify(d));}catch(e){}}
+let ans=load();
+const $=id=>document.getElementById(id);
+const plain=h=>{const d=document.createElement('div');d.innerHTML=h.replace(/<br\s*\/?>/gi,'\n').replace(/&bull;/g,'•');return d.textContent.replace(/[ \t]+\n/g,'\n').trim();};
+const words=s=>(s.trim().match(/\S+/g)||[]).length;
+const total=FRQ.reduce((a,f)=>a+f.parts.reduce((b,p)=>b+p.pts,0),0);
+const filled=(f)=>f.parts.filter(p=>words(ans[PFX+f.id+p.key]||'')>=5).length;
+
+// build
+$('frqs').innerHTML=FRQ.map((f,i)=>`
+  <section class="frq" id="${f.id}">
+    <div class="frq-top"><span class="frq-icon">${f.icon}</span><div><div class="frq-lbl">FRQ ${f.sim} · ${f.simTitle.toUpperCase()}</div><div class="frq-title">${f.title}</div></div></div>
+    <div class="scen">${f.scenario}</div>
+    ${f.parts.map(p=>`
+      <div class="part">
+        <div class="part-q"><span class="k">(${p.key})</span>${p.prompt}<span class="pts">[${p.pts} pt${p.pts>1?'s':''}]</span></div>
+        <textarea class="ans" id="t-${PFX}${f.id}${p.key}" data-k="${PFX}${f.id}${p.key}" placeholder="Type your answer here…"></textarea>
+        <div class="wc" id="wc-${PFX}${f.id}${p.key}">0 words</div>
+      </div>`).join('')}
+    <div class="row">${ONLY>=0?'':`<button class="btn quiet" data-copy="${f.id}">Copy just this question</button>`}<span class="status" id="st-${f.id}"></span></div>
+  </section>`).join('');
+
+document.querySelectorAll('textarea.ans').forEach(t=>{
+  const k=t.dataset.k; t.value=ans[k]||''; upd(k,t.value);
+  t.addEventListener('input',()=>{ans[k]=t.value;save(ans);upd(k,t.value);renderProg();});
+});
+function upd(k,v){const n=words(v);$('wc-'+k).textContent=n+' word'+(n===1?'':'s');}
+
+function renderProg(){
+  let doneParts=0;
+  $('prog').innerHTML=FRQ.map((f,i)=>{
+    const n=filled(f); doneParts+=n;
+    return `<a class="pip ${n===f.parts.length?'done':n>0?'part':''}" href="#${f.id}">FRQ ${f.sim} · ${n}/${f.parts.length}</a>`;
+  }).join('')+`<span class="tot">${doneParts}/${FRQ.length*3} parts answered</span>`;
+}
+renderProg();
+
+function header(){
+  const s=APSim.getStudent()||{name:'(name not entered)',period:''};
+  return 'AP CYBERSECURITY — UNIT '+UNIT+' FRQ'+(ONLY>=0?' '+FRQ[0].sim+' ('+FRQ[0].simTitle+')':'S')+'\nStudent: '+s.name+(s.period?'\nClass/Period: '+s.period:'')+'\nDate: '+new Date().toLocaleDateString()+'\n';
+}
+function frqText(f,i,withQ){
+  let out='\n==============================\nFRQ '+f.sim+' ('+f.simTitle+'): '+f.title+'\n==============================\n';
+  if(withQ) out+='Scenario: '+plain(f.scenario)+'\n';
+  f.parts.forEach(p=>{
+    out+='\n';
+    if(withQ) out+='('+p.key+') '+plain(p.prompt).replace(/\n/g,'\n    ')+' ['+p.pts+' pt'+(p.pts>1?'s':'')+']\nAnswer:\n';
+    else out+='('+p.key+') ';
+    out+=((ans[PFX+f.id+p.key]||'').trim()||'[no answer]')+'\n';
+  });
+  return out;
+}
+function build(only){
+  const withQ=$('inclQ').checked;
+  if(only!=null) return header()+frqText(FRQ[only],only,withQ);
+  return header()+FRQ.map((f,i)=>frqText(f,i,withQ)).join('');
+}
+function missing(){return FRQ.reduce((a,f)=>a+f.parts.length-filled(f),0);}
+
+function copy(text,statusEl,okMsg,boxEl){
+  function fb(){
+    boxEl.style.display='block';boxEl.value=text;boxEl.focus();boxEl.select();
+    try{document.execCommand('copy');statusEl.className='status';statusEl.textContent=okMsg;}
+    catch(e){statusEl.className='status err';statusEl.textContent='Select the text in the box below and copy it (Ctrl/Cmd+C).';}
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(()=>{statusEl.className='status';statusEl.textContent=okMsg;},fb);
+  else fb();
+}
+$('copyAll').onclick=()=>{
+  const m=missing(), st=$('finalStatus');
+  if(m>0 && !confirm(m+' part'+(m===1?' is':'s are')+' still blank or very short. Copy anyway?')) return;
+  copy(build(),st,'✓ Copied! Now paste it into the Schoology assignment'+(m?' (note: '+m+' part'+(m===1?'':'s')+' unfinished)':'')+'.',$('preview'));
+};
+$('dl').onclick=()=>{
+  const s=APSim.getStudent()||{name:'student'};
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([build()],{type:'text/plain'}));
+  a.download='Unit'+UNIT+'_FRQ'+(ONLY>=0?FRQ[0].sim.replace('.','-'):'s')+'_'+(s.name.replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'')||'student')+'.txt';
+  document.body.appendChild(a);a.click();a.remove();
+  $('finalStatus').className='status';$('finalStatus').textContent='✓ Downloaded. You can open it and copy from there.';
+};
+document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>{
+  const i=FRQ.findIndex(f=>f.id===b.dataset.copy);
+  copy(build(i),$('st-'+b.dataset.copy),'✓ Copied',$('preview'));
+});
+
+if(ONLY>=0){
+  const f=FRQ[0];
+  $('hTitle').textContent='FRQ '+f.sim+': '+f.title;
+  $('hSub').textContent='UNIT '+UNIT+' · SIM '+f.sim+' · '+f.simTitle.toUpperCase()+' · '+f.parts.reduce((a,p)=>a+p.pts,0)+' POINTS';
+  $('introLead').textContent='Free-response question for Sim '+f.sim+' ('+f.simTitle+').';
+  document.title='FRQ '+f.sim+' — AP Cybersecurity';
+  $('final').querySelector('p').textContent='Pressing the button copies your name, this question, and your answers as plain text, ready to paste into Schoology.';
+  const more=document.createElement('div');
+  more.style.cssText='margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);';
+  more.innerHTML='<a href="'+UDEF.hub+'" style="color:var(--acc);">← Back to the Unit '+UNIT+' hub</a> to launch your next sim.';
+  $('final').appendChild(more);
+}
+$('hBadge').textContent='Unit '+UNIT; $('hHub').href=UDEF.hub; $('hHub').textContent='← UNIT '+UNIT+' HUB';
+if(ONLY<0){ $('hSub').textContent='UNIT '+UNIT+' · '+UDEF.title.toUpperCase()+' · '+ALL.length+' FRQs · '+ALL.reduce((a,f)=>a+f.parts.reduce((b,p)=>b+p.pts,0),0)+' POINTS'; document.title='Unit '+UNIT+' Free-Response — AP Cybersecurity'; }
+})();
+</script>
+</body>
+</html>

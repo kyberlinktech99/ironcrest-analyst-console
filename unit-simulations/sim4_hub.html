@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="4" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="hub">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Unit 4 Sim Lab — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--amber) 2%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--amber) 2%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+.hero{text-align:center;padding:40px 0 36px;border-bottom:1px solid var(--border);margin-bottom:36px;}
+.hero-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--text3);margin-bottom:14px;}
+.hero-title{font-family:var(--display);font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:1.0;margin-bottom:12px;}
+.hero-title span{color:var(--amber);}
+.hero-sub{font-size:16px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+.hero-stats{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat-val{font-family:var(--mono);font-size:28px;font-weight:700;display:block;margin-bottom:2px;}
+.stat-lbl{font-size:11px;color:var(--text3);letter-spacing:.08em;}
+.sims-title{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--text3);margin-bottom:18px;}
+.sims-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:36px;}
+.sim-card{background:var(--panel);border:1px solid var(--border);padding:0;cursor:pointer;text-decoration:none;display:block;transition:all .25s;position:relative;overflow:hidden;}
+.sim-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.sim-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.sim-card-body{padding:20px;}
+.sim-num{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.15em;margin-bottom:10px;}
+.sim-icon{font-size:30px;display:block;margin-bottom:10px;}
+.sim-title{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px;}
+.sim-desc{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:12px;}
+.sim-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.sim-tag{font-family:var(--mono);font-size:9px;padding:3px 7px;background:var(--bg);border:1px solid var(--border2);color:var(--text3);letter-spacing:.06em;}
+.sim-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sim-meta{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.sim-cta{font-family:var(--mono);font-size:11px;letter-spacing:.08em;font-weight:700;opacity:.6;transition:opacity .2s;}
+.sim-card:hover .sim-cta{opacity:1;}
+.t-amber::before,.t-amber .sim-cta{color:var(--amber);}.t-amber::before{background:var(--amber);}
+.t-orange::before,.t-orange .sim-cta{color:var(--c-orange);}.t-orange::before{background:var(--c-orange);}
+.t-yellow::before,.t-yellow .sim-cta{color:var(--c-amber);}.t-yellow::before{background:var(--c-amber);}
+.t-gold::before,.t-gold .sim-cta{color:var(--c-amber);}.t-gold::before{background:var(--c-amber);}
+.t-lime::before,.t-lime .sim-cta{color:var(--c-lime);}.t-lime::before{background:var(--c-lime);}
+.skills-section{background:var(--panel);border:1px solid var(--border);padding:20px 24px;margin-bottom:28px;}
+.skills-title{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--text3);margin-bottom:14px;}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.skill-item{display:flex;align-items:flex-start;gap:10px;}
+.skill-check{color:var(--amber);font-size:14px;flex-shrink:0;margin-top:1px;}
+.skill-text{font-size:12px;color:var(--text2);line-height:1.5;}
+.skill-text strong{display:block;color:var(--text);font-size:13px;margin-bottom:1px;}
+.exam-note{background:var(--panel2);border:1px solid var(--border2);padding:16px 20px;margin-bottom:28px;display:flex;gap:14px;align-items:flex-start;}
+.exam-icon{font-size:22px;flex-shrink:0;}
+.exam-text{font-size:13px;color:var(--text2);line-height:1.6;}
+.exam-text strong{color:var(--text);}
+.nav-row{display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-top:1px solid var(--border);flex-wrap:wrap;gap:12px;}
+.nav-link{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-decoration:none;padding:10px 20px;border:1px solid var(--border);transition:all .2s;}
+.nav-link.prev{color:var(--text3);}.nav-link.prev:hover{color:var(--text2);}
+.nav-link.next{color:var(--amber);border-color:var(--amber);}.nav-link.next:hover{background:color-mix(in srgb,var(--amber) 8%,transparent);}
+@media(max-width:600px){.sims-grid,.skills-grid{grid-template-columns:1fr;}.hero-title{font-size:36px;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div id="u2-chip-host" style="float:right;"></div>
+
+<a href="sim3_hub.html" class="nav-link prev" style="display:inline-flex;margin-bottom:24px;">← UNIT 3 HUB</a>
+
+<div class="hero">
+  <div class="hero-kicker">AP CYBERSECURITY · SIMULATION LAB</div>
+  <div class="hero-title">UNIT 4<br><span>SECURING DEVICES</span></div>
+  <div class="hero-sub">Five interactive simulations covering malware taxonomy, authentication factors, log analysis, vulnerability triage, and incident response — the device-level security skills tested most heavily on the AP exam.</div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-val" style="color:var(--amber);">5</span><span class="stat-lbl">SIMULATIONS</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--c-lime);">~55</span><span class="stat-lbl">MINUTES TOTAL</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--c-orange);">3</span><span class="stat-lbl">CORE SKILLS</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--c-amber);">AP</span><span class="stat-lbl">EXAM ALIGNED</span></div>
+  </div>
+</div>
+
+<div class="skills-section">
+  <div class="skills-title">// UNIT 4 SKILLS YOU'LL PRACTICE</div>
+  <div class="skills-grid">
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Classify malware by behavior</strong>Virus, worm, trojan, ransomware, spyware, rootkit — identified from EDR behavior reports, not file signatures</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Evaluate authentication strength</strong>Know/Have/Are factors, what true MFA requires, and the "two steps ≠ two factors" distinction the AP exam tests</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Read auth logs for attack patterns</strong>Distinguish brute force, password spraying, and credential stuffing from raw authentication log data</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Triage CVEs by real-world priority</strong>Combine CVSS scores with exploitability, asset criticality, and active exploitation to set patch order</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Sequence incident response correctly</strong>Apply the NIST IR lifecycle to real breach scenarios — containment before eradication, evidence before action</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Connect device security to CIA Triad</strong>Every malware type and IR phase maps back to which pillar is violated and how the response addresses it</div></div>
+  </div>
+</div>
+
+<div class="exam-note">
+  <span class="exam-icon">📝</span>
+  <div class="exam-text"><strong>AP Exam Connection:</strong> Unit 4 is the most directly tested unit on the AP FRQ. The Device Security Analysis FRQ asks students to identify a device-level attack, classify the threat, and recommend specific controls — exactly what these sims train. Know the NIST IR phases by name and order, the three MFA factor categories, and the difference between malware types by mechanism (how it spreads) rather than by damage.</div>
+</div>
+
+<div class="sims-title">// UNIT 4 SIMULATIONS — SELECT TO BEGIN</div>
+<div class="sims-grid">
+
+  <a href="sim4_malware.html" class="sim-card t-amber">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 4.1</div>
+      <span class="sim-icon">🦠</span>
+      <div class="sim-title">Malware Taxonomy Lab</div>
+      <div class="sim-desc">Six EDR behavior reports — read the indicators and classify the malware type. Virus, worm, trojan, ransomware, spyware, or rootkit? Each sample includes the defining behavioral marker and a trap explanation showing why common wrong answers are tempting. Classification is by mechanism, not damage.</div>
+      <div class="sim-tags">
+        <span class="sim-tag">VIRUS vs WORM</span>
+        <span class="sim-tag">ROOTKIT</span>
+        <span class="sim-tag">RANSOMWARE</span>
+        <span class="sim-tag">EDR BEHAVIOR</span>
+      </div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">~10 MIN · 6 SAMPLES</span>
+      <span class="sim-cta t-amber">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a href="sim4_auth.html" class="sim-card t-orange">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 4.2</div>
+      <span class="sim-icon">🔑</span>
+      <div class="sim-title">Authentication Factor Builder</div>
+      <div class="sim-desc">Four login scenarios — classify each factor into Know/Have/Are by clicking and placing, then answer the MFA determination question (+15 pts). Bank password + VPN PIN: is that MFA? Smart badge + fingerprint with no password: is that MFA? The AP exam tests these exact scenarios.</div>
+      <div class="sim-tags">
+        <span class="sim-tag">KNOW / HAVE / ARE</span>
+        <span class="sim-tag">TRUE MFA</span>
+        <span class="sim-tag">TOTP</span>
+        <span class="sim-tag">BIOMETRICS</span>
+      </div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">~10 MIN · 4 SCENARIOS</span>
+      <span class="sim-cta t-orange">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a href="sim4_logs.html" class="sim-card t-yellow">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 4.3</div>
+      <span class="sim-icon">🕵️</span>
+      <div class="sim-title">Log Analysis Detective</div>
+      <div class="sim-desc">Three authentication log sets with statistics panels — SSH brute force to credential compromise, Active Directory password spraying evading lockout, and SaaS credential stuffing with impossible travel detection. Two questions per log: identify the attack AND recommend the correct defense. Six questions total.</div>
+      <div class="sim-tags">
+        <span class="sim-tag">BRUTE FORCE</span>
+        <span class="sim-tag">PASSWORD SPRAY</span>
+        <span class="sim-tag">CRED STUFFING</span>
+        <span class="sim-tag">2 Qs PER LOG</span>
+      </div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">~12 MIN · 3 LOG SETS</span>
+      <span class="sim-cta t-yellow">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a href="sim4_patch.html" class="sim-card t-gold">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 4.4</div>
+      <span class="sim-icon">🩹</span>
+      <div class="sim-title">Patch Priority Ranker</div>
+      <div class="sim-desc">Two vulnerability scanner results — hospital network and financial services. Click CVEs to expand full context (exploit availability, asset criticality, active exploitation), then drag-to-rank from highest to lowest priority. A CVSS 9.1 on an air-gapped system ranks below a CVSS 8.1 on an internet-facing server. Context beats raw score.</div>
+      <div class="sim-tags">
+        <span class="sim-tag">CVSS SCORING</span>
+        <span class="sim-tag">EXPLOIT CONTEXT</span>
+        <span class="sim-tag">ASSET CRITICALITY</span>
+        <span class="sim-tag">TRIAGE</span>
+      </div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">~10 MIN · 2 ROUNDS · 8 CVEs</span>
+      <span class="sim-cta t-gold">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a href="sim4_ir.html" class="sim-card t-lime" style="grid-column:1/-1;max-width:480px;margin:0 auto;width:100%;">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 4.5 — CAPSTONE</div>
+      <span class="sim-icon">🚨</span>
+      <div class="sim-title">Incident Response Sequencer</div>
+      <div class="sim-desc">Three active incidents — ransomware in a finance department, SQL injection data breach at a cloud SaaS, and an insider threat data exfiltration. For each: read the brief, select actions from the scrambled bank, and place them in the correct NIST IR lifecycle order. Eight steps per incident. Phase tags (Containment, Eradication, Recovery) help — but the order within phases matters too.</div>
+      <div class="sim-tags">
+        <span class="sim-tag">NIST IR LIFECYCLE</span>
+        <span class="sim-tag">RANSOMWARE</span>
+        <span class="sim-tag">DATA BREACH</span>
+        <span class="sim-tag">INSIDER THREAT</span>
+        <span class="sim-tag">CAPSTONE</span>
+      </div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">~15 MIN · 3 INCIDENTS · CAPSTONE</span>
+      <span class="sim-cta t-lime">LAUNCH →</span>
+    </div>
+  </a>
+
+</div>
+
+<div id="u2-record"></div>
+
+<div class="nav-row">
+  <a href="sim3_hub.html" class="nav-link prev">← UNIT 3 — SECURING NETWORKS</a>
+  <a href="sim5_hub.html" class="nav-link next">UNIT 5 — SECURING APPS & DATA →</a>
+</div>
+
+<div style="text-align:center;margin-top:18px;"> &nbsp;·&nbsp; </div>
+</div>
+<script src="apsim_record.js"></script>
+<script>
+APSim.renderHub('u2-record',4);
+document.addEventListener('apsim-student',function(){APSim.renderHub('u2-record',4);});
+</script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="1" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim_risk">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Risk Matrix Lab — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--accent:#a3e635;--dim:#84cc16;--I:#00ff9d;--warn:#ffd166;--danger:#ff4757;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-lime) 3%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-lime) 3%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--accent);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--accent);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--accent);box-shadow:0 0 8px var(--accent);}
+.prog-step.done{background:var(--I);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.sec-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-main{background:var(--accent);color:var(--on-acc);font-weight:700;}
+.btn-main:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-lime) 35%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-lime) 8%,transparent);}
+.btn-I{background:var(--I);color:var(--on-acc);font-weight:700;}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:32px 20px 24px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;}
+.intro-title{font-family:var(--display);font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px;color:var(--accent);}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* FORMULA */
+.formula{display:flex;align-items:center;justify-content:center;gap:16px;padding:18px;background:var(--panel);border:1px solid var(--border2);margin-bottom:28px;max-width:480px;margin-left:auto;margin-right:auto;}
+.formula-part{text-align:center;}
+.formula-val{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--accent);}
+.formula-lbl{font-size:11px;color:var(--text3);margin-top:2px;}
+.formula-op{font-family:var(--mono);font-size:24px;color:var(--text3);}
+
+/* THREAT CARD */
+.threat-box{background:var(--panel);border:1px solid var(--border2);padding:20px;margin-bottom:18px;}
+.threat-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:10px;}
+.threat-title{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text);}
+.threat-context{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:12px;}
+.threat-factors{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.factor{background:var(--bg);border:1px solid var(--border);padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.5;}
+.factor strong{display:block;font-size:10px;font-family:var(--mono);letter-spacing:.08em;color:var(--accent);margin-bottom:3px;}
+
+/* SLIDERS */
+.sliders{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:16px;}
+.slider-group{background:var(--panel);border:1px solid var(--border);padding:16px;}
+.slider-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+.slider-label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--accent);}
+.slider-val{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--text);}
+.slider-desc-row{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:6px;}
+input[type=range]{width:100%;appearance:none;height:6px;background:var(--border2);border-radius:3px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;background:var(--accent);border-radius:50%;cursor:pointer;box-shadow:0 0 8px color-mix(in srgb,var(--c-lime) 40%,transparent);}
+.risk-meter{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);margin-bottom:16px;}
+.risk-meter-label{font-family:var(--mono);font-size:11px;color:var(--text3);white-space:nowrap;}
+.risk-bar-wrap{flex:1;height:10px;background:var(--border);border-radius:5px;overflow:hidden;}
+.risk-bar-fill{height:100%;border-radius:5px;transition:width .3s,background .3s;}
+.risk-score-num{font-family:var(--mono);font-size:18px;font-weight:700;min-width:3ch;text-align:right;}
+.risk-tier{font-family:var(--mono);font-size:10px;text-align:right;min-width:6ch;letter-spacing:.06em;}
+
+/* ANSWER comparison */
+.answer-reveal{background:var(--panel);border:1px solid var(--border);padding:14px 16px;margin-top:12px;display:none;}
+.answer-reveal.show{display:block;animation:fadeIn .3s;}
+.ar-header{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:8px;}
+.ar-correct{color:var(--I);}
+.ar-off{color:var(--warn);}
+.ar-wrong{color:var(--danger);}
+.ar-compare{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;}
+.ar-cell{text-align:center;padding:10px;background:var(--bg);}
+.ar-cell-lbl{font-size:10px;color:var(--text3);margin-bottom:3px;}
+.ar-cell-val{font-family:var(--mono);font-size:18px;font-weight:700;}
+.your-val{color:var(--warn);}
+.correct-val{color:var(--I);}
+.ar-explanation{font-size:13px;color:var(--text2);line-height:1.65;}
+.submit-btn{display:block;width:100%;padding:11px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;background:var(--accent);color:var(--on-acc);font-weight:700;text-transform:uppercase;transition:all .2s;margin-bottom:12px;}
+.submit-btn:hover{filter:brightness(1.1);}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* RESULTS */
+.result-hero{text-align:center;padding:32px 0 24px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--I);text-shadow:0 0 30px color-mix(in srgb,var(--green) 40%,transparent);}
+.result-score.mid{color:var(--warn);}
+.result-score.low{color:var(--danger);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:22px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:15px;width:20px;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--accent);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.sliders,.threat-factors,.ar-compare,.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--accent:var(--c-lime);--dim:var(--c-lime);--I:var(--green);--warn:var(--amber);--danger:var(--red);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">AP Cyber</div>
+  <div><div class="hdr-title">Risk Matrix Lab</div><div class="hdr-sub">UNIT 1 · INTRO TO SECURITY · RISK ANALYSIS</div></div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">THREAT 1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">THREAT 2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">THREAT 3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">THREAT 4</span><div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p5"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">⚖️</span>
+    <div class="intro-title">Risk Matrix Lab</div>
+    <div class="intro-desc">Risk isn't just "is there a threat" — it's how likely it is AND how bad it would be. Use the formula below to rate four real threats facing a school district. Your ratings will be compared to expert assessments.</div>
+    <div class="formula">
+      <div class="formula-part"><div class="formula-val">RISK</div><div class="formula-lbl">Overall Score</div></div>
+      <div class="formula-op">=</div>
+      <div class="formula-part"><div class="formula-val">L</div><div class="formula-lbl">Likelihood (1–5)</div></div>
+      <div class="formula-op">×</div>
+      <div class="formula-part"><div class="formula-val">I</div><div class="formula-lbl">Impact (1–5)</div></div>
+    </div>
+    <button class="btn btn-main" onclick="goTo(1)">▶ BEGIN ASSESSMENT</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+
+<div class="screen" id="s5">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl" style="margin-bottom:10px;">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">RISK FORMULA</div><div class="concept-def">Risk = Likelihood × Impact. A low-likelihood event with catastrophic impact can still be high-risk. Both dimensions matter.</div></div>
+    <div class="concept-card"><div class="concept-term">RISK PRIORITIZATION</div><div class="concept-def">Organizations can't fix everything at once. High-risk items (score 15–25) get immediate attention; low-risk (1–6) may be accepted or monitored.</div></div>
+    <div class="concept-card"><div class="concept-term">RESIDUAL RISK</div><div class="concept-def">The risk that remains after controls are applied. No system is perfectly secure — the goal is to reduce risk to an acceptable level.</div></div>
+    <div class="concept-card"><div class="concept-term">RISK TOLERANCE</div><div class="concept-def">Different organizations accept different levels of risk. A hospital has near-zero tolerance for patient data exposure; a school may tolerate more risk.</div></div>
+    <div class="concept-card"><div class="concept-term">THREAT vs VULNERABILITY</div><div class="concept-def">Threat = who/what could attack. Vulnerability = the weakness they'd exploit. Risk requires both — a threat with no vulnerability is harmless.</div></div>
+    <div class="concept-card"><div class="concept-term">RISK TREATMENT</div><div class="concept-def">Four options: Mitigate (add controls), Transfer (insurance), Avoid (stop the activity), Accept (acknowledge and monitor).</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ RUN AGAIN</button>
+    <button class="btn btn-I" onclick="window.location.href='sim_hub.html'">← BACK TO HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const THREATS = [
+  {
+    label:"THREAT 001",
+    title:"Phishing Attack on Staff Email",
+    context:"Westlake School District uses Google Workspace. Staff regularly receive emails from parents, vendors, and the district office. The district has no email filtering and hasn't conducted security awareness training in 3 years. Last year, 2 other districts in the state were breached via staff phishing.",
+    factors:{
+      "Attack frequency":"Phishing is the #1 attack vector globally — millions of attempts daily",
+      "Staff awareness":"No recent training; staff may not recognize modern phishing tactics",
+      "Current controls":"No email filtering, no MFA on staff accounts",
+      "Potential impact":"Student records, financial data, and access to internal systems all at risk"
+    },
+    answerL:4, answerI:4,
+    explanation:"Likelihood is high (4) — phishing is extremely common, the district has no filtering, and nearby districts have already been hit. Impact is high (4) — student records, financial systems, and credentials to other services could all be compromised. Risk score: 16 (HIGH). Priority action: email filtering + MFA + training."
+  },
+  {
+    label:"THREAT 002",
+    title:"Physical Theft of Student Laptop",
+    context:"The district issues Chromebooks to all 8,000 students for home use. Devices are encrypted and require a district Google account to sign in. Students can't access the underlying file system. The district has remote wipe capability but it requires someone to report the theft first.",
+    factors:{
+      "Theft likelihood":"Student devices are frequently lost or stolen — a realistic daily occurrence",
+      "Data accessible":"Login required, encrypted storage, limited local data stored",
+      "Remote wipe":"Available, but depends on timely theft reporting",
+      "Potential impact":"Mostly the device cost (~$300) and potential brief access window before wipe"
+    },
+    answerL:4, answerI:2,
+    explanation:"Likelihood is high (4) — laptop theft among students is a common, frequent occurrence. But Impact is low (2) — encryption and mandatory login mean an attacker gets a $300 device, not student data. Risk score: 8 (MEDIUM-LOW). This is a great example of how controls dramatically reduce impact while likelihood stays high."
+  },
+  {
+    label:"THREAT 003",
+    title:"Ransomware Attack on District Servers",
+    context:"The district's finance and HR systems run on aging Windows servers with manual patching (patches applied quarterly). These servers aren't segmented from the rest of the network. A ransomware group has publicly announced it is specifically targeting school districts in the region.",
+    factors:{
+      "Attacker targeting":"Criminal group has publicly announced regional school district targeting",
+      "Patch status":"Quarterly patching leaves a window; many known vulnerabilities unpatched for weeks",
+      "Network segmentation":"Servers connected to the same network as classrooms and offices",
+      "Potential impact":"Payroll, HR records, finance systems could be locked; possible multi-week outage"
+    },
+    answerL:4, answerI:5,
+    explanation:"Likelihood is high (4) — a ransomware group is actively targeting the district's sector, and unpatched quarterly servers are easy targets. Impact is critical (5) — payroll, HR, and finance lockout for weeks would be catastrophic for a school district. Risk score: 20 (CRITICAL). Immediate action required: patch NOW, segment networks, backup verification."
+  },
+  {
+    label:"THREAT 004",
+    title:"Nation-State Attack on Cafeteria POS System",
+    context:"The district's cafeteria uses a point-of-sale system for student lunch payments. The system is handled by a third-party vendor and stores minimal payment data (no full card numbers). Nation-state actors focus almost exclusively on government, defense, and critical infrastructure targets.",
+    factors:{
+      "Attacker motive":"Nation-states target strategic intelligence, not school lunch data",
+      "Data value":"Minimal financial data stored; not strategically valuable",
+      "Vendor managed":"Third-party handles security; district has limited visibility",
+      "Potential impact":"Payment disruption; embarrassment; limited financial exposure"
+    },
+    answerL:1, answerI:2,
+    explanation:"Likelihood is very low (1) — nation-states have no strategic interest in a school cafeteria system. Impact is low (2) — even if breached, minimal sensitive data is stored. Risk score: 2 (LOW). This threat can likely be accepted or transferred (covered by vendor contract). Resources should go to Threats 001 and 003 instead — this is risk prioritization in action."
+  }
+];
+
+let score=0,results=[],_chg=[];
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<6;i++){const el=document.getElementById('p'+i);el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=4)buildThreat(n-1);
+  if(n===5)buildResults();
+}
+
+const tierLabel=s=>s>=20?'CRITICAL':s>=15?'HIGH':s>=8?'MEDIUM':s>=4?'LOW':'MINIMAL';
+const tierColor=s=>s>=20?'var(--danger)':s>=15?'var(--warn)':s>=8?'var(--accent)':'var(--I)';
+
+function buildThreat(idx){
+  const t=THREATS[idx];
+  const screen=document.getElementById('s'+(idx+1));
+  const factorHtml=Object.entries(t.factors).map(([k,v])=>`<div class="factor"><strong>${k.toUpperCase()}</strong>${v}</div>`).join('');
+
+  screen.innerHTML=`
+    <div class="sec-lbl">// THREAT ${idx+1} OF 4 — RATE THE RISK</div>
+    <div class="sec-title">${t.title}</div>
+    <div class="threat-box">
+      <div class="threat-label">${t.label} — THREAT BRIEFING</div>
+      <div class="threat-context">${t.context}</div>
+      <div class="threat-factors">${factorHtml}</div>
+    </div>
+
+    <div class="sliders">
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">LIKELIHOOD</span>
+          <span class="slider-val" id="lval-${idx}">3</span>
+        </div>
+        <div class="slider-desc-row"><span>1 = Very Unlikely</span><span>5 = Near Certain</span></div>
+        <input type="range" min="1" max="5" value="3" oninput="updateMeter(${idx})" id="lslide-${idx}">
+      </div>
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">IMPACT</span>
+          <span class="slider-val" id="ival-${idx}">3</span>
+        </div>
+        <div class="slider-desc-row"><span>1 = Minimal</span><span>5 = Catastrophic</span></div>
+        <input type="range" min="1" max="5" value="3" oninput="updateMeter(${idx})" id="islide-${idx}">
+      </div>
+    </div>
+
+    <div class="risk-meter">
+      <span class="risk-meter-label">RISK SCORE</span>
+      <div class="risk-bar-wrap"><div class="risk-bar-fill" id="rbar-${idx}" style="width:36%;background:var(--accent)"></div></div>
+      <span class="risk-score-num" id="rnum-${idx}">9</span>
+      <span class="risk-tier" id="rtier-${idx}" style="color:var(--accent)">MEDIUM</span>
+    </div>
+
+    <div class="lock-row"><button class="submit-btn" id="submit-${idx}" onclick="submitRisk(${idx})">🔒 LOCK IN ASSESSMENT</button><span class="lock-hint">Set your likelihood and impact ratings. You can adjust them until you lock in. The expert rating is revealed only after.</span></div>
+    <div class="answer-reveal" id="ar-${idx}"></div>
+    <div class="nav"><div></div><button class="btn btn-main" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===3?'SEE RESULTS →':'NEXT THREAT →'}</button></div>`;
+}
+
+function updateMeter(idx){
+  if(results[idx])return;
+  _chg[idx]=(_chg[idx]||0)+1;
+  const l=+document.getElementById('lslide-'+idx).value;
+  const i=+document.getElementById('islide-'+idx).value;
+  document.getElementById('lval-'+idx).textContent=l;
+  document.getElementById('ival-'+idx).textContent=i;
+  const risk=l*i;
+  const pct=((risk-1)/24)*100;
+  const bar=document.getElementById('rbar-'+idx);
+  bar.style.width=pct+'%';
+  bar.style.background=tierColor(risk);
+  document.getElementById('rnum-'+idx).textContent=risk;
+  document.getElementById('rtier-'+idx).textContent=tierLabel(risk);
+  document.getElementById('rtier-'+idx).style.color=tierColor(risk);
+}
+
+function submitRisk(idx){
+  if(results[idx])return;
+  const t=THREATS[idx];
+  const l=+document.getElementById('lslide-'+idx).value;
+  const i=+document.getElementById('islide-'+idx).value;
+  const yourRisk=l*i;
+  const correctRisk=t.answerL*t.answerI;
+  const lDiff=Math.abs(l-t.answerL);
+  const iDiff=Math.abs(i-t.answerI);
+  const totalDiff=lDiff+iDiff;
+  const pts=totalDiff===0?25:totalDiff<=2?15:totalDiff<=4?8:0;
+  score+=pts;
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  results[idx]={yourL:l,yourI:i,yourRisk,correctL:t.answerL,correctI:t.answerI,correctRisk,pts};
+
+  const arClass=totalDiff===0?'ar-correct':totalDiff<=2?'ar-off':'ar-wrong';
+  const arMsg=totalDiff===0?'// EXPERT MATCH':totalDiff<=2?'// CLOSE ASSESSMENT':'// RECALIBRATE';
+  const ar=document.getElementById('ar-'+idx);
+  ar.className='answer-reveal show';
+  ar.innerHTML=`
+    <div class="ar-header ${arClass}">LOCKED IN — ${arMsg.replace('// ','')} (+${pts} pts)</div>
+    <div class="ar-compare">
+      <div class="ar-cell"><div class="ar-cell-lbl">YOUR RATING</div><div class="ar-cell-val your-val">L:${l} × I:${i} = ${yourRisk}<br><small style="font-size:12px">${tierLabel(yourRisk)}</small></div></div>
+      <div class="ar-cell"><div class="ar-cell-lbl">EXPERT RATING</div><div class="ar-cell-val correct-val">L:${t.answerL} × I:${t.answerI} = ${correctRisk}<br><small style="font-size:12px">${tierLabel(correctRisk)}</small></div></div>
+      <div class="ar-cell"><div class="ar-cell-lbl">DIFFERENCE</div><div class="ar-cell-val" style="color:${totalDiff===0?'var(--I)':totalDiff<=2?'var(--warn)':'var(--danger)'};font-size:18px;">${totalDiff===0?'✓ Match':totalDiff+' points off'}</div></div>
+    </div>
+    <div class="ar-explanation">${t.explanation}</div>`;
+
+  document.getElementById('submit-'+idx).closest('.lock-row').style.display='none';
+  document.getElementById('lslide-'+idx).disabled=true;document.getElementById('islide-'+idx).disabled=true;
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const totalPts=results.reduce((a,r)=>a+(r?r.pts:0),0);
+  const pct=Math.round((totalPts/100)*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Risk Analyst 📊','Your risk assessments closely matched expert ratings. Strong intuition for likelihood and impact trade-offs.'],mid:['Developing Analyst 🎯','Good reasoning, some calibration needed. Review threats where you were off — what context did you miss?'],low:['Keep Calibrating 📚','Risk assessment is a skill that takes practice. Focus on what drives likelihood (controls in place) and impact (what data/systems are at stake).']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=THREATS.map((th,i)=>{
+    const r=results[i]||{yourL:'-',yourI:'-',yourRisk:'-',correctL:th.answerL,correctI:th.answerI,correctRisk:th.answerL*th.answerI,pts:0};
+    return `<div class="b-row"><div class="b-check">${r.pts===25?'✅':r.pts>0?'⚡':'❌'}</div><div class="b-text"><strong>${th.title}</strong>: Expert = L:${r.correctL}×I:${r.correctI}=${r.correctRisk} (${tierLabel(r.correctRisk)}) | You = ${r.yourRisk}</div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+
+function restart(){score=0;results=[];_chg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:1,sim:'risk',screenId:'s5',score:score,max:100,items:THREATS.map(function(th,i){var r=results[i]||{pts:0,yourL:'-',yourI:'-',yourRisk:'-'};return {label:th.title,result:r.pts===25?'correct':(r.pts>0?'partial':'incorrect'),pts:r.pts,max:25,response:'L:'+r.yourL+' x I:'+r.yourI+' = '+r.yourRisk,expected:'L:'+th.answerL+' x I:'+th.answerI+' = '+(th.answerL*th.answerI),changes:_chg[i]||0};})});
+};
+const _apRestart=restart;
+restart=function(){_chg=[];APSim.start(1,'risk');_apRestart();};
+APSim.start(1,'risk');
+
+goTo(0);
+</script>
+</body></html>

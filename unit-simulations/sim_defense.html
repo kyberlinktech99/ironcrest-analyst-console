@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="1" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim_defense">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Defense Builder — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--accent:#38bdf8;--I:#00ff9d;--warn:#ffd166;--danger:#ff4757;--red2:#ff6b6b;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-sky) 3%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-sky) 3%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--accent);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--accent);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--accent);box-shadow:0 0 8px var(--accent);}
+.prog-step.done{background:var(--I);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.sec-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-main{background:var(--accent);color:var(--on-acc);font-weight:700;}
+.btn-main:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-sky) 35%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-sky) 8%,transparent);}
+.btn-I{background:var(--I);color:var(--on-acc);font-weight:700;}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:32px 20px 24px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;}
+.intro-title{font-family:var(--display);font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px;color:var(--accent);}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+.layers-preview{display:flex;gap:0;max-width:500px;margin:0 auto 28px;overflow:hidden;border:1px solid var(--border2);}
+.layer-preview{flex:1;padding:14px 8px;text-align:center;font-size:10px;font-family:var(--mono);letter-spacing:.06em;border-right:1px solid var(--border2);}
+.layer-preview:last-child{border-right:none;}
+.lp-p{background:color-mix(in srgb,var(--c-sky) 10%,transparent);color:var(--accent);}
+.lp-t{background:color-mix(in srgb,var(--amber) 8%,transparent);color:var(--warn);}
+.lp-ad{background:color-mix(in srgb,var(--green) 8%,transparent);color:var(--I);}
+.lp-emoji{font-size:18px;display:block;margin-bottom:4px;}
+
+/* SCENARIO */
+.attack-scenario{background:var(--panel);border:1px solid var(--border2);border-left:3px solid var(--danger);padding:18px 20px;margin-bottom:18px;}
+.attack-label{font-family:var(--mono);font-size:10px;color:var(--danger);letter-spacing:.15em;margin-bottom:8px;}
+.attack-title{font-size:16px;font-weight:600;margin-bottom:6px;}
+.attack-desc{font-size:13px;color:var(--text2);line-height:1.65;}
+
+/* BUDGET + CONTROLS */
+.budget-bar{display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--bg3);border:1px solid var(--border);margin-bottom:16px;}
+.budget-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.budget-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.budget-fill{height:100%;background:var(--I);border-radius:4px;transition:all .3s;}
+.budget-num{font-family:var(--mono);font-size:14px;color:var(--I);min-width:6ch;text-align:right;}
+.budget-warn{color:var(--warn)!important;}
+.budget-over{color:var(--danger)!important;}
+
+.controls-section{margin-bottom:16px;}
+.controls-category{font-family:var(--mono);font-size:10px;letter-spacing:.15em;padding:8px 12px;margin-bottom:8px;}
+.cat-physical{background:color-mix(in srgb,var(--c-sky) 10%,transparent);color:var(--accent);}
+.cat-tech{background:color-mix(in srgb,var(--amber) 10%,transparent);color:var(--warn);}
+.cat-admin{background:color-mix(in srgb,var(--green) 10%,transparent);color:var(--I);}
+.controls-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+.control-item{background:var(--panel);border:1px solid var(--border);padding:13px;cursor:pointer;transition:all .2s;position:relative;}
+.control-item:hover{border-color:var(--accent);background:var(--panel2);}
+.control-item.selected{border-color:var(--I);}
+.control-item.selected::after{content:'✓';position:absolute;top:8px;right:10px;color:var(--I);font-weight:700;}
+.control-item.selected .ctrl-cost{color:var(--I);}
+.ctrl-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;}
+.ctrl-name{font-size:13px;font-weight:500;}
+.ctrl-cost{font-family:var(--mono);font-size:11px;color:var(--warn);flex-shrink:0;margin-top:1px;}
+.ctrl-desc{font-size:11px;color:var(--text2);line-height:1.5;}
+.ctrl-tags{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;}
+.ctrl-tag{font-family:var(--mono);font-size:8px;padding:2px 5px;background:var(--bg);border:1px solid var(--border2);color:var(--text3);}
+
+/* ATTACK SIMULATION */
+.attack-sim{background:var(--panel);border:1px solid var(--border2);overflow:hidden;margin-bottom:16px;}
+.sim-header{background:var(--bg);padding:10px 14px;font-family:var(--mono);font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);}
+.attack-steps{padding:14px;}
+.attack-step{display:flex;align-items:flex-start;gap:12px;padding:10px;margin-bottom:6px;border-left:3px solid transparent;transition:all .4s;}
+.attack-step.blocked{border-left-color:var(--I);background:color-mix(in srgb,var(--green) 4%,transparent);}
+.attack-step.succeeded{border-left-color:var(--danger);background:color-mix(in srgb,var(--red) 4%,transparent);}
+.step-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.step-content{flex:1;}
+.step-action{font-size:13px;margin-bottom:3px;}
+.step-result{font-family:var(--mono);font-size:10px;letter-spacing:.08em;}
+.blocked .step-result{color:var(--I);}
+.succeeded .step-result{color:var(--danger);}
+.step-control{font-size:11px;color:var(--text3);font-style:italic;margin-top:3px;}
+
+.sim-outcome{padding:14px 16px;font-size:14px;font-weight:500;text-align:center;font-family:var(--mono);display:none;}
+.sim-outcome.defended{background:color-mix(in srgb,var(--green) 8%,transparent);border-top:1px solid var(--I);color:var(--I);}
+.sim-outcome.breached{background:color-mix(in srgb,var(--red) 8%,transparent);border-top:1px solid var(--danger);color:var(--danger);}
+
+.feedback-box{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;color:var(--text2);margin-bottom:14px;display:none;}
+.feedback-box.show{display:block;animation:fadeIn .3s;}
+
+/* results */
+.result-hero{text-align:center;padding:32px 0 24px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--I);text-shadow:0 0 30px color-mix(in srgb,var(--green) 40%,transparent);}
+.result-score.mid{color:var(--warn);}
+.result-score.low{color:var(--danger);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:22px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:15px;width:20px;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--accent);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.controls-grid,.layers-preview,.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--accent:var(--c-sky);--I:var(--green);--warn:var(--amber);--danger:var(--red);--red2:var(--red);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">AP Cyber</div>
+  <div><div class="hdr-title">Defense-in-Depth Builder</div><div class="hdr-sub">UNIT 1 · INTRO TO SECURITY · LAYERED DEFENSE</div></div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">ATTACK 1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">ATTACK 2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">ATTACK 3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p4"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🏰</span>
+    <div class="intro-title">Defense-in-Depth Builder</div>
+    <div class="intro-desc">A single lock can be picked. Defense-in-depth layers multiple controls — physical, technical, and administrative — so if one fails, others remain. You have a limited budget. Choose wisely, then watch your defenses get tested.</div>
+    <div class="layers-preview">
+      <div class="layer-preview lp-p"><span class="lp-emoji">🏢</span>PHYSICAL</div>
+      <div class="layer-preview lp-t"><span class="lp-emoji">💻</span>TECHNICAL</div>
+      <div class="layer-preview lp-ad"><span class="lp-emoji">📋</span>ADMIN</div>
+    </div>
+    <button class="btn btn-main" onclick="goTo(1)">▶ BUILD YOUR DEFENSES</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+
+<div class="screen" id="s4">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl" style="margin-bottom:10px;">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">DEFENSE-IN-DEPTH</div><div class="concept-def">Using multiple layers of security so that no single failure leads to total compromise. Also called "layered defense."</div></div>
+    <div class="concept-card"><div class="concept-term">PHYSICAL CONTROLS</div><div class="concept-def">Locks, keycards, cameras, security guards. Prevent physical access to systems. The first layer an attacker must bypass.</div></div>
+    <div class="concept-card"><div class="concept-term">TECHNICAL CONTROLS</div><div class="concept-def">Firewalls, encryption, MFA, antivirus. Software and hardware that enforce security policy automatically.</div></div>
+    <div class="concept-card"><div class="concept-term">ADMINISTRATIVE CONTROLS</div><div class="concept-def">Policies, training, access reviews, incident response plans. Shape human behavior to reduce risk.</div></div>
+    <div class="concept-card"><div class="concept-term">KILL CHAIN</div><div class="concept-def">The sequence of steps an attacker must complete to succeed. Disrupting any one step can prevent the breach.</div></div>
+    <div class="concept-card"><div class="concept-term">COST vs. RISK</div><div class="concept-def">Not every control is worth its cost. Strong defense-in-depth maximizes risk reduction within budget constraints.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ RUN AGAIN</button>
+    <button class="btn btn-I" onclick="window.location.href='sim_hub.html'">← BACK TO HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const BUDGET = 50;
+
+const ALL_CONTROLS = {
+  physical: [
+    {id:'keycard',name:'Keycard Access',cost:8,desc:'Electronic access control on server room and sensitive areas',tags:['PHYSICAL','ACCESS CONTROL'],blocks:['physical_access']},
+    {id:'cctv',name:'Security Cameras',cost:5,desc:'Camera coverage of entry points, server room, and hallways',tags:['PHYSICAL','MONITORING'],blocks:['physical_recon']},
+    {id:'guard',name:'Security Guard',cost:12,desc:'On-site guard presence 24/7; challenges unknown visitors',tags:['PHYSICAL','DETERRENCE'],blocks:['tailgating']},
+    {id:'badge',name:'Visitor Badges & Escort Policy',cost:3,desc:'All visitors signed in, badged, and escorted at all times',tags:['ADMIN/PHYSICAL'],blocks:['tailgating','social_eng_physical']},
+  ],
+  technical: [
+    {id:'mfa',name:'Multi-Factor Authentication',cost:6,desc:'Requires second factor (phone app) for all logins',tags:['TECHNICAL','AUTH'],blocks:['cred_theft']},
+    {id:'firewall',name:'Next-Gen Firewall',cost:10,desc:'Inspects traffic, blocks known malicious IPs and patterns',tags:['TECHNICAL','NETWORK'],blocks:['network_intrusion']},
+    {id:'edr',name:'Endpoint Detection & Response',cost:9,desc:'Real-time monitoring and response on all workstations',tags:['TECHNICAL','DETECTION'],blocks:['malware']},
+    {id:'encrypt',name:'Full Disk Encryption',cost:4,desc:'All device storage encrypted; data unreadable if stolen',tags:['TECHNICAL','DATA'],blocks:['device_theft']},
+    {id:'patch',name:'Automated Patching',cost:5,desc:'OS and software patches applied within 48 hours of release',tags:['TECHNICAL','VULNMGMT'],blocks:['exploit_vuln']},
+    {id:'emailfilter',name:'Email Filtering + Sandboxing',cost:7,desc:'Scans and quarantines suspicious emails before delivery',tags:['TECHNICAL','PHISHING'],blocks:['phishing']},
+  ],
+  admin: [
+    {id:'training',name:'Security Awareness Training',cost:4,desc:'Annual training + simulated phishing exercises for all staff',tags:['ADMIN','HUMAN'],blocks:['phishing','social_eng']},
+    {id:'policy',name:'Acceptable Use Policy',cost:2,desc:'Written policy on device and data use; all staff sign annually',tags:['ADMIN','POLICY'],blocks:['insider_accidental']},
+    {id:'ir',name:'Incident Response Plan',cost:5,desc:'Documented, tested plan for responding to breaches',tags:['ADMIN','RESPONSE'],blocks:['slow_response']},
+    {id:'access_review',name:'Quarterly Access Reviews',cost:3,desc:'Regular audits to remove unnecessary or outdated permissions',tags:['ADMIN','ACCESS'],blocks:['insider','stale_access']},
+  ]
+};
+
+const ATTACKS = [
+  {
+    title:"Credential Phishing via Fake IT Email",
+    desc:"An attacker sends a convincing email to all staff appearing to be from IT, asking them to log into a fake portal to 'reauthorize' their accounts. 3 staff members enter their credentials.",
+    steps:[
+      {action:"Attacker sends phishing email to staff inbox",requires:null,blocks_by:'emailfilter',block_msg:"Email filtering quarantines the message — staff never see it",fail_msg:"Email reaches staff inboxes — 3 people enter credentials"},
+      {action:"Stolen credentials used to attempt login",requires:'phishing',blocks_by:'mfa',block_msg:"MFA required — attacker has password but can't provide phone code",fail_msg:"Login succeeds — attacker has full account access"},
+      {action:"Attacker attempts to access sensitive files",requires:'cred_theft',blocks_by:'access_review',block_msg:"Quarterly access reviews mean the account only has minimal permissions",fail_msg:"Account has broad permissions — sensitive data accessed and exfiltrated"},
+    ],
+    feedback:"This attack chain required phishing delivery + credential theft + broad access. Email filtering stops it early. MFA makes stolen credentials useless even if they arrive. Access reviews limit damage if both fail. That's three independent layers — defense-in-depth.",
+    successPts:25,partialPts:12
+  },
+  {
+    title:"Physical Break-In to Server Room",
+    desc:"A contracted cleaning crew member stays behind after hours and attempts to access the server room by following another employee through a secured door, then connecting a USB device to a server.",
+    steps:[
+      {action:"Attacker tailgates through secured door",requires:null,blocks_by:'guard',block_msg:"Security guard challenges and stops the unknown person at the door",fail_msg:"No one challenges the tailgating — attacker enters the building undetected"},
+      {action:"Attacker walks toward server room",requires:'tailgating',blocks_by:'keycard',block_msg:"Keycard required to enter server room — access denied without one",fail_msg:"Server room door is unlocked — attacker enters freely"},
+      {action:"Attacker plugs in USB device to extract data",requires:'physical_access',blocks_by:'edr',block_msg:"EDR detects unknown USB device and blocks execution automatically",fail_msg:"USB device runs successfully — data copied and attacker leaves"},
+    ],
+    feedback:"Physical attacks bypass all digital controls if no physical layers exist. Guard → keycard → EDR is a classic three-layer defense: stop entry, control access, detect if they get through. Each layer compensates for failures in the others.",
+    successPts:25,partialPts:12
+  },
+  {
+    title:"Ransomware via Unpatched Software",
+    desc:"Attackers scan the internet for servers running an unpatched version of a popular web application. The school district's server is found. Attackers exploit the vulnerability, install ransomware, and encrypt district servers.",
+    steps:[
+      {action:"Attacker scans internet for unpatched servers",requires:null,blocks_by:'patch',block_msg:"Automated patching applied the fix 3 days after release — vulnerability no longer present",fail_msg:"Server is running a 3-month-old version with the known vulnerability exposed"},
+      {action:"Attacker exploits vulnerability to gain access",requires:'exploit_vuln',blocks_by:'firewall',block_msg:"Firewall detects and blocks the exploit attempt before it reaches the server",fail_msg:"Exploit succeeds — attacker establishes a foothold on the server"},
+      {action:"Ransomware installed and begins encrypting files",requires:'network_intrusion',blocks_by:'edr',block_msg:"EDR detects ransomware behavior and terminates the process immediately",fail_msg:"Ransomware runs undetected — all district servers encrypted within hours"},
+    ],
+    feedback:"Ransomware attacks love unpatched systems. Patching alone removes the initial entry. A firewall provides a second check. EDR catches it if both fail. Note that with all three layers — no ransom, no outage, no data loss. Remove even one and the outcome changes.",
+    successPts:25,partialPts:12
+  }
+];
+
+let score=0,results=[];
+let selectedControls={},_chg=[];
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<5;i++){const el=document.getElementById('p'+i);el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=3)buildAttack(n-1);
+  if(n===4)buildResults();
+}
+
+function getCurrentCost(){return Object.keys(selectedControls).filter(k=>selectedControls[k]).reduce((a,k)=>{const c=findControl(k);return a+(c?c.cost:0);},0);}
+
+function findControl(id){for(const cat of Object.values(ALL_CONTROLS)){const f=cat.find(c=>c.id===id);if(f)return f;}return null;}
+
+function toggleControl(id,idx){
+  const ctrl=findControl(id);
+  const wasSelected=selectedControls[id];
+  if(!wasSelected){
+    const newCost=getCurrentCost()+ctrl.cost;
+    if(newCost>BUDGET){
+      const el=document.getElementById('ctrl-'+id+'-'+idx);
+      el.style.borderColor='var(--danger)';
+      setTimeout(()=>el.style.borderColor='',800);
+      return;
+    }
+  }
+  if(results[idx])return;
+  _chg[idx]=(_chg[idx]||0)+1;
+  selectedControls[id]=!wasSelected;
+  renderControlItem(id,idx);
+  updateBudget(idx);
+}
+
+function renderControlItem(id,idx){
+  const el=document.getElementById('ctrl-'+id+'-'+idx);
+  if(!el)return;
+  el.classList.toggle('selected',!!selectedControls[id]);
+}
+
+function updateBudget(idx){
+  const spent=getCurrentCost();
+  const remaining=BUDGET-spent;
+  const pct=(remaining/BUDGET)*100;
+  const fill=document.getElementById('bfill-'+idx);
+  const num=document.getElementById('bnum-'+idx);
+  if(fill){fill.style.width=pct+'%';fill.style.background=remaining<10?'var(--warn)':remaining<0?'var(--danger)':'var(--I)';}
+  if(num){num.textContent='$'+remaining+'k remaining';num.className='budget-num'+(remaining<10?' budget-warn':'');}
+}
+
+function buildAttack(idx){
+  const atk=ATTACKS[idx];
+  const screen=document.getElementById('s'+(idx+1));
+
+  const buildCatHtml=(cat,items)=>{
+    const catClass={'physical':'cat-physical','technical':'cat-tech','admin':'cat-admin'}[cat];
+    const catLabel={'physical':'🏢 PHYSICAL CONTROLS','technical':'💻 TECHNICAL CONTROLS','admin':'📋 ADMINISTRATIVE CONTROLS'}[cat];
+    const itemsHtml=items.map(ctrl=>`
+      <div class="control-item ${selectedControls[ctrl.id]?'selected':''}" id="ctrl-${ctrl.id}-${idx}" onclick="toggleControl('${ctrl.id}',${idx})">
+        <div class="ctrl-top">
+          <span class="ctrl-name">${ctrl.name}</span>
+          <span class="ctrl-cost">$${ctrl.cost}k</span>
+        </div>
+        <div class="ctrl-desc">${ctrl.desc}</div>
+        <div class="ctrl-tags">${ctrl.tags.map(t=>`<span class="ctrl-tag">${t}</span>`).join('')}</div>
+      </div>`).join('');
+    return `<div class="controls-section"><div class="controls-category ${catClass}">${catLabel}</div><div class="controls-grid">${itemsHtml}</div></div>`;
+  };
+
+  screen.innerHTML=`
+    <div class="sec-lbl">// ATTACK ${idx+1} OF 3 — BUILD YOUR DEFENSE</div>
+    <div class="sec-title">Incoming Attack: ${atk.title}</div>
+
+    <div class="attack-scenario">
+      <div class="attack-label">⚠ ATTACK BRIEFING</div>
+      <div class="attack-title">${atk.title}</div>
+      <div class="attack-desc">${atk.desc}</div>
+    </div>
+
+    <div class="budget-bar">
+      <span class="budget-lbl">BUDGET</span>
+      <div class="budget-track"><div class="budget-fill" id="bfill-${idx}" style="width:100%"></div></div>
+      <span class="budget-num" id="bnum-${idx}">$${BUDGET}k remaining</span>
+    </div>
+
+    <div class="sec-desc">Select controls to deploy before the attack simulation runs. Every $1k counts — choose for this specific threat.</div>
+
+    ${buildCatHtml('physical',ALL_CONTROLS.physical)}
+    ${buildCatHtml('technical',ALL_CONTROLS.technical)}
+    ${buildCatHtml('admin',ALL_CONTROLS.admin)}
+
+    <div class="attack-sim" id="sim-box-${idx}" style="display:none">
+      <div class="sim-header">// DEFENSE LOCKED IN — ATTACK SIMULATION</div>
+      <div class="attack-steps" id="sim-steps-${idx}"></div>
+      <div class="sim-outcome" id="sim-outcome-${idx}"></div>
+    </div>
+    <div class="feedback-box" id="fb-${idx}"></div>
+
+    <div class="nav">
+      <div></div>
+      <span class="lock-hint" id="run-hint-${idx}" style="margin-right:12px;">Choose your controls. You can change them until you lock in. The attack simulation runs only after that.</span><button class="btn btn-main" id="run-btn-${idx}" onclick="runSimulation(${idx})">🔒 LOCK IN DEFENSE &amp; RUN SIMULATION</button>
+      <button class="btn btn-main" id="next-btn-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===2?'SEE RESULTS →':'NEXT ATTACK →'}</button>
+    </div>`;
+
+  updateBudget(idx);
+}
+
+function runSimulation(idx){
+  if(results[idx])return;
+  const atk=ATTACKS[idx];
+  const _hint=document.getElementById('run-hint-'+idx);if(_hint)_hint.style.display='none';
+  const _chosen=Object.keys(selectedControls).filter(k=>selectedControls[k]).map(k=>findControl(k).name);
+  const simBox=document.getElementById('sim-box-'+idx);
+  const stepsEl=document.getElementById('sim-steps-'+idx);
+  const outcomeEl=document.getElementById('sim-outcome-'+idx);
+  const fb=document.getElementById('fb-'+idx);
+  simBox.style.display='block';
+  document.getElementById('run-btn-'+idx).style.display='none';
+  document.querySelectorAll(`#s${idx+1} .control-item`).forEach(el=>el.style.pointerEvents='none');
+
+  let attackState={};
+  let stepsBlocked=0;
+  let html='';
+
+  atk.steps.forEach((step,si)=>{
+    const prereqMet=!step.requires||attackState[step.requires];
+    if(!prereqMet){html+=`<div class="attack-step blocked"><div class="step-icon">⛔</div><div class="step-content"><div class="step-action">${step.action}</div><div class="step-result">STOPPED — previous step was blocked</div></div></div>`;stepsBlocked++;return;}
+    const hasBlock=selectedControls[step.blocks_by];
+    if(hasBlock){
+      html+=`<div class="attack-step blocked"><div class="step-icon">🛡️</div><div class="step-content"><div class="step-action">${step.action}</div><div class="step-result">BLOCKED</div><div class="step-control">${step.block_msg}</div></div></div>`;
+      stepsBlocked++;
+    } else {
+      const failKey=step.requires||step.blocks_by+'_fail';
+      atk.steps.forEach((s2,si2)=>{if(si2>si&&s2.requires)attackState[s2.requires]=true;});
+      // mark the state that this step grants
+      if(atk.steps[si+1])attackState[atk.steps[si+1].requires||'next']=true;
+      const nextRequire=si+1<atk.steps.length?atk.steps[si+1].requires:null;
+      if(nextRequire)attackState[nextRequire]=true;
+      html+=`<div class="attack-step succeeded"><div class="step-icon">💥</div><div class="step-content"><div class="step-action">${step.action}</div><div class="step-result">SUCCEEDED</div><div class="step-control">${step.fail_msg}</div></div></div>`;
+    }
+  });
+
+  stepsEl.innerHTML=html;
+
+  const allBlocked=stepsBlocked===atk.steps.length;
+  const someBlocked=stepsBlocked>0;
+  const pts=allBlocked?atk.successPts:someBlocked?atk.partialPts:0;
+  score+=pts;
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  results[idx]={allBlocked,someBlocked,pts,title:atk.title,chosen:_chosen,spent:getCurrentCost()};
+
+  setTimeout(()=>{
+    outcomeEl.style.display='block';
+    outcomeEl.className='sim-outcome '+(allBlocked?'defended':'breached');
+    outcomeEl.textContent=allBlocked?'✓ ATTACK FULLY BLOCKED — YOUR LAYERS HELD':'✗ BREACH OCCURRED — LAYERS INSUFFICIENT';
+    fb.className='feedback-box show';
+    fb.innerHTML=`<strong>${allBlocked?'Well done — your controls intercepted the attack.':'The attack got through — here\'s why it mattered:'}</strong><br><br>${atk.feedback}`;
+    document.getElementById('next-btn-'+idx).style.display='inline-flex';
+  },600);
+}
+
+function buildResults(){
+  const totalPts=results.reduce((a,r)=>a+(r?r.pts:0),0);
+  const pct=Math.round((totalPts/75)*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Security Architect 🏰','Your layered defenses held up against all attacks. You understand that stopping an attack at one layer doesn\'t mean ignoring others.'],mid:['Defense Builder 🎯','Some attacks got through. Consider: which layer did you skip, and what would it have cost to add it?'],low:['Back to the Drawing Board 📚','Review which controls block which attack steps. Defense-in-depth means layering — not just spending the most.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=ATTACKS.map((atk,i)=>{
+    const r=results[i]||{allBlocked:false,someBlocked:false,pts:0,title:atk.title};
+    return `<div class="b-row"><div class="b-check">${r.allBlocked?'✅':r.someBlocked?'⚡':'❌'}</div><div class="b-text"><strong>${r.title}</strong>: ${r.allBlocked?'Fully blocked':'Partially blocked or breached'}</div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+
+function restart(){score=0;results=[];selectedControls={};_chg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:1,sim:'defense',screenId:'s4',score:score,max:75,items:ATTACKS.map(function(atk,i){var r=results[i]||{allBlocked:false,someBlocked:false,pts:0,chosen:[],spent:0};return {label:atk.title,result:r.allBlocked?'correct':(r.someBlocked?'partial':'incorrect'),pts:r.pts,max:25,response:'$'+r.spent+'k: '+(r.chosen||[]).join(', '),expected:atk.steps.map(function(s){return findControl(s.blocks_by).name;}).join(' + '),changes:_chg[i]||0};})});
+};
+const _apRestart=restart;
+restart=function(){_chg=[];APSim.start(1,'defense');_apRestart();};
+APSim.start(1,'defense');
+
+goTo(0);
+</script>
+</body></html>

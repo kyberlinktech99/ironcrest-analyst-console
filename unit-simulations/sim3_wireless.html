@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="3" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim3_wireless">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Wireless Attack Identifier — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#22c55e;--red:#ef4444;--amber:#ffd166;--cyan:#00d4ff;--purple:#c084fc;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-green) 2%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-green) 2%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-green) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-green) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* SCENARIO CARDS */
+.evidence-box{background:var(--panel);border:1px solid var(--border2);padding:0;margin-bottom:16px;overflow:hidden;}
+.evidence-header{background:var(--panel2);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:12px;}
+.evidence-type{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--text3);background:var(--bg3);padding:3px 8px;border:1px solid var(--border);}
+.evidence-title{font-family:var(--mono);font-size:12px;color:var(--text);}
+.evidence-body{padding:16px;}
+.evidence-line{font-family:var(--mono);font-size:12px;color:var(--text2);padding:4px 0;border-bottom:1px solid color-mix(in srgb,var(--text) 4%,transparent);line-height:1.5;}
+.evidence-line:last-child{border-bottom:none;}
+.evidence-line .key{color:var(--text3);}
+.evidence-line .val{color:var(--text);}
+.evidence-line .flag{color:var(--red);}
+.evidence-line .good{color:var(--acc);}
+
+/* VISUAL DIAGRAM */
+.wifi-diagram{background:var(--bg3);border:1px solid var(--border);padding:16px;margin-bottom:14px;}
+.wifi-scene{position:relative;width:100%;height:160px;display:flex;align-items:center;justify-content:space-around;}
+.wifi-node{text-align:center;position:relative;}
+.wifi-node-icon{font-size:28px;display:block;margin-bottom:4px;}
+.wifi-node-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.06em;line-height:1.4;}
+.wifi-node-label .highlight{color:var(--red);}
+.wifi-waves{position:absolute;top:-8px;left:50%;transform:translateX(-50%);}
+.wave{border:1px solid;border-radius:50%;position:absolute;left:50%;transform:translateX(-50%);opacity:.6;animation:wave-out 1.5s ease-out infinite;}
+@keyframes wave-out{0%{width:10px;height:10px;top:-5px;opacity:.8}100%{width:60px;height:60px;top:-30px;opacity:0}}
+.wave:nth-child(2){animation-delay:.5s;}
+.wave:nth-child(3){animation-delay:1s;}
+.conn-line{position:absolute;height:2px;top:50%;transform:translateY(-50%);}
+
+/* ATTACK TYPE CHOICES */
+.attack-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+.attack-card{background:var(--panel);border:2px solid var(--border);padding:16px;cursor:pointer;transition:all .2s;text-align:left;}
+.attack-card:hover{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.attack-card.selected-correct{border-color:var(--acc)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.attack-card.selected-wrong{border-color:var(--red)!important;background:color-mix(in srgb,var(--red) 8%,transparent)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.attack-card.locked{pointer-events:none;opacity:.5;}
+.attack-card.selected-correct,.attack-card.selected-wrong{opacity:1!important;}
+.attack-icon{font-size:28px;display:block;margin-bottom:8px;}
+.attack-name{font-family:var(--display);font-size:17px;font-weight:700;margin-bottom:4px;}
+.attack-desc{font-size:12px;color:var(--text2);line-height:1.5;}
+
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--acc);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+
+/* defense Q */
+.def-q{background:var(--panel2);border:1px solid var(--border2);padding:14px 16px;margin-top:14px;}
+.def-q-label{font-family:var(--mono);font-size:9px;color:var(--purple);letter-spacing:.15em;margin-bottom:8px;}
+.def-q-text{font-size:13px;color:var(--text);margin-bottom:10px;line-height:1.55;}
+.def-choices{display:grid;gap:6px;}
+.def-choice{background:var(--bg3);border:1px solid var(--border);padding:10px 13px;cursor:pointer;font-size:12px;color:var(--text2);transition:all .2s;font-family:var(--sans);}
+.def-choice:hover:not(.def-locked){border-color:var(--purple);background:color-mix(in srgb,var(--c-purple) 5%,transparent);}
+.def-choice.def-correct{border-color:var(--acc)!important;background:color-mix(in srgb,var(--c-green) 6%,transparent)!important;color:var(--text)!important;}
+.def-choice.def-wrong{border-color:var(--red)!important;animation:shake .4s ease;}
+.def-choice.def-locked{pointer-events:none;opacity:.5;}
+.def-choice.def-correct{opacity:1!important;}
+
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--acc);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.attack-grid,.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--c-green);--red:var(--red);--amber:var(--amber);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 3</div>
+  <div>
+    <div class="hdr-title">Wireless Attack Identifier</div>
+    <div class="hdr-sub">UNIT 3 · SECURING NETWORKS · EVIL TWIN · DEAUTH · ROGUE AP</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">S1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">S2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">S3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">S4</span><div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p5"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">📡</span>
+    <div class="intro-title">Wireless Attack Identifier</div>
+    <div class="intro-desc">Four wireless security incidents. Read the evidence, identify the attack type, then answer the defense question. Wireless attacks are among the most commonly tested scenarios in network security — and among the easiest to miss in the wild.</div>
+    <div class="attack-grid" style="max-width:540px;margin:0 auto 24px;">
+      <div class="attack-card" style="pointer-events:none;">
+        <span class="attack-icon">👯</span>
+        <div class="attack-name">Evil Twin</div>
+        <div class="attack-desc">Rogue AP mimics a legitimate network's SSID to steal connections</div>
+      </div>
+      <div class="attack-card" style="pointer-events:none;">
+        <span class="attack-icon">🔇</span>
+        <div class="attack-name">Deauthentication</div>
+        <div class="attack-desc">Forged management frames force devices to disconnect from the legitimate AP</div>
+      </div>
+      <div class="attack-card" style="pointer-events:none;">
+        <span class="attack-icon">📻</span>
+        <div class="attack-name">Rogue Access Point</div>
+        <div class="attack-desc">Unauthorized AP installed on the corporate network — creates an unsecured entry point</div>
+      </div>
+      <div class="attack-card" style="pointer-events:none;">
+        <span class="attack-icon">🔓</span>
+        <div class="attack-name">WPA2 Downgrade</div>
+        <div class="attack-desc">Attacker forces devices to use weaker encryption or open authentication</div>
+      </div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+
+<div class="screen" id="s5">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">EVIL TWIN ATTACK</div><div class="concept-def">Rogue AP broadcasts the same SSID as a legitimate network. Devices auto-connect based on signal strength or remembered networks. Attacker gains MITM position. Defense: VPN on public Wi-Fi, 802.1X authentication.</div></div>
+    <div class="concept-card"><div class="concept-term">DEAUTHENTICATION ATTACK</div><div class="concept-def">802.11 management frames are unauthenticated — anyone can send forged deauth frames that force devices to disconnect. Used to disrupt service (DoS) or force reconnection to an evil twin. Defense: 802.11w (Protected Management Frames).</div></div>
+    <div class="concept-card"><div class="concept-term">ROGUE ACCESS POINT</div><div class="concept-def">An unauthorized AP connected to the corporate network — often installed by an employee for convenience. Bypasses all perimeter security. Defense: wireless IDS, 802.1X port authentication, regular wireless surveys.</div></div>
+    <div class="concept-card"><div class="concept-term">WPA3 vs WPA2</div><div class="concept-def">WPA3 uses Simultaneous Authentication of Equals (SAE) instead of WPA2's Pre-Shared Key — resistant to offline dictionary attacks. WPA3 also includes Protected Management Frames by default, preventing deauth attacks.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ TRY AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim3_hub.html'">← UNIT 3 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const SCENARIOS=[
+  {
+    label:"INCIDENT 01",
+    evidenceType:"WIRELESS SCAN LOG",
+    evidenceTitle:"Hotel Conference Network — 10:14 AM",
+    evidence:[
+      {key:"SSID Detected:",val:"ConferenceWiFi",flag:false},
+      {key:"BSSID (MAC):",val:"AA:BB:CC:11:22:33 (Cisco AP — legitimate)",flag:false},
+      {key:"Signal:",val:"-72 dBm (weak)",flag:false},
+      {key:"SSID Detected:",val:"ConferenceWiFi",flag:true,note:"⚠ DUPLICATE SSID"},
+      {key:"BSSID (MAC):",val:"DD:EE:FF:44:55:66 (Unknown vendor)",flag:true},
+      {key:"Signal:",val:"-45 dBm (stronger than legitimate AP)",flag:true},
+      {key:"Encryption:",val:"Open (no password required)",flag:true},
+      {key:"Clients Connected:",val:"14 devices (most attendee laptops)",flag:true}
+    ],
+    attacks:["Evil Twin","Deauthentication","Rogue Access Point","WPA2 Downgrade"],
+    answer:"Evil Twin",
+    explanation:"Two access points broadcasting the same SSID (ConferenceWiFi), with the rogue AP having a stronger signal and no encryption — this is a textbook evil twin attack. Devices auto-connect to the stronger signal, giving the attacker a man-in-the-middle position. The 14 connected attendee laptops are all routing traffic through the attacker's device.",
+    trap:"A rogue AP is an unauthorized AP on the corporate network. An evil twin mimics an existing legitimate network to steal connections from the outside. The difference: rogue AP = inside the network, evil twin = impersonating it from outside.",
+    defQ:{text:"Which control BEST protects conference attendees from this type of attack?",
+    choices:["Use a VPN on all devices — traffic is encrypted regardless of which AP they connect to","Change the conference Wi-Fi password every hour","Use a stronger signal booster on the legitimate AP","Ask the hotel to disable all Wi-Fi until the rogue AP is found"],
+    answer:0,
+    defExplain:"A VPN encrypts traffic end-to-end — even if connected to an evil twin, the attacker sees only encrypted data. This is the primary protection against evil twin attacks on networks you don't control, like hotels and conferences."}
+  },
+  {
+    label:"INCIDENT 02",
+    evidenceType:"WIRELESS IDS ALERT",
+    evidenceTitle:"Corporate Campus — 2:47 PM",
+    evidence:[
+      {key:"Alert Type:",val:"802.11 DEAUTH FLOOD",flag:true},
+      {key:"Source MAC:",val:"BB:CC:DD:22:33:44 (spoofed — vendor unknown)",flag:true},
+      {key:"Target:",val:"BSSID 00:11:22:33:44:55 (Corp-WiFi legitimate AP)",flag:false},
+      {key:"Frame Type:",val:"Management Frame — Deauthentication",flag:true},
+      {key:"Rate:",val:"847 deauth frames per second",flag:true},
+      {key:"Affected Clients:",val:"All 23 connected devices disconnected",flag:true},
+      {key:"Duration:",val:"Ongoing — 4 minutes",flag:false},
+      {key:"Corp-WiFi Status:",val:"Operational — but no clients can stay connected",flag:false}
+    ],
+    attacks:["Evil Twin","Deauthentication","Rogue Access Point","WPA2 Downgrade"],
+    answer:"Deauthentication",
+    explanation:"A flood of 847 deauthentication frames per second from a spoofed MAC address, targeting a legitimate AP, causing all clients to disconnect — this is a deauthentication (deauth) flood attack. 802.11 management frames including deauth are not authenticated by default, so any device can forge them. This is a Denial of Service attack targeting Availability.",
+    trap:"The attacker is disrupting the legitimate network, not impersonating it. An evil twin would set up a competing AP with the same SSID. This attack simply prevents clients from staying connected to the real AP.",
+    defQ:{text:"Which Wi-Fi security feature specifically addresses deauthentication attacks?",
+    choices:["WPA3 SAE — replaces pre-shared key with more secure handshake","802.11w (Protected Management Frames) — authenticates management frames including deauth","WPA2-Enterprise — uses RADIUS server for authentication","Increasing beacon interval to reduce management frame frequency"],
+    answer:1,
+    defExplain:"802.11w (Protected Management Frames, now required in WPA3) adds cryptographic protection to management frames including deauthentication frames. With PMF enabled, forged deauth frames from an unauthorized device are rejected — the AP and client verify that management frames are from a legitimate source."}
+  },
+  {
+    label:"INCIDENT 03",
+    evidenceType:"NETWORK SCAN REPORT",
+    evidenceTitle:"Finance Department — 9:05 AM",
+    evidence:[
+      {key:"Discovery Method:",val:"Wireless survey tool — campus walkthrough",flag:false},
+      {key:"SSID Found:",val:"Free_Internet",flag:true},
+      {key:"Encryption:",val:"None (Open)",flag:true},
+      {key:"BSSID:",val:"00:50:BA:CC:DD:EE (D-Link consumer router)",flag:true},
+      {key:"IP Range Served:",val:"192.168.1.0/24 (not on corp DHCP)",flag:true},
+      {key:"Physical Location:",val:"Finance dept — connected to wall jack port 4F-12",flag:true},
+      {key:"Corp Network Access:",val:"Full access via wired connection",flag:true},
+      {key:"Authentication Required:",val:"None",flag:true}
+    ],
+    attacks:["Evil Twin","Deauthentication","Rogue Access Point","WPA2 Downgrade"],
+    answer:"Rogue Access Point",
+    explanation:"A consumer-grade D-Link router, physically connected to the corporate network via a wall jack, broadcasting an open Wi-Fi network that provides full corporate network access — this is a rogue access point. It was almost certainly installed by a finance employee for convenience. Anyone within Wi-Fi range can now bypass all perimeter security controls and access the internal network.",
+    trap:"A rogue AP is on the corporate network — it's an unauthorized AP that someone plugged in. An evil twin impersonates an external network to steal credentials or perform MITM. The key indicator here is the physical connection to port 4F-12 on the corporate network.",
+    defQ:{text:"Which control would MOST effectively prevent rogue access points from being plugged in?",
+    choices:["Confiscate all personal routers and post a policy forbidding them","802.1X port-based network access control — only authenticated devices can use wall jacks","Disable all unused wall jacks physically","Conduct monthly wireless surveys to detect rogue APs"],
+    answer:1,
+    defExplain:"802.1X port-based NAC (Network Access Control) requires authentication before any device can use a network port. A consumer router plugged into a corporate wall jack would not be able to pass authentication and would be blocked from joining the network entirely. This is the preventive control. Wireless surveys are detective — they find rogue APs after the fact."}
+  },
+  {
+    label:"INCIDENT 04",
+    evidenceType:"CLIENT ASSOCIATION LOG",
+    evidenceTitle:"Coffee Shop — 11:32 AM",
+    evidence:[
+      {key:"Event:",val:"Client 44:55:66:AA:BB:CC connecting to 'CafeWifi'",flag:false},
+      {key:"AP Offered:",val:"WPA2 (legitimate AP signal: -68 dBm)",flag:false},
+      {key:"Second AP Detected:",val:"SSID: CafeWifi — no encryption (open)",flag:true},
+      {key:"Client Association:",val:"Connected to OPEN AP (stronger signal: -40 dBm)",flag:true},
+      {key:"Client Status:",val:"Browsing — HTTP traffic visible",flag:true},
+      {key:"Client Action:",val:"Dismissed browser warning: 'Your connection is not secure'",flag:true},
+      {key:"Captured Data:",val:"login=alice@company.com&password=[VISIBLE IN PLAINTEXT]",flag:true}
+    ],
+    attacks:["Evil Twin","Deauthentication","Rogue Access Point","WPA2 Downgrade"],
+    answer:"Evil Twin",
+    explanation:"A second AP broadcasting the same SSID (CafeWifi) but with no encryption, stronger signal, resulting in credential capture — this is an evil twin attack that also functions as a downgrade attack (WPA2 → Open). The client connected to the open AP instead of the legitimate WPA2 AP because of signal strength, then dismissed a browser security warning, resulting in credentials captured in plaintext.",
+    trap:"This also has elements of a downgrade (Open instead of WPA2), but the primary attack is the evil twin — the rogue AP impersonating the cafe network. WPA2 downgrade is typically a more specific attack targeting the 4-way handshake, not simply offering an open network.",
+    defQ:{text:"The user dismissed the browser 'not secure' warning. Beyond user training, which technical control would MOST effectively have prevented credential exposure?",
+    choices:["Display the browser warning for 10 seconds before allowing dismissal","HSTS (HTTP Strict Transport Security) — forces browser to always use HTTPS for this domain","Require the user to set a 15-character minimum password","Block HTTP traffic on the firewall at the office"],
+    answer:1,
+    defExplain:"HSTS (HTTP Strict Transport Security) tells browsers to always connect to a domain via HTTPS, even if the user types 'http://' or clicks an HTTP link. If the login site has HSTS enabled and the browser has cached it, the browser will refuse to send the login form over an unencrypted connection — making it impossible for the evil twin to capture credentials via HTTP downgrade."}
+  }
+];
+
+let score=0,results=[],total=SCENARIOS.length,sel=[],locked=[],_chg=[],defSel=[],defLocked=[],_dchg=[];
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildScenario(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildScenario(idx){
+  const sc=SCENARIOS[idx];
+  const evLines=sc.evidence.map(e=>`<div class="evidence-line"><span class="key">${e.key}</span> <span class="val" data-flag="${e.flag?1:0}">${e.val}${e.note?' <span class="ev-note" style="color:var(--amber);display:none">'+e.note+'</span>':''}</span></div>`).join('');
+  const atkCards=sc.attacks.map(a=>`<div class="attack-card" onclick="pickAttack(this,'${a}',${idx})" data-a="${a}"><span class="attack-icon">${a==='Evil Twin'?'👯':a==='Deauthentication'?'🔇':a==='Rogue Access Point'?'📻':'🔓'}</span><div class="attack-name">${a}</div><div class="attack-desc">${a==='Evil Twin'?'Mimics legitimate SSID to steal connections':a==='Deauthentication'?'Forces disconnection via forged management frames':a==='Rogue Access Point'?'Unauthorized AP on the corporate network':'Forces weaker encryption or open auth'}</div></div>`).join('');
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// INCIDENT ${idx+1} OF ${total}</div>
+    <div class="sec-title">Identify the Wireless Attack</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Incident ${idx+1}/${total}</span>
+    </div>
+    <div class="evidence-box">
+      <div class="evidence-header">
+        <span class="evidence-type">${sc.evidenceType}</span>
+        <span class="evidence-title">${sc.evidenceTitle}</span>
+      </div>
+      <div class="evidence-body">${evLines}</div>
+    </div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:10px;">// SELECT THE ATTACK TYPE</div>
+    <div class="attack-grid" id="atk-${idx}">${atkCards}</div>
+    <div class="lock-row"><button class="btn btn-acc" id="lock-${idx}" disabled onclick="lockAttack(${idx})">🔒 LOCK IN ATTACK TYPE</button><span class="lock-hint" id="hint-${idx}">Choose an attack type. You can change it until you lock in. Nothing is revealed before that.</span></div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div id="defq-${idx}" style="display:none;"></div>
+    <div class="nav"><div></div><button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT INCIDENT →'}</button></div>`;
+}
+
+function pickAttack(el,attack,idx){
+  if(locked[idx])return;
+  if(sel[idx]&&sel[idx]!==attack)_chg[idx]=(_chg[idx]||0)+1;
+  sel[idx]=attack;
+  document.getElementById('atk-'+idx).querySelectorAll('.attack-card').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+idx).disabled=false;
+  document.getElementById('hint-'+idx).textContent='Selected: '+attack+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockAttack(idx){
+  if(locked[idx]||!sel[idx])return;
+  locked[idx]=true;
+  const sc=SCENARIOS[idx],attack=sel[idx],ok=attack===sc.answer;
+  document.querySelector('#s'+(idx+1)+' .lock-row').style.display='none';
+  document.querySelectorAll('#s'+(idx+1)+' .evidence-line .val').forEach(v=>{if(v.dataset.flag==='1'){v.classList.remove('val');v.classList.add('flag');}const n=v.querySelector('.ev-note');if(n)n.style.display='';});
+  document.getElementById('atk-'+idx).querySelectorAll('.attack-card').forEach(c=>{
+    c.classList.remove('picked');c.classList.add('locked');
+    if(c.dataset.a===sc.answer)c.classList.add('selected-correct');
+    if(c.dataset.a===attack){if(!ok)c.classList.add('selected-wrong');c.querySelector('.attack-name').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx]={attackCorrect:ok,defCorrect:false,pts:ok?15:0,attack:attack};
+  if(ok){score+=15;document.getElementById('score-disp').textContent='SCORE: '+score+' pts';}
+  const fb=document.getElementById('fb-'+idx);
+  fb.className='feedback show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?`<div class="fb-lbl ok">// LOCKED IN — CORRECT: ${sc.answer.toUpperCase()}</div>`:`<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: ${sc.answer.toUpperCase()}</div>You chose <strong>${attack}</strong>. `)+`${sc.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 How to distinguish: ${sc.trap}</em>`;
+  showDefQ(idx);
+}
+
+function showDefQ(idx){
+  const sc=SCENARIOS[idx];
+  const dq=sc.defQ;
+  const container=document.getElementById('defq-'+idx);
+  container.style.display='block';
+  container.innerHTML=`<div class="def-q">
+    <div class="def-q-label">// BONUS DEFENSE QUESTION (+10 pts)</div>
+    <div class="def-q-text">${dq.text}</div>
+    <div class="def-choices" id="defch-${idx}">
+      ${dq.choices.map((c,i)=>`<div class="def-choice" onclick="pickDef(this,${i},${idx})"><span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-right:8px;">${String.fromCharCode(65+i)}.</span>${c}</div>`).join('')}
+    </div>
+    <div class="lock-row"><button class="btn btn-acc" id="deflock-${idx}" disabled onclick="lockDef(${idx})">🔒 LOCK IN DEFENSE</button><span class="lock-hint" id="defhint-${idx}">Choose a defense. You can change it until you lock in.</span></div>
+    <div class="feedback" id="deffb-${idx}" style="margin-top:8px;"></div>
+  </div>`;
+  container.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function pickDef(el,choiceIdx,idx){
+  if(defLocked[idx])return;
+  if(defSel[idx]!=null&&defSel[idx]!==choiceIdx)_dchg[idx]=(_dchg[idx]||0)+1;
+  defSel[idx]=choiceIdx;
+  document.getElementById('defch-'+idx).querySelectorAll('.def-choice').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('deflock-'+idx).disabled=false;
+  document.getElementById('defhint-'+idx).textContent='Selected: '+String.fromCharCode(65+choiceIdx)+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockDef(idx){
+  if(defLocked[idx]||defSel[idx]==null)return;
+  defLocked[idx]=true;
+  const sc=SCENARIOS[idx],ci=defSel[idx],ok=ci===sc.defQ.answer;
+  document.querySelector('#defq-'+idx+' .lock-row').style.display='none';
+  document.getElementById('defch-'+idx).querySelectorAll('.def-choice').forEach((c,i)=>{
+    c.classList.remove('picked');c.classList.add('def-locked');
+    if(i===sc.defQ.answer)c.classList.add('def-correct');
+    if(i===ci){if(!ok)c.classList.add('def-wrong');c.insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx].defCorrect=ok;results[idx].defChoice=ci;
+  if(ok){score+=10;results[idx].pts+=10;document.getElementById('score-disp').textContent='SCORE: '+score+' pts';}
+  const fb=document.getElementById('deffb-'+idx);
+  fb.className='feedback show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?'<div class="fb-lbl ok">// LOCKED IN — CORRECT +10 pts</div>':'<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: '+String.fromCharCode(65+sc.defQ.answer)+'</div>')+sc.defQ.defExplain;
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*25))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Wireless Security Expert 📡','You identified all attack types and their defenses. These scenarios appear regularly on network security assessments and the AP exam.'],mid:['Solid Foundation 🎯','You caught most attacks. Review the distinction between evil twin (impersonation) and rogue AP (unauthorized hardware on the network).'],low:['Keep Building 📚','Focus on what distinguishes each wireless attack: evil twin = same SSID impersonation; deauth = management frame flood; rogue AP = plugged into corporate network.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=SCENARIOS.map((sc,i)=>{
+    const r=results[i]||{attackCorrect:false,defCorrect:false,pts:0};
+    return `<div class="b-row"><div class="b-check">${r.attackCorrect?'✅':'❌'}</div><div class="b-text"><strong>${sc.label} — ${sc.answer}</strong>${r.defCorrect?' · Defense bonus ✓':''}</div><div class="b-pts">+${r.pts||0} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];sel=[];locked=[];_chg=[];defSel=[];defLocked=[];_dchg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:3,sim:'wifi',screenId:'s5',score:score,max:total*25,items:(function(){var o=[];SCENARIOS.forEach(function(sc,i){var r=results[i]||{};o.push({label:sc.label+' — attack type',result:r.attackCorrect?'correct':'incorrect',pts:r.attackCorrect?15:0,max:15,response:r.attack||'',expected:sc.answer,changes:_chg[i]||0});o.push({label:sc.label+' — defense',result:r.defCorrect?'correct':'incorrect',pts:r.defCorrect?10:0,max:10,response:r.defChoice!=null?String.fromCharCode(65+r.defChoice):'',expected:String.fromCharCode(65+sc.defQ.answer),changes:_dchg[i]||0});});return o;})()});
+};
+const _apRestart=restart;
+restart=function(){sel=[];locked=[];_chg=[];defSel=[];defLocked=[];_dchg=[];APSim.start(3,'wifi');_apRestart();};
+APSim.start(3,'wifi');
+
+goTo(0);
+</script>
+</body>
+</html>

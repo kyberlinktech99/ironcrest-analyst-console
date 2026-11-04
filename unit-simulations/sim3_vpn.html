@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="3" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim3_vpn">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | VPN & Encryption Analyzer — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#22c55e;--red:#ef4444;--amber:#ffd166;--cyan:#00d4ff;--purple:#c084fc;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-green) 2%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-green) 2%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-green) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-green) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* VPN DIAGRAM */
+.vpn-diagram{background:var(--panel);border:1px solid var(--border2);padding:20px;margin-bottom:16px;}
+.vpn-svg{width:100%;max-width:760px;display:block;margin:0 auto;}
+.vpn-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.vl-item{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--text3);}
+.vl-line{width:24px;height:3px;}
+
+/* VISIBILITY TABLE */
+.vis-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px;}
+.vis-table th{background:var(--panel2);border:1px solid var(--border2);padding:9px 12px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--text2);}
+.vis-table td{border:1px solid var(--border);padding:9px 12px;background:var(--panel);vertical-align:middle;}
+.vis-table tr:nth-child(even) td{background:var(--bg3);}
+.vis-table td:first-child{font-size:12px;color:var(--text);}
+.vis-yes{font-family:var(--mono);font-size:11px;font-weight:700;}
+.vis-yes.visible{color:var(--red);}
+.vis-yes.hidden{color:var(--acc);}
+.vis-yes.partial{color:var(--amber);}
+
+/* CHOICES */
+.choices{display:grid;gap:8px;margin-bottom:12px;}
+.choice-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 15px;cursor:pointer;text-align:left;transition:all .2s;}
+.choice-btn:hover:not(.locked){border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.choice-btn.correct-ans{border-color:var(--acc)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.choice-btn.wrong-ans{border-color:var(--red)!important;background:color-mix(in srgb,var(--red) 6%,transparent)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.choice-btn.locked{pointer-events:none;opacity:.5;}
+.choice-btn.correct-ans,.choice-btn.wrong-ans{opacity:1!important;}
+.cl{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px;display:block;}
+.ct{font-size:13px;color:var(--text);line-height:1.45;}
+
+.scenario-box{background:var(--panel);border:1px solid var(--border2);padding:16px 18px;margin-bottom:16px;}
+.scenario-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;}
+.scenario-text{font-size:14px;line-height:1.7;color:var(--text);}
+.scenario-text strong{color:var(--acc);}
+.scenario-text code{font-family:var(--mono);font-size:12px;color:var(--cyan);background:var(--bg3);padding:1px 4px;}
+
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--acc);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--acc);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--c-green);--red:var(--red);--amber:var(--amber);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 3</div>
+  <div>
+    <div class="hdr-title">VPN & Encryption Analyzer</div>
+    <div class="hdr-sub">UNIT 3 · SECURING NETWORKS · VPN · TLS · WHAT'S VISIBLE</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">Q1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">Q2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">Q3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">Q4</span><div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">Q5</span><div class="prog-step" id="p5"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p6"></div>
+</div>
+
+<!-- INTRO -->
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🔒</span>
+    <div class="intro-title">VPN & Encryption Analyzer</div>
+    <div class="intro-desc">Five scenarios testing your understanding of what VPNs and encryption actually protect — and what they don't. This is one of the most commonly misunderstood topics in security. A VPN is not a magic privacy shield — and HTTPS is not the same as anonymity.</div>
+    <div style="overflow-x:auto;max-width:660px;margin:0 auto 24px;">
+      <table class="vis-table" style="min-width:500px;">
+        <thead><tr><th>Information</th><th>No VPN — HTTP</th><th>No VPN — HTTPS</th><th>VPN — Any Traffic</th></tr></thead>
+        <tbody>
+          <tr><td>Source IP Address</td><td class="vis-yes visible">VISIBLE</td><td class="vis-yes visible">VISIBLE</td><td class="vis-yes hidden">HIDDEN</td></tr>
+          <tr><td>Destination IP / Domain</td><td class="vis-yes visible">VISIBLE</td><td class="vis-yes partial">PARTIAL*</td><td class="vis-yes hidden">HIDDEN</td></tr>
+          <tr><td>URLs / Page Content</td><td class="vis-yes visible">VISIBLE</td><td class="vis-yes hidden">ENCRYPTED</td><td class="vis-yes hidden">ENCRYPTED</td></tr>
+          <tr><td>Login Credentials</td><td class="vis-yes visible">VISIBLE</td><td class="vis-yes hidden">ENCRYPTED</td><td class="vis-yes hidden">ENCRYPTED</td></tr>
+          <tr><td>Traffic Volume / Timing</td><td class="vis-yes visible">VISIBLE</td><td class="vis-yes visible">VISIBLE</td><td class="vis-yes partial">PARTIAL</td></tr>
+          <tr><td>VPN Server IP</td><td class="vis-yes hidden">N/A</td><td class="vis-yes hidden">N/A</td><td class="vis-yes visible">VISIBLE</td></tr>
+        </tbody>
+      </table>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:6px;">*SNI (Server Name Indication) leaks the domain even in HTTPS before the handshake completes</div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN ANALYSIS</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+<div class="screen" id="s5"></div>
+
+<!-- RESULTS -->
+<div class="screen" id="s6">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">VPN — WHAT IT DOES</div><div class="concept-def">A VPN encrypts all traffic between your device and the VPN server, and hides your real IP from destinations. Your ISP sees only encrypted traffic to the VPN server — not your actual destinations or content.</div></div>
+    <div class="concept-card"><div class="concept-term">VPN — WHAT IT DOESN'T DO</div><div class="concept-def">A VPN doesn't make you anonymous — the VPN provider sees your traffic. It doesn't protect against malware on your device. It doesn't guarantee privacy if the VPN provider logs your activity or is compromised.</div></div>
+    <div class="concept-card"><div class="concept-term">TLS/HTTPS — WHAT IT DOES</div><div class="concept-def">TLS encrypts the payload (content, credentials, cookies) between browser and server. An eavesdropper on the same network cannot read the content of HTTPS communications.</div></div>
+    <div class="concept-card"><div class="concept-term">TLS/HTTPS — WHAT IT DOESN'T DO</div><div class="concept-def">TLS doesn't hide which server you're connecting to (SNI leaks the hostname). It doesn't verify the website is legitimate (phishing sites get TLS certs too). It doesn't protect metadata — timing and volume are still visible.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ TRY AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim3_hub.html'">← UNIT 3 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const QUESTIONS=[
+  {
+    label:"QUESTION 01",
+    scenario:"An employee at a coffee shop connects to the café's open Wi-Fi (no password) without a VPN. They visit their company's HTTPS website and log in. A security researcher on the same Wi-Fi is running Wireshark. <strong>What can the researcher capture?</strong>",
+    svg:`<svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:0 auto 12px;">
+      <defs><marker id="a1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="var(--border2)"/></marker><marker id="a1r" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="var(--red)"/></marker></defs>
+      <rect x="10" y="55" width="100" height="50" rx="3" fill="var(--panel)" stroke="var(--c-green)"/>
+      <text x="60" y="78" text-anchor="middle" fill="var(--c-green)" font-family="Share Tech Mono" font-size="9">👤 EMPLOYEE</text>
+      <text x="60" y="93" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="8">HTTP→HTTPS</text>
+      <rect x="180" y="40" width="100" height="80" rx="3" fill="var(--panel)" stroke="var(--amber)"/>
+      <text x="230" y="65" text-anchor="middle" fill="var(--amber)" font-family="Share Tech Mono" font-size="9">📶 OPEN WIFI</text>
+      <text x="230" y="82" text-anchor="middle" fill="var(--amber)" font-family="Share Tech Mono" font-size="8">NO PASSWORD</text>
+      <text x="230" y="98" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="8">👁️ ATTACKER</text>
+      <text x="230" y="111" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="8">WIRESHARK</text>
+      <line x1="110" y1="80" x2="180" y2="80" stroke="var(--c-green)" stroke-width="1.5" marker-end="url(#a1)"/>
+      <rect x="350" y="55" width="100" height="50" rx="3" fill="var(--panel)" stroke="var(--cyan)"/>
+      <text x="400" y="78" text-anchor="middle" fill="var(--cyan)" font-family="Share Tech Mono" font-size="9">🌐 COMPANY</text>
+      <text x="400" y="93" text-anchor="middle" fill="var(--cyan)" font-family="Share Tech Mono" font-size="9">HTTPS SERVER</text>
+      <line x1="280" y1="80" x2="350" y2="80" stroke="var(--c-green)" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#a1)"/>
+      <text x="315" y="68" text-anchor="middle" fill="var(--c-green)" font-family="Share Tech Mono" font-size="9">ENCRYPTED</text>
+      <rect x="530" y="40" width="150" height="80" rx="3" fill="var(--panel2)" stroke="var(--red)"/>
+      <text x="605" y="65" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="9">ATTACKER SEES:</text>
+      <text x="605" y="82" text-anchor="middle" fill="var(--amber)" font-family="Share Tech Mono" font-size="8">✓ Employee IP</text>
+      <text x="605" y="96" text-anchor="middle" fill="var(--amber)" font-family="Share Tech Mono" font-size="8">✓ Server domain (SNI)</text>
+      <text x="605" y="110" text-anchor="middle" fill="var(--c-green)" font-family="Share Tech Mono" font-size="8">✗ Login credentials</text>
+    </svg>`,
+    choices:[
+      {l:"A",t:"The employee's login credentials (username and password) in plaintext"},
+      {l:"B",t:"The IP address of the employee's device and the domain of the company website, but NOT the login credentials"},
+      {l:"C",t:"Nothing — HTTPS encrypts all traffic and the attacker sees only gibberish"},
+      {l:"D",t:"The employee's VPN credentials if they have a VPN configured"}
+    ],
+    answer:"B",
+    explanation:"HTTPS encrypts the payload (including login credentials) but the network-level metadata is still visible. The attacker can see: the employee's IP address, the destination server's IP, and through SNI (Server Name Indication) — the domain name. They CANNOT read the credentials, page content, or session cookies because they're encrypted. This is often the most surprising correct answer for students who believe 'HTTPS = fully private.'",
+    trap:"Option A is wrong because HTTPS encrypts credentials. Option C is wrong because network metadata (IP addresses, domains via SNI) IS visible even over HTTPS. HTTPS protects content, not connection metadata."
+  },
+  {
+    label:"QUESTION 02",
+    scenario:"The same employee now connects using a WireGuard VPN before browsing. All traffic flows through the VPN server at <code>vpn.company.com</code>. A Wireshark capture on the same café Wi-Fi shows only UDP traffic between the employee's laptop and the VPN server IP. <strong>What has the VPN achieved?</strong>",
+    svg:`<svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:0 auto 12px;">
+      <defs><marker id="a2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="var(--border2)"/></marker></defs>
+      <rect x="10" y="55" width="100" height="50" rx="3" fill="var(--panel)" stroke="var(--c-green)"/>
+      <text x="60" y="78" text-anchor="middle" fill="var(--c-green)" font-family="Share Tech Mono" font-size="9">👤 EMPLOYEE</text>
+      <text x="60" y="93" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="8">+VPN</text>
+      <line x1="110" y1="80" x2="200" y2="80" stroke="var(--c-purple)" stroke-width="3" stroke-dasharray="6,2" marker-end="url(#a2)"/>
+      <text x="155" y="68" text-anchor="middle" fill="var(--c-purple)" font-family="Share Tech Mono" font-size="8">ENCRYPTED</text>
+      <text x="155" y="96" text-anchor="middle" fill="var(--c-purple)" font-family="Share Tech Mono" font-size="8">TUNNEL</text>
+      <rect x="200" y="50" width="100" height="60" rx="3" fill="var(--panel)" stroke="var(--c-purple)"/>
+      <text x="250" y="73" text-anchor="middle" fill="var(--c-purple)" font-family="Share Tech Mono" font-size="9">🔒 VPN SERVER</text>
+      <text x="250" y="88" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="8">vpn.company.com</text>
+      <text x="250" y="103" text-anchor="middle" fill="var(--c-green)" font-family="Share Tech Mono" font-size="8">DECRYPTS HERE</text>
+      <line x1="300" y1="80" x2="390" y2="80" stroke="var(--c-green)" stroke-width="1.5" marker-end="url(#a2)"/>
+      <rect x="390" y="55" width="100" height="50" rx="3" fill="var(--panel)" stroke="var(--cyan)"/>
+      <text x="440" y="78" text-anchor="middle" fill="var(--cyan)" font-family="Share Tech Mono" font-size="9">🌐 ANY WEBSITE</text>
+      <rect x="510" y="30" width="170" height="100" rx="3" fill="var(--panel2)" stroke="var(--text3)"/>
+      <text x="595" y="52" text-anchor="middle" fill="var(--text3)" font-family="Share Tech Mono" font-size="9">CAFÉ ATTACKER SEES:</text>
+      <text x="595" y="68" text-anchor="middle" fill="var(--c-green)" font-family="Share Tech Mono" font-size="8">✓ Employee IP</text>
+      <text x="595" y="84" text-anchor="middle" fill="var(--c-green)" font-family="Share Tech Mono" font-size="8">✓ VPN server IP</text>
+      <text x="595" y="100" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="8">✗ Destinations</text>
+      <text x="595" y="116" text-anchor="middle" fill="var(--red)" font-family="Share Tech Mono" font-size="8">✗ Content</text>
+    </svg>`,
+    choices:[
+      {l:"A",t:"The employee is now completely anonymous — no one can determine their IP address"},
+      {l:"B",t:"The VPN encrypts the payload AND hides destination IPs — the café attacker sees only traffic to the VPN server"},
+      {l:"C",t:"The VPN protects against malware on the employee's laptop by filtering malicious traffic"},
+      {l:"D",t:"The VPN guarantees privacy because VPN providers are required by law to delete all logs"}
+    ],
+    answer:"B",
+    explanation:"The VPN creates an encrypted tunnel — the café attacker sees only encrypted UDP traffic to the VPN server IP. The actual destinations (company website, any other sites) and all content are hidden. The employee's IP is visible to the café network (it has to be, to route the VPN traffic), but the VPN server now appears as the source IP to destination websites. This is a significant improvement over no VPN.",
+    trap:"The employee is NOT anonymous (A) — their real IP is known to the VPN provider, and potentially to anyone watching the VPN server's traffic. VPNs don't filter malware (C) — that's an endpoint control. VPN providers are NOT universally required to delete logs (D) — logging policies vary widely by provider and jurisdiction."
+  },
+  {
+    label:"QUESTION 03",
+    scenario:"A company's network administrator captures this Wireshark output from a remote employee using the corporate VPN:\n\nIP: 10.0.0.47 → 10.0.0.1 (UDP/WireGuard, encrypted)\nIP: 10.0.0.1 → 8.8.8.8 (DNS query: 'docs.google.com')\nIP: 10.0.0.1 → 8.8.8.8 (DNS query: 'slack.com')\n\nThe employee believes their VPN hides all their activity. <strong>What has the network admin ACTUALLY been able to determine?</strong>",
+    choices:[
+      {l:"A",t:"Nothing — the VPN encrypts all traffic including DNS queries"},
+      {l:"B",t:"The domains the employee is visiting (docs.google.com, slack.com), because DNS queries from the VPN server are unencrypted"},
+      {l:"C",t:"The exact pages the employee is viewing within Google Docs and Slack"},
+      {l:"D",t:"The employee's home IP address and physical location"}
+    ],
+    answer:"B",
+    explanation:"This is DNS leakage. When the VPN server makes DNS lookups on behalf of the employee, those DNS queries may be unencrypted (standard DNS uses UDP port 53 in plaintext). A network admin watching traffic from the VPN server can see the domain names being resolved — revealing which websites the employee is accessing. The content is still encrypted (HTTPS), but the domain names are visible. This is why DNS over HTTPS (DoH) and DNS over TLS (DoT) were developed.",
+    trap:"VPNs encrypt the tunnel between the employee and the VPN server — but they don't automatically encrypt the VPN server's own DNS queries. Option C is wrong — the page content and URLs within a domain are encrypted by HTTPS. Option D is wrong — the admin sees the VPN internal IP (10.0.0.47), not the employee's home IP."
+  },
+  {
+    label:"QUESTION 04",
+    scenario:"A user visits <code>https://bank.com</code> from a public Wi-Fi network (no VPN). An attacker captures the TLS handshake and sees the following unencrypted field in the ClientHello message:\n\n<code>server_name: bank.com</code>\n\nThe attacker then sees only encrypted application data. <strong>Which statement BEST explains this observation?</strong>",
+    choices:[
+      {l:"A",t:"The attacker has broken TLS encryption and can now read all banking data"},
+      {l:"B",t:"SNI (Server Name Indication) reveals the destination hostname before encryption is established, even for HTTPS connections"},
+      {l:"C",t:"The bank's HTTPS implementation is misconfigured — a properly configured server wouldn't expose the server name"},
+      {l:"D",t:"This only occurs on HTTP connections — HTTPS would have prevented this disclosure"}
+    ],
+    answer:"B",
+    explanation:"SNI (Server Name Indication) is a TLS extension that allows a client to specify which hostname it wants to connect to at the beginning of the TLS handshake — before encryption is established. This is necessary for servers hosting multiple domains on one IP. The hostname is sent in plaintext in the ClientHello message, visible to anyone observing the connection. This is by design in TLS 1.2 and below. TLS 1.3 introduced Encrypted Client Hello (ECH) to address this, but it's not universally deployed.",
+    trap:"The attacker cannot read banking data (A) — only the hostname was exposed, not the payload. This is NOT a misconfiguration (C) — SNI was visible by design in older TLS versions. And (D) is wrong — this happens specifically within HTTPS/TLS, not HTTP."
+  },
+  {
+    label:"QUESTION 05",
+    scenario:"A security analyst is reviewing network traffic for a remote employee. The employee uses a VPN but the analyst notices their web traffic appears to route correctly through the VPN tunnel. However, DNS queries for external domains are resolving through the ISP's DNS server, not the corporate DNS.\n\n<strong>What vulnerability does this represent, and what is the correct fix?</strong>",
+    choices:[
+      {l:"A",t:"SSL stripping — the ISP is downgrading HTTPS to HTTP. Fix: force HTTPS with HSTS"},
+      {l:"B",t:"DNS leak — DNS queries are bypassing the VPN tunnel. Fix: configure DNS to route through the VPN or use DNS over HTTPS"},
+      {l:"C",t:"ARP poisoning — the ISP is intercepting DNS packets. Fix: use static ARP entries"},
+      {l:"D",t:"Split tunneling — some traffic bypasses the VPN. Fix: enable full tunnel mode"}
+    ],
+    answer:"B",
+    explanation:"A DNS leak occurs when DNS queries bypass the encrypted VPN tunnel and are sent to the system's default DNS resolver (often the ISP) instead of through the VPN. Even though the actual website traffic is encrypted within the VPN tunnel, the DNS queries reveal which domains the user is accessing to the ISP. The fix is to configure the VPN client to route DNS through the tunnel, or use an encrypted DNS protocol (DoH/DoT) that doesn't leak to the ISP.",
+    trap:"Split tunneling (D) is a related but different concept — it's when some traffic routes through the VPN and other traffic goes directly to the internet. A DNS leak can occur even with full tunnel mode if the DNS configuration doesn't route through the tunnel. ARP poisoning is a local network attack, not an ISP-level issue."
+  }
+];
+
+let score=0,results=[],total=QUESTIONS.length,sel=[],locked=[],_chg=[];
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildQ(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildQ(idx){
+  const q=QUESTIONS[idx];
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// QUESTION ${idx+1} OF ${total}</div>
+    <div class="sec-title">VPN & Encryption Analysis</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Q${idx+1}/${total}</span>
+    </div>
+    <div class="scenario-box">
+      <div class="scenario-label">${q.label}</div>
+      <div class="scenario-text">${q.scenario}</div>
+    </div>
+    ${q.svg||''}
+    <div class="choices" id="ch-${idx}">
+      ${q.choices.map(c=>`<div class="choice-btn" onclick="pick(this,'${c.l}',${idx})"><span class="cl">${c.l}</span><div class="ct">${c.t}</div></div>`).join('')}
+    </div>
+    <div class="lock-row"><button class="btn btn-acc" id="lock-${idx}" disabled onclick="lockIn(${idx})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="hint-${idx}">Choose an answer. You can change it until you lock in. Nothing is revealed before that.</span></div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav"><div></div><button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT →'}</button></div>`;
+}
+
+function pick(el,letter,idx){
+  if(locked[idx])return;
+  if(sel[idx]&&sel[idx]!==letter)_chg[idx]=(_chg[idx]||0)+1;
+  sel[idx]=letter;
+  document.getElementById('ch-'+idx).querySelectorAll('.choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+idx).disabled=false;
+  document.getElementById('hint-'+idx).textContent='Selected: '+letter+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockIn(idx){
+  if(locked[idx]||!sel[idx])return;
+  locked[idx]=true;
+  const q=QUESTIONS[idx],letter=sel[idx],ok=letter===q.answer;
+  const all=document.getElementById('ch-'+idx).querySelectorAll('.choice-btn');
+  document.querySelector('#s'+(idx+1)+' .lock-row').style.display='none';
+  all.forEach(c=>{
+    const l=c.querySelector('.cl').textContent;
+    c.classList.remove('picked');c.classList.add('locked');
+    if(l===q.answer)c.classList.add('correct-ans');
+    if(l===letter){if(!ok)c.classList.add('wrong-ans');c.querySelector('.ct').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx]={correct:ok,choice:letter};
+  const fb=document.getElementById('fb-'+idx);
+  const tail=`${q.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 Common confusion: ${q.trap}</em>`;
+  if(ok){
+    score+=20;document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+    fb.className='feedback show correct';
+    fb.innerHTML=`<div class="fb-lbl ok">// LOCKED IN — CORRECT</div>`+tail;
+  } else {
+    fb.className='feedback show wrong';
+    fb.innerHTML=`<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: ${q.answer}</div>`+tail;
+  }
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*20))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Encryption Expert 🔒','You understand exactly what VPNs and HTTPS protect — and what they don\'t. This nuanced understanding separates security professionals from the "VPN = anonymous" crowd.'],mid:['Good Foundation 🎯','You got most right. Review SNI leakage and DNS leaks — the two most commonly misunderstood VPN limitations.'],low:['Keep Building 📚','Focus on the key distinction: encryption protects CONTENT, but network metadata (IPs, domains, timing) often remains visible depending on the protocol and configuration.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=QUESTIONS.map((q,i)=>{
+    const r=results[i]||{correct:false};
+    return `<div class="b-row"><div class="b-check">${r.correct?'✅':'❌'}</div><div class="b-text"><strong>${q.label}</strong></div><div class="b-pts">${r.correct?'+20':'+0'} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];sel=[];locked=[];_chg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:3,sim:'vpn',screenId:'s6',score:score,max:total*20,items:QUESTIONS.map(function(q,i){var r=results[i]||{correct:false};return {label:q.label,result:r.correct?'correct':'incorrect',pts:r.correct?20:0,max:20,response:r.choice||'',expected:q.answer,changes:_chg[i]||0};})});
+};
+const _apRestart=restart;
+restart=function(){sel=[];locked=[];_chg=[];APSim.start(3,'vpn');_apRestart();};
+APSim.start(3,'vpn');
+
+goTo(0);
+</script>
+</body>
+</html>

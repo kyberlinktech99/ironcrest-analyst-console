@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="4" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim4_logs">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Log Analysis Detective — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#f59e0b;--red:#ef4444;--green:#22c55e;--cyan:#00d4ff;--purple:#c084fc;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--amber) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--amber) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--amber) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--amber) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--amber) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* LOG VIEWER */
+.log-viewer{background:#0d1117;border:1px solid var(--border2);margin-bottom:14px;overflow:hidden;}
+.log-toolbar{background:#161b22;border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:8px;}
+.lt-title{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;}
+.lt-badge{font-family:var(--mono);font-size:9px;padding:2px 8px;border:1px solid var(--border2);color:var(--text3);}
+.log-body{padding:10px 14px;max-height:260px;overflow-y:auto;}
+.log-entry{font-family:var(--mono);font-size:11px;padding:3px 0;border-bottom:1px solid color-mix(in srgb,var(--text) 2.5%,transparent);line-height:1.45;display:flex;gap:10px;align-items:flex-start;}
+.log-entry:last-child{border-bottom:none;}
+.log-entry.highlight-line{background:color-mix(in srgb,var(--amber) 6%,transparent);padding:3px 6px;margin:0 -6px;}
+.log-entry.flag-line{background:color-mix(in srgb,var(--red) 6%,transparent);padding:3px 6px;margin:0 -6px;}
+.le-time{color:var(--text3);flex-shrink:0;min-width:80px;}
+.le-type{color:var(--text3);flex-shrink:0;min-width:80px;}
+.le-msg{color:var(--text2);flex:1;line-height:1.45;}
+.le-msg .hl{color:var(--text);}
+.le-msg .bad{color:var(--red);}
+.le-msg .ok{color:var(--green);}
+.le-msg .warn{color:var(--acc);}
+
+/* STATS PANEL */
+.stats-panel{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat-card{background:var(--panel);border:1px solid var(--border);padding:12px;text-align:center;}
+.stat-val{font-family:var(--mono);font-size:22px;font-weight:700;display:block;margin-bottom:3px;}
+.stat-val.danger{color:var(--red);}
+.stat-val.warn{color:var(--acc);}
+.stat-val.good{color:var(--green);}
+.stat-lbl{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;}
+
+/* QUESTIONS */
+.q-box{background:var(--panel);border:1px solid var(--border2);padding:16px 18px;margin-bottom:12px;}
+.q-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;}
+.q-text{font-size:14px;line-height:1.7;color:var(--text);margin-bottom:12px;}
+.q-text strong{color:var(--acc);}
+.choices{display:grid;gap:8px;}
+.choice-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 15px;cursor:pointer;text-align:left;transition:all .2s;}
+.choice-btn:hover:not(.locked){border-color:var(--acc);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.choice-btn.correct-ans{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.choice-btn.wrong-ans{border-color:var(--red)!important;background:color-mix(in srgb,var(--red) 6%,transparent)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.choice-btn.locked{pointer-events:none;opacity:.5;}
+.choice-btn.correct-ans,.choice-btn.wrong-ans{opacity:1!important;}
+.cl{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px;display:block;}
+.ct{font-size:13px;color:var(--text);line-height:1.45;}
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:10px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--amber) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--acc);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.stats-panel{grid-template-columns:repeat(2,1fr);}.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--amber);--red:var(--red);--green:var(--c-green);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<style>/*apsim-island*//* LOG VIEWER */
+.log-viewer,.log-toolbar{--bg:#0c111f;--bg2:#101728;--bg3:#151e34;--panel:#131b2f;--panel2:#1a2441;--border:#232f4d;--border2:#344470;--text:#e9effc;--text2:#a3b0d0;--text3:#7384ab;--on-acc:#0b1020;--green:#34d399;--amber:#fbbf24;--warn:#fbbf24;--danger:#f87171;--red:#f87171;--cyan:#22d3ee;--purple:#a78bfa;--c-orange:#fb923c;--c-purple:#c084fc;--c-red:#f87171;--c-sky:#38bdf8;--c-lime:#a3e635;--c-amber:#fbbf24;--c-green:#34d399;--c-teal:#2dd4bf;color-scheme:dark;color:var(--text);--acc:var(--amber);--red:var(--red);--green:var(--c-green);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 4</div>
+  <div>
+    <div class="hdr-title">Log Analysis Detective</div>
+    <div class="hdr-sub">UNIT 4 · SECURING DEVICES · AUTH LOGS · IDENTIFY ATTACKS</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">L1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">L2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">L3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p4"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🕵️</span>
+    <div class="intro-title">Log Analysis Detective</div>
+    <div class="intro-desc">Three authentication log extracts from real device scenarios. Read the logs, analyze the stats panel, then answer two questions per set: identify the attack AND recommend the correct defensive control. This is what a SOC analyst does every day.</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:480px;margin:0 auto 24px;">
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);text-align:center;"><div style="font-family:var(--mono);font-size:10px;color:var(--red);margin-bottom:4px;">FAILED</div><div style="font-size:11px;color:var(--text3);">Login attempt rejected</div></div>
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);text-align:center;"><div style="font-family:var(--mono);font-size:10px;color:var(--green);margin-bottom:4px;">SUCCESS</div><div style="font-size:11px;color:var(--text3);">Authenticated</div></div>
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);text-align:center;"><div style="font-family:var(--mono);font-size:10px;color:var(--acc);margin-bottom:4px;">LOCKED</div><div style="font-size:11px;color:var(--text3);">Account locked out</div></div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ OPEN LOGS</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+
+<div class="screen" id="s4">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">BRUTE FORCE vs CREDENTIAL STUFFING</div><div class="concept-def">Brute force tries every possible password combination. Credential stuffing uses real username/password pairs leaked from other breaches. Credential stuffing succeeds far more often because the credentials are correct — just used on the wrong site.</div></div>
+    <div class="concept-card"><div class="concept-term">ACCOUNT LOCKOUT POLICY</div><div class="concept-def">Lock accounts after N failed attempts (typically 5–10). Prevents brute force by making it impractically slow. Downside: attackers can lock out legitimate users deliberately (DoS). Configure carefully with escalating delays rather than hard locks for critical systems.</div></div>
+    <div class="concept-card"><div class="concept-term">PASSWORD SPRAYING</div><div class="concept-def">Instead of many passwords against one account (brute force), spray ONE common password across MANY accounts. Avoids lockout policies because each individual account sees only one failed attempt. Indicators: one failed attempt per account, many accounts, slow timing.</div></div>
+    <div class="concept-card"><div class="concept-term">LOG ANALYSIS INDICATORS</div><div class="concept-def">Brute force: many failures on ONE account, fast timing, sequential passwords. Spraying: one failure per account, MANY accounts, slow timing. Credential stuffing: scattered failures across many accounts, then occasional sudden success. All require MFA as the primary defense.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ NEW LOGS</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim4_hub.html'">← UNIT 4 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const LOGS=[
+  {
+    title:"AUTH LOG — WEBSERVER-01 — 2026-03-14",
+    source:"SSH auth.log",
+    entries:[
+      {time:"03:14:01",type:"FAILED",msg:"Invalid password for <span class='hl'>root</span> from 185.220.101.33",flag:true},
+      {time:"03:14:02",type:"FAILED",msg:"Invalid password for <span class='hl'>root</span> from 185.220.101.33",flag:true},
+      {time:"03:14:02",type:"FAILED",msg:"Invalid password for <span class='hl'>root</span> from 185.220.101.33",flag:true},
+      {time:"03:14:03",type:"FAILED",msg:"Invalid password for <span class='hl'>root</span> from 185.220.101.33",flag:true},
+      {time:"03:14:03",type:"FAILED",msg:"Invalid password for <span class='hl'>root</span> from 185.220.101.33",flag:true},
+      {time:"03:14:04",type:"FAILED",msg:"Invalid password for <span class='hl'>admin</span> from 185.220.101.33",flag:true},
+      {time:"03:14:04",type:"FAILED",msg:"Invalid password for <span class='hl'>administrator</span> from 185.220.101.33",flag:true},
+      {time:"03:14:05",type:"FAILED",msg:"Invalid password for <span class='hl'>ubuntu</span> from 185.220.101.33",flag:true},
+      {time:"03:14:22",type:"FAILED",msg:"Invalid password for <span class='hl'>root</span> from 185.220.101.33",flag:true},
+      {time:"03:14:31",type:"SUCCESS",msg:"<span class='bad'>Accepted password for backup_svc from 185.220.101.33</span> — session opened",flag:true}
+    ],
+    stats:[
+      {val:"847",cls:"danger",lbl:"FAILED ATTEMPTS"},
+      {val:"1",cls:"danger",lbl:"COMPROMISED ACCT"},
+      {val:"1",cls:"warn",lbl:"SOURCE IPs"},
+      {val:"29s",cls:"warn",lbl:"TIME TO BREACH"}
+    ],
+    qs:[
+      {
+        label:"QUESTION A",
+        text:"The log shows 847 failed attempts from a <strong>single IP address</strong> against multiple usernames in rapid succession, followed by a successful login. What attack does this represent?",
+        choices:[
+          {l:"A",t:"Password spraying — attacker tried one password across many accounts"},
+          {l:"B",t:"Brute force / dictionary attack — attacker systematically tried many passwords against SSH accounts"},
+          {l:"C",t:"Credential stuffing — attacker used credentials from a previous data breach"},
+          {l:"D",t:"Replay attack — attacker captured and replayed a valid SSH session"}
+        ],
+        answer:"B",
+        explanation:"Key indicators of brute force: single source IP, rapid fire attempts, multiple usernames tried, systematic pattern (root, admin, administrator, ubuntu — all common SSH usernames). 847 attempts in ~30 seconds = automated tool. The eventual success against 'backup_svc' suggests this was a weak/default password.",
+        trap:"Credential stuffing would show the attacker knowing specific username/password pairs that work together — it's more targeted and usually fewer attempts before success. Password spraying hits many accounts with one password slowly. This is volume brute force against SSH."
+      },
+      {
+        label:"QUESTION B",
+        text:"What is the MOST effective control to prevent this type of attack on an internet-facing SSH server?",
+        choices:[
+          {l:"A",t:"Implement account lockout after 10 failed attempts"},
+          {l:"B",t:"Disable password authentication entirely and require SSH key pairs only"},
+          {l:"C",t:"Change the SSH port from 22 to a non-standard port"},
+          {l:"D",t:"Add a login banner warning that unauthorized access is prohibited"}
+        ],
+        answer:"B",
+        explanation:"Disabling password authentication and requiring SSH key pairs (public/private key cryptography) eliminates password-based brute force entirely — there's no password to guess. SSH keys are cryptographically strong (typically 2048–4096 bit RSA or ED25519) and immune to dictionary attacks. This is the industry standard for internet-facing SSH servers.",
+        trap:"Account lockout (A) creates a DoS risk and still leaves a window for attack. Port security through obscurity (C) — changing to a non-standard port — reduces noise but doesn't prevent targeted attacks; port scanners find it. Login banners (D) have no technical enforcement value."
+      }
+    ]
+  },
+  {
+    title:"AUTH LOG — CORP-AD — 2026-03-15",
+    source:"Windows Security Event Log (Event ID 4625)",
+    entries:[
+      {time:"09:00:01",type:"FAILED",msg:"Account: <span class='hl'>alice.johnson</span> | Password: Summer2024! | IP: 10.0.0.55",flag:true},
+      {time:"09:00:04",type:"FAILED",msg:"Account: <span class='hl'>bob.smith</span> | Password: Summer2024! | IP: 10.0.0.55",flag:true},
+      {time:"09:00:07",type:"FAILED",msg:"Account: <span class='hl'>carol.white</span> | Password: Summer2024! | IP: 10.0.0.55",flag:true},
+      {time:"09:00:10",type:"FAILED",msg:"Account: <span class='hl'>david.lee</span> | Password: Summer2024! | IP: 10.0.0.55",flag:true},
+      {time:"09:00:13",type:"SUCCESS",msg:"Account: <span class='bad'>eve.martin</span> | Password: Summer2024! | IP: 10.0.0.55 ← LOGIN SUCCESS",flag:true},
+      {time:"09:00:16",type:"FAILED",msg:"Account: <span class='hl'>frank.chen</span> | Password: Summer2024! | IP: 10.0.0.55",flag:true},
+      {time:"09:00:19",type:"FAILED",msg:"Account: <span class='hl'>grace.kim</span> | Password: Summer2024! | IP: 10.0.0.55",flag:true},
+      {time:"09:00:22",type:"FAILED",msg:"Account: <span class='hl'>henry.patel</span> | Password: Summer2024! | IP: 10.0.0.55",flag:true},
+      {time:"09:00:25",type:"FAILED",msg:"Account: <span class='hl'>iris.jones</span> | Password: Summer2024! | IP: 10.0.0.55",flag:true},
+      {time:"09:00:28",type:"FAILED",msg:"Account: <span class='hl'>jack.brown</span> | Password: Summer2024! | IP: 10.0.0.55",flag:true}
+    ],
+    stats:[
+      {val:"1",cls:"warn",lbl:"PASSWORD TRIED"},
+      {val:"47",cls:"danger",lbl:"ACCOUNTS TARGETED"},
+      {val:"1",cls:"warn",lbl:"SOURCE IPs"},
+      {val:"~3s",cls:"warn",lbl:"INTERVAL (slow)"}
+    ],
+    qs:[
+      {
+        label:"QUESTION A",
+        text:"The log shows the <strong>same password</strong> (Summer2024!) tried against <strong>47 different accounts</strong>, with a 3-second interval between attempts. One account (eve.martin) had that as their actual password. What attack is this?",
+        choices:[
+          {l:"A",t:"Brute force — the attacker tried many passwords against one account"},
+          {l:"B",t:"Credential stuffing — the attacker used passwords from a previous breach database"},
+          {l:"C",t:"Password spraying — one common password tried slowly across many accounts to avoid lockout"},
+          {l:"D",t:"Dictionary attack — the attacker used a wordlist of common passwords"}
+        ],
+        answer:"C",
+        explanation:"Password spraying: ONE password, MANY accounts, SLOW timing. The 3-second interval is deliberate — it avoids triggering account lockout policies (which trigger on multiple failures for ONE account). The password 'Summer2024!' is a common seasonal pattern. The attacker found that one employee (eve.martin) actually used this password. This attack defeats account lockout by design.",
+        trap:"Brute force = many passwords, one account. Spraying = one password, many accounts. Credential stuffing = real breach credentials (specific user/password pairs that were exposed together). The 3-second slow interval and single password across all accounts is the spraying signature."
+      },
+      {
+        label:"QUESTION B",
+        text:"Account lockout policies are in place (locks after 5 failures) but <strong>failed to prevent this attack</strong>. What control would MOST effectively stop password spraying?",
+        choices:[
+          {l:"A",t:"Reduce lockout threshold to 3 failed attempts instead of 5"},
+          {l:"B",t:"Require MFA on all Active Directory accounts — a stolen password alone grants nothing"},
+          {l:"C",t:"Block the attacker's IP address (10.0.0.55) at the firewall"},
+          {l:"D",t:"Require passwords to be at least 20 characters long"}
+        ],
+        answer:"B",
+        explanation:"MFA is the correct answer because password spraying specifically defeats account lockout by staying under the threshold. Even when spraying succeeds and the correct password is found, MFA means the attacker cannot log in with the password alone — they also need the second factor (phone, token, etc.). MFA neutralizes the attack even if the password is compromised.",
+        trap:"IP blocking (C) is reactive and easily bypassed. Reducing lockout to 3 attempts (A) makes legitimate users more likely to get locked out without stopping spraying — an attacker can spray with 2 attempts per account. Longer passwords (D) help against brute force but not against spraying with correct-looking passwords like 'Summer2024!'."
+      }
+    ]
+  },
+  {
+    title:"AUTH LOG — CLOUD-APP — 2026-03-16",
+    source:"SaaS Application Login Audit",
+    entries:[
+      {time:"11:02:11",type:"FAILED",msg:"User: <span class='hl'>j.carter@company.com</span> | IP: 198.51.100.44 (Chicago, IL)",flag:false},
+      {time:"11:02:44",type:"FAILED",msg:"User: <span class='hl'>m.nguyen@company.com</span> | IP: 198.51.100.44 (Chicago, IL)",flag:false},
+      {time:"11:03:01",type:"SUCCESS",msg:"User: <span class='bad'>j.carter@company.com</span> | IP: 198.51.100.44 — <span class='bad'>LOGIN SUCCESS</span>",flag:true},
+      {time:"11:03:22",type:"SUCCESS",msg:"User: <span class='bad'>m.nguyen@company.com</span> | IP: 198.51.100.44 — <span class='bad'>LOGIN SUCCESS</span>",flag:true},
+      {time:"11:03:45",type:"SUCCESS",msg:"User: <span class='bad'>p.okafor@company.com</span> | IP: 198.51.100.44 — <span class='bad'>LOGIN SUCCESS</span>",flag:true},
+      {time:"11:04:01",type:"FAILED",msg:"User: <span class='hl'>r.patel@company.com</span> | IP: 198.51.100.44",flag:false},
+      {time:"11:04:18",type:"SUCCESS",msg:"User: <span class='bad'>s.rodriguez@company.com</span> | IP: 198.51.100.44 — <span class='bad'>LOGIN SUCCESS</span>",flag:true},
+      {time:"11:04:30",type:"INFO",msg:"User: j.carter@company.com — <span class='warn'>CONCURRENT SESSION from Dublin, Ireland (user's normal location)</span>",flag:true},
+      {time:"11:04:30",type:"ALERT",msg:"<span class='bad'>IMPOSSIBLE TRAVEL DETECTED: j.carter logged in from both Chicago and Dublin simultaneously</span>",flag:true},
+      {time:"11:04:31",type:"INFO",msg:"Accounts exported: all 847 customer records downloaded by m.nguyen session",flag:true}
+    ],
+    stats:[
+      {val:"4",cls:"danger",lbl:"ACCOUNTS HIT"},
+      {val:"847",cls:"danger",lbl:"RECORDS EXPORTED"},
+      {val:"~20",cls:"warn",lbl:"ATTEMPTS TOTAL"},
+      {val:"⚠",cls:"danger",lbl:"IMPOSSIBLE TRAVEL"}
+    ],
+    qs:[
+      {
+        label:"QUESTION A",
+        text:"The attacker succeeds quickly with specific username/password pairs from an external IP, while the legitimate user (j.carter) is simultaneously logged in from Ireland. 847 customer records are exported. What attack type does this represent?",
+        choices:[
+          {l:"A",t:"Password spraying — attacker tried one common password across many accounts"},
+          {l:"B",t:"Brute force — attacker tried many passwords until finding the correct ones"},
+          {l:"C",t:"Credential stuffing — attacker used real username/password pairs from a previous data breach"},
+          {l:"D",t:"Session hijacking — attacker stole active session cookies to impersonate users"}
+        ],
+        answer:"C",
+        explanation:"Credential stuffing indicators: (1) Attacker quickly succeeds with multiple accounts (knows the correct passwords already), (2) Few failed attempts before success — not guessing randomly, (3) Impossible travel alert — the real j.carter is in Dublin while the attacker uses their credentials from Chicago. These are real credentials from a breach database being 'stuffed' into this application.",
+        trap:"Brute force would show many failures before success. Spraying tries one password. Session hijacking requires active session cookies. Credential stuffing is fast, precise, and affects multiple accounts simultaneously because the attacker has a list of real credentials."
+      },
+      {
+        label:"QUESTION B",
+        text:"The impossible travel detection alerted on j.carter being logged in simultaneously from two continents. Which combination of controls would BEST prevent and detect this attack type?",
+        choices:[
+          {l:"A",t:"MFA on all accounts + anomaly-based login detection (impossible travel, new device, unusual hours)"},
+          {l:"B",t:"Force users to reset passwords every 30 days to invalidate breached credentials"},
+          {l:"C",t:"Block all logins from IP addresses outside the United States"},
+          {l:"D",t:"Require passwords of at least 16 characters with special characters"}
+        ],
+        answer:"A",
+        explanation:"The two-layer solution: MFA prevents credential stuffing from succeeding even when the password is correct (attacker needs the second factor). Anomaly detection catches attacks that do get through — impossible travel, new devices, bulk downloads all signal compromise. Together they prevent and detect. This is defense in depth applied to authentication.",
+        trap:"30-day password rotations (B) are outdated guidance — NIST now recommends against forced rotation unless a compromise is known. By the time the user resets, the attacker has already acted. Geographic IP blocking (C) fails if the attacker uses a US-based proxy. Complex passwords (D) don't help when real passwords are used."
+      }
+    ]
+  }
+];
+
+let score=0,results=[],total=LOGS.length,sel={},locked={},_chg={};
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildLog(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildLog(idx){
+  const log=LOGS[idx];
+  const entries=log.entries.map(e=>`<div class="log-entry" data-flag="${e.flag?1:0}"><span class="le-time">${e.time}</span><span class="le-type" style="color:${e.type==='FAILED'?'var(--red)':e.type==='SUCCESS'?'var(--green)':'var(--acc)'}">[${e.type}]</span><span class="le-msg">${e.msg}</span></div>`).join('');
+  const stats=log.stats.map(s=>`<div class="stat-card"><span class="stat-val" data-cls="${s.cls}">${s.val}</span><div class="stat-lbl">${s.lbl}</div></div>`).join('');
+  const qs=log.qs.map((q,qi)=>`
+    <div class="q-box">
+      <div class="q-label">${q.label}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="choices" id="ch-${idx}-${qi}">
+        ${q.choices.map(c=>`<div class="choice-btn" onclick="pick(this,'${c.l}',${idx},${qi})"><span class="cl">${c.l}</span><div class="ct">${c.t}</div></div>`).join('')}
+      </div>
+      <div class="lock-row"><button class="btn btn-acc" id="lock-${idx}-${qi}" disabled onclick="lockIn(${idx},${qi})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="hint-${idx}-${qi}">Choose an answer. You can change it until you lock in. Nothing is revealed before that.</span></div>
+      <div class="feedback" id="fb-${idx}-${qi}"></div>
+    </div>`).join('');
+
+  results[idx]={q0:null,q1:null,pts:0};
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// LOG SET ${idx+1} OF ${total}</div>
+    <div class="sec-title">Analyze the Authentication Logs</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Log Set ${idx+1}/${total}</span>
+    </div>
+    <div class="log-viewer">
+      <div class="log-toolbar">
+        <span class="lt-badge">LOG</span>
+        <span class="lt-title">${log.title}</span>
+        <span class="lt-badge" style="margin-left:auto;">${log.source}</span>
+      </div>
+      <div class="log-body">${entries}</div>
+    </div>
+    <div class="stats-panel">${stats}</div>
+    ${qs}
+    <div class="nav"><div></div><button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT LOG SET →'}</button></div>`;
+}
+
+function pick(el,letter,idx,qi){
+  const k=idx+'-'+qi;
+  if(locked[k])return;
+  if(sel[k]&&sel[k]!==letter)_chg[k]=(_chg[k]||0)+1;
+  sel[k]=letter;
+  document.getElementById('ch-'+k).querySelectorAll('.choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+k).disabled=false;
+  document.getElementById('hint-'+k).textContent='Selected: '+letter+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockIn(idx,qi){
+  const k=idx+'-'+qi;
+  if(locked[k]||!sel[k])return;
+  locked[k]=true;
+  const q=LOGS[idx].qs[qi],letter=sel[k],ok=letter===q.answer;
+  const box=document.getElementById('ch-'+k).closest('.q-box');
+  box.querySelector('.lock-row').style.display='none';
+  document.getElementById('ch-'+k).querySelectorAll('.choice-btn').forEach(c=>{
+    const l=c.querySelector('.cl').textContent;
+    c.classList.remove('picked');c.classList.add('locked');
+    if(l===q.answer)c.classList.add('correct-ans');
+    if(l===letter){if(!ok)c.classList.add('wrong-ans');c.querySelector('.ct').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  const pts=17;
+  if(ok){score+=pts;results[idx].pts+=pts;}
+  results[idx]['q'+qi]=ok;results[idx]['c'+qi]=letter;
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  const fb=document.getElementById('fb-'+k);
+  fb.className='feedback show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?`<div class="fb-lbl ok">// LOCKED IN — CORRECT +${pts} pts</div>`:`<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: ${q.answer}</div>`)+`${q.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 Common confusion: ${q.trap}</em>`;
+  if(locked[idx+'-0']&&locked[idx+'-1']){
+    document.querySelectorAll('#s'+(idx+1)+' .log-entry').forEach(e=>{if(e.dataset.flag==='1')e.classList.add('flag-line');});
+    document.querySelectorAll('#s'+(idx+1)+' .stat-val').forEach(e=>{if(e.dataset.cls)e.classList.add(e.dataset.cls);});
+    document.getElementById('next-'+idx).style.display='inline-flex';
+  }
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*34))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Log Analysis Expert 🕵️','You correctly identified all attack types AND their defenses from raw log data. This is exactly the evidence-based analysis the AP FRQ tests.'],mid:['Good Analyst 🎯','You caught most patterns. Review brute force vs. spraying vs. stuffing — they look similar in logs but have different indicators and require different defenses.'],low:['Keep Building 📚','Focus on the three numbers: attempts per account (brute force = many), accounts per password (spraying = many), and success rate (credential stuffing = high). Each tells a different story.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=LOGS.map((log,i)=>{
+    const r=results[i]||{q0:false,q1:false,pts:0};
+    return `<div class="b-row"><div class="b-check">${r.q0&&r.q1?'✅':'⚠️'}</div><div class="b-text"><strong>${log.source}</strong> — Attack ID: ${r.q0?'✓':'✗'} · Defense: ${r.q1?'✓':'✗'}</div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];sel={};locked={};_chg={};document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:4,sim:'logs',screenId:''+('s'+(total+1))+'',score:score,max:total*34,items:(function(){var o=[];LOGS.forEach(function(lg,i){var r=results[i]||{};[0,1].forEach(function(qi){var q=lg.qs[qi];o.push({label:lg.source+' — '+(qi===0?'attack ID':'defense'),result:r['q'+qi]?'correct':'incorrect',pts:r['q'+qi]?17:0,max:17,response:r['c'+qi]||'',expected:q.answer,changes:_chg[i+'-'+qi]||0});});});return o;})()});
+};
+const _apRestart=restart;
+restart=function(){sel={};locked={};_chg={};APSim.start(4,'logs');_apRestart();};
+APSim.start(4,'logs');
+
+goTo(0);
+</script>
+</body>
+</html>

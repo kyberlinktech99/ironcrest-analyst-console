@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="5" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim5_sqli">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | SQL Injection Detective — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#c084fc;--red:#ef4444;--green:#22c55e;--amber:#f59e0b;--cyan:#00d4ff;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-purple) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-purple) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--c-purple) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-purple) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-purple) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* CODE BLOCK */
+.code-block{background:#0d1117;border:1px solid var(--border2);padding:0;margin-bottom:14px;overflow:hidden;}
+.code-header{background:#161b22;border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:8px;}
+.code-lang{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.12em;}
+.code-file{font-family:var(--mono);font-size:10px;color:var(--text2);}
+.code-body{padding:14px;overflow-x:auto;}
+.code-line{font-family:var(--mono);font-size:12px;line-height:1.8;white-space:pre;}
+.kw{color:#ff7b72;}.str{color:#a5d6ff;}.fn{color:#d2a8ff;}.cm{color:#8b949e;}.bad{color:var(--red);font-weight:700;}.good{color:var(--green);}.num{color:#79c0ff;}.var-c{color:#ffa657;}
+
+/* QUERY SIMULATOR */
+.query-sim{background:var(--panel);border:1px solid var(--border2);padding:16px;margin-bottom:14px;}
+.qs-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:10px;}
+.qs-input-row{display:flex;gap:8px;margin-bottom:10px;align-items:center;}
+.qs-input{background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 12px;flex:1;outline:none;}
+.qs-input:focus{border-color:var(--acc);}
+.qs-btn{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:11px;padding:8px 16px;cursor:pointer;border:none;font-weight:700;white-space:nowrap;}
+.qs-query{font-family:var(--mono);font-size:11px;color:var(--text3);padding:8px 10px;background:var(--bg3);border:1px solid var(--border);margin-bottom:8px;line-height:1.5;}
+.qs-query .injected{color:var(--red);font-weight:700;}
+.qs-result{font-family:var(--mono);font-size:11px;padding:10px;border:1px solid var(--border);min-height:40px;line-height:1.6;}
+.qs-result.danger{border-color:var(--red);background:color-mix(in srgb,var(--red) 6%,transparent);}
+.qs-result.safe{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 6%,transparent);}
+.qs-result.error{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 6%,transparent);}
+
+/* MCQ */
+.q-box{background:var(--panel);border:1px solid var(--border2);padding:16px 18px;margin-bottom:12px;}
+.q-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;}
+.q-text{font-size:14px;line-height:1.7;color:var(--text);margin-bottom:12px;}
+.q-text strong{color:var(--acc);}
+.q-text code{font-family:var(--mono);font-size:11px;color:var(--cyan);background:var(--bg3);padding:1px 5px;}
+.choices{display:grid;gap:8px;}
+.choice-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 15px;cursor:pointer;text-align:left;transition:all .2s;}
+.choice-btn:hover:not(.locked){border-color:var(--acc);background:color-mix(in srgb,var(--c-purple) 5%,transparent);}
+.choice-btn.correct-ans{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.choice-btn.wrong-ans{border-color:var(--red)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.choice-btn.locked{pointer-events:none;opacity:.5;}
+.choice-btn.correct-ans,.choice-btn.wrong-ans{opacity:1!important;}
+.cl{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px;display:block;}
+.ct{font-size:13px;color:var(--text);line-height:1.45;}
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:10px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--c-purple) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.concept-grid{grid-template-columns:1fr;}.qs-input-row{flex-direction:column;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--c-purple);--red:var(--red);--green:var(--c-green);--amber:var(--amber);--cyan:var(--cyan);}</style>
+<style>/*apsim-island*//* CODE BLOCK */
+.code-block,.code-header{--bg:#0c111f;--bg2:#101728;--bg3:#151e34;--panel:#131b2f;--panel2:#1a2441;--border:#232f4d;--border2:#344470;--text:#e9effc;--text2:#a3b0d0;--text3:#7384ab;--on-acc:#0b1020;--green:#34d399;--amber:#fbbf24;--warn:#fbbf24;--danger:#f87171;--red:#f87171;--cyan:#22d3ee;--purple:#a78bfa;--c-orange:#fb923c;--c-purple:#c084fc;--c-red:#f87171;--c-sky:#38bdf8;--c-lime:#a3e635;--c-amber:#fbbf24;--c-green:#34d399;--c-teal:#2dd4bf;color-scheme:dark;color:var(--text);--acc:var(--c-purple);--red:var(--red);--green:var(--c-green);--amber:var(--amber);--cyan:var(--cyan);}</style>
+<style>/*apsim-dark*/.apsim-dark{--bg:#0c111f;--bg2:#101728;--bg3:#151e34;--panel:#131b2f;--panel2:#1a2441;--border:#232f4d;--border2:#344470;--text:#e9effc;--text2:#a3b0d0;--text3:#7384ab;--on-acc:#0b1020;--green:#34d399;--amber:#fbbf24;--warn:#fbbf24;--danger:#f87171;--red:#f87171;--cyan:#22d3ee;--purple:#a78bfa;--c-orange:#fb923c;--c-purple:#c084fc;--c-red:#f87171;--c-sky:#38bdf8;--c-lime:#a3e635;--c-amber:#fbbf24;--c-green:#34d399;--c-teal:#2dd4bf;color-scheme:dark;color:var(--text);--acc:var(--c-purple);--red:var(--red);--green:var(--c-green);--amber:var(--amber);--cyan:var(--cyan);}</style>
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 5</div>
+  <div>
+    <div class="hdr-title">SQL Injection Detective</div>
+    <div class="hdr-sub">UNIT 5 · SECURING APPS & DATA · SQLI · INPUT VALIDATION</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">L1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">L2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">L3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">L4</span><div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p5"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">💉</span>
+    <div class="intro-title">SQL Injection Detective</div>
+    <div class="intro-desc">SQL injection is the most historically common web application vulnerability. Four lessons — each shows vulnerable code, a live interactive query simulator, and two questions: identify the vulnerability and select the correct fix. Understanding SQLi means understanding how unsanitized input becomes a database command.</div>
+    <div class="apsim-dark" style="background:#0d1117;border:1px solid var(--border2);padding:14px;max-width:500px;margin:0 auto 24px;text-align:left;">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;">// THE CORE PROBLEM</div>
+      <div class="code-line"><span class="cm"># User types: ' OR '1'='1</span></div>
+      <div class="code-line"><span class="cm"># Query becomes:</span></div>
+      <div class="code-line"><span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> user=<span class="str">''</span></div>
+      <div class="code-line">  <span class="kw">OR</span> <span class="bad">'1'='1'</span> <span class="cm">-- always true → dumps everything</span></div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+
+<div class="screen" id="s5">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">WHY SQLI WORKS</div><div class="concept-def">SQL injection works because user input is concatenated directly into a SQL query string. The database can't distinguish between the developer's intended SQL and the attacker's injected SQL — they're the same string.</div></div>
+    <div class="concept-card"><div class="concept-term">PARAMETERIZED QUERIES</div><div class="concept-def">The correct fix: use prepared statements / parameterized queries. The SQL structure is defined first with placeholders (?), then user input is bound separately. The database treats bound parameters as data, never as SQL commands — injection is structurally impossible.</div></div>
+    <div class="concept-card"><div class="concept-term">INPUT VALIDATION vs SANITIZATION</div><div class="concept-def">Validation checks if input is acceptable (is this a valid email?). Sanitization removes dangerous characters (strip apostrophes). Validation and sanitization are defense-in-depth layers — but parameterized queries are the primary fix for SQLi.</div></div>
+    <div class="concept-card"><div class="concept-term">WHAT SQLI CAN DO</div><div class="concept-def">Bypass authentication (login without credentials), extract the entire database (UNION attacks), modify or delete data (UPDATE/DELETE injection), execute OS commands (in some configurations). SQLi is an Integrity AND Confidentiality violation.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ TRY AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim5_hub.html'">← UNIT 5 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const LESSONS=[
+  {
+    label:"LESSON 01 — AUTH BYPASS",
+    vulnCode:[
+      {t:`<span class="cm"># VULNERABLE: string concatenation</span>`},
+      {t:`username = request.form[<span class="str">'username'</span>]`},
+      {t:`password = request.form[<span class="str">'password'</span>]`},
+      {t:`query = <span class="str">"SELECT * FROM users WHERE username='"</span> + <span class="var-c">username</span>`},
+      {t:`        <span class="str">+ "' AND password='"</span> + <span class="var-c">password</span> + <span class="str">"'"</span>`},
+      {t:`<span class="cm"># If username = admin'-- the query becomes:</span>`},
+      {t:`<span class="cm"># SELECT * FROM users WHERE username='admin'--' AND password='...'</span>`},
+      {t:`<span class="cm"># The -- comments out the password check entirely!</span>`}
+    ],
+    simLabel:"// TRY THE INJECTION — type into the username field",
+    simInputs:[
+      {label:"USERNAME",id:"sim1-user",placeholder:"Try: admin'--",default:"admin'--"},
+      {label:"PASSWORD",id:"sim1-pass",placeholder:"anything",default:"wrong"}
+    ],
+    simFn:"runAuthBypass",
+    qs:[
+      {
+        label:"QUESTION A",
+        text:"When a user enters <code>admin'--</code> as the username, what happens to the SQL query?",
+        choices:[
+          {l:"A",t:"The apostrophe causes a database error and the login fails"},
+          {l:"B",t:"The apostrophe closes the username string and -- comments out the AND password check — the query returns the admin record without verifying the password"},
+          {l:"C",t:"The special characters are filtered by the browser before reaching the server"},
+          {l:"D",t:"The query runs normally — special characters in username fields are ignored by SQL"}
+        ],
+        answer:"B",
+        explain:"The apostrophe closes the string literal started by the developer's code. Everything after -- is a SQL comment (ignored). The resulting query: SELECT * FROM users WHERE username='admin'-- ' AND password='...' — the password check is commented out, so any admin account is returned. This bypasses authentication entirely."
+      },
+      {
+        label:"QUESTION B",
+        text:"What is the CORRECT fix for this SQL injection vulnerability?",
+        choices:[
+          {l:"A",t:"Remove apostrophes from the username field using JavaScript on the client side"},
+          {l:"B",t:"Use parameterized queries (prepared statements) — separate the SQL structure from the user-supplied data"},
+          {l:"C",t:"Limit username fields to 20 characters maximum to prevent long injection strings"},
+          {l:"D",t:"Store passwords as MD5 hashes — this prevents the password check from being bypassed"}
+        ],
+        answer:"B",
+        explain:"Parameterized queries separate SQL structure from data: cursor.execute('SELECT * FROM users WHERE username=? AND password=?', (username, password)). The database treats username and password as literal data values — never as SQL syntax. The apostrophe in 'admin' becomes a literal apostrophe in the data, not a string terminator. Client-side validation (A) is easily bypassed; length limits (C) don't prevent injection; password hashing (D) doesn't fix the SQLi."
+      }
+    ]
+  },
+  {
+    label:"LESSON 02 — DATA EXTRACTION (UNION)",
+    vulnCode:[
+      {t:`<span class="cm"># VULNERABLE: product search</span>`},
+      {t:`product_id = request.args.get(<span class="str">'id'</span>)`},
+      {t:`query = <span class="str">"SELECT name, price FROM products WHERE id="</span> + <span class="var-c">product_id</span>`},
+      {t:`<span class="cm"># Attacker submits: 1 UNION SELECT username,password FROM users--</span>`},
+      {t:`<span class="cm"># Query becomes:</span>`},
+      {t:`<span class="cm"># SELECT name,price FROM products WHERE id=1</span>`},
+      {t:`<span class="cm"># UNION SELECT username,password FROM users--</span>`},
+      {t:`<span class="cm"># Returns BOTH product rows AND all user credentials!</span>`}
+    ],
+    simLabel:"// TRY UNION INJECTION — enter a product ID",
+    simInputs:[
+      {label:"PRODUCT ID",id:"sim2-id",placeholder:"Try: 1 UNION SELECT username,password FROM users--",default:"1 UNION SELECT username,password FROM users--"}
+    ],
+    simFn:"runUnionInject",
+    qs:[
+      {
+        label:"QUESTION A",
+        text:"A UNION SELECT injection <code>1 UNION SELECT username,password FROM users--</code> appended to a product search. What does this attack accomplish?",
+        choices:[
+          {l:"A",t:"It deletes all records from the users table"},
+          {l:"B",t:"It causes the application to crash with a database error, creating a DoS condition"},
+          {l:"C",t:"It appends a second SELECT to the original query, causing the application to return user credential data alongside product data"},
+          {l:"D",t:"It modifies the product prices in the database"}
+        ],
+        answer:"C",
+        explain:"UNION SELECT appends a second query result to the first. If the products table has 2 columns (name, price), the UNION must also select 2 columns — and the attacker chooses username and password. The application returns product results AND user records in the same response. This is a Confidentiality violation — the entire users table is exfiltrated through the product search page."
+      },
+      {
+        label:"QUESTION B",
+        text:"Beyond parameterized queries, which additional control specifically limits the damage of a successful UNION injection?",
+        choices:[
+          {l:"A",t:"Rate limiting on the search endpoint — prevents too many requests per minute"},
+          {l:"B",t:"The principle of least privilege on database accounts — the web app's DB user should only have SELECT on product tables, not access to the users table"},
+          {l:"C",t:"Encrypting the database at rest — attackers can't read extracted data"},
+          {l:"D",t:"Using HTTPS — prevents injection payloads from reaching the server"}
+        ],
+        answer:"B",
+        explain:"Database least privilege is defense in depth against SQLi. If the web application's database account only has SELECT permission on the products table (not the users table), a UNION injection against users fails — access denied. The parameterized query prevents injection; least privilege limits blast radius if injection somehow occurs. Encryption at rest doesn't help — the attacker is reading data through legitimate database queries."
+      }
+    ]
+  },
+  {
+    label:"LESSON 03 — BLIND INJECTION",
+    vulnCode:[
+      {t:`<span class="cm"># VULNERABLE: no visible error, but boolean behavior leaks data</span>`},
+      {t:`user_id = request.args.get(<span class="str">'user'</span>)`},
+      {t:`query = <span class="str">"SELECT * FROM accounts WHERE user_id="</span> + <span class="var-c">user_id</span>`},
+      {t:`<span class="cm"># Page shows "Account found" or "Not found"</span>`},
+      {t:`<span class="cm"># Attacker: user_id=1 AND SUBSTRING(password,1,1)='a'</span>`},
+      {t:`<span class="cm"># If "Account found" → first char of password is 'a'</span>`},
+      {t:`<span class="cm"># Repeat for each character → full password extracted!</span>`},
+      {t:`<span class="cm"># Automation: 26 letters × 8 chars = ~208 requests</span>`}
+    ],
+    simLabel:"// BLIND INJECTION DEMO — the page only shows true/false",
+    simInputs:[
+      {label:"USER ID",id:"sim3-id",placeholder:"Try: 1 AND 1=1  or  1 AND 1=2",default:"1 AND 1=1"}
+    ],
+    simFn:"runBlindInject",
+    qs:[
+      {
+        label:"QUESTION A",
+        text:"In blind SQL injection, the application shows no data output — just 'true' or 'false' responses. How does an attacker still extract data?",
+        choices:[
+          {l:"A",t:"They can't — without visible output, SQL injection is ineffective"},
+          {l:"B",t:"They inject boolean conditions character-by-character — a 'true' response confirms each character guess, rebuilding data one bit at a time"},
+          {l:"C",t:"They use UNION SELECT to force the application to display the data anyway"},
+          {l:"D",t:"They trigger database errors that include the data in the error message"}
+        ],
+        answer:"B",
+        explain:"Blind SQLi exploits the application's boolean behavior (true/false responses). By injecting conditions like AND SUBSTRING(password,1,1)='a', the attacker learns one character at a time. Automated tools (sqlmap) can extract entire databases through blind injection with thousands of requests. This makes SQLi dangerous even in applications that don't display query results directly."
+      },
+      {
+        label:"QUESTION B",
+        text:"Which of the following BEST describes how parameterized queries prevent blind SQL injection?",
+        choices:[
+          {l:"A",t:"Parameterized queries add a time delay that makes automated blind injection too slow"},
+          {l:"B",t:"The database treats all user input as literal data, so AND SUBSTRING(...) is treated as a literal string — it's never executed as SQL logic"},
+          {l:"C",t:"Parameterized queries encrypt user input before adding it to the query"},
+          {l:"D",t:"Parameterized queries log suspicious patterns and block the request"}
+        ],
+        answer:"B",
+        explain:"With parameterized queries, user input is bound to a placeholder as a data value. The string '1 AND SUBSTRING(password,1,1)=\\'a\\'' is treated as a literal search value — the database looks for a user_id equal to that entire string, which doesn't exist. No boolean logic is executed. The SQL structure is fixed at development time; user input can never alter it."
+      }
+    ]
+  },
+  {
+    label:"LESSON 04 — SECURE CODE COMPARISON",
+    vulnCode:[
+      {t:`<span class="cm"># VULNERABLE ❌</span>`},
+      {t:`<span class="kw">def</span> <span class="fn">login_vulnerable</span>(username, password):`},
+      {t:`    query = <span class="str">"SELECT * FROM users WHERE username='"</span>`},
+      {t:`             + <span class="var-c">username</span> + <span class="str">"' AND password='"</span> + <span class="var-c">password</span> + <span class="str">"'"</span>`},
+      {t:`    <span class="kw">return</span> db.execute(query)`},
+      {t:``},
+      {t:`<span class="cm"># SECURE ✓ — Parameterized</span>`},
+      {t:`<span class="kw">def</span> <span class="fn">login_secure</span>(username, password):`},
+      {t:`    query = <span class="str">"SELECT * FROM users WHERE username=? AND password=?"</span>`},
+      {t:`    <span class="kw">return</span> db.execute(query, (<span class="var-c">username</span>, <span class="var-c">password</span>))`}
+    ],
+    simLabel:"// SPOT THE DIFFERENCE — which part of the secure version prevents injection?",
+    simInputs:[
+      {label:"TEST INPUT",id:"sim4-input",placeholder:"Enter: ' OR '1'='1",default:"' OR '1'='1"}
+    ],
+    simFn:"runSecureCompare",
+    qs:[
+      {
+        label:"QUESTION A",
+        text:"Looking at the secure vs. vulnerable code, what is the structural difference that prevents SQL injection?",
+        choices:[
+          {l:"A",t:"The secure version checks if the username contains apostrophes and rejects such input"},
+          {l:"B",t:"In the secure version, the SQL query structure (?) is defined separately from the user data (username, password) passed as parameters — user input never becomes part of the SQL string"},
+          {l:"C",t:"The secure version uses a different database driver that automatically sanitizes input"},
+          {l:"D",t:"The secure version limits the query to only return one row, preventing bulk extraction"}
+        ],
+        answer:"B",
+        explain:"The key structural difference: in the vulnerable version, username and password are concatenated into the SQL string — they CAN become SQL syntax. In the secure version, the SQL string '...WHERE username=? AND password=?' is complete before any user input is involved. The ? placeholders are then filled with (username, password) as data values — they're never parsed as SQL."
+      },
+      {
+        label:"QUESTION B",
+        text:"An application uses parameterized queries but still displays detailed database error messages to users (e.g., 'ORA-00942: table or view does not exist'). What security risk does this create?",
+        choices:[
+          {l:"A",t:"No risk — parameterized queries make the application fully secure regardless of error messages"},
+          {l:"B",t:"Error messages reveal database structure (table names, column names, DB type) — valuable intelligence for attackers planning future attacks"},
+          {l:"C",t:"Database errors can cause the application to crash permanently"},
+          {l:"D",t:"Error messages can be used to perform blind SQL injection attacks"}
+        ],
+        answer:"B",
+        explain:"Information disclosure through error messages is a separate vulnerability class. Even with parameterized queries preventing injection, verbose errors reveal: which database system (Oracle, MySQL, MSSQL), table and column names, application internals. This is reconnaissance intelligence. Production applications should display generic error messages to users ('An error occurred') and log detailed errors internally for developers only."
+      }
+    ]
+  }
+];
+
+let score=0,results=[],total=LESSONS.length,sel={},locked={},_chg={};
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildLesson(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildLesson(idx){
+  const les=LESSONS[idx];
+  const codeLines=les.vulnCode.map(l=>`<div class="code-line">${l.t}</div>`).join('');
+  const inputs=les.simInputs.map(inp=>`<div style="display:flex;flex-direction:column;gap:4px;flex:1;"><div style="font-family:var(--mono);font-size:9px;color:var(--text3);">${inp.label}</div><input class="qs-input" id="${inp.id}" placeholder="${inp.placeholder}" value="${inp.default}"></div>`).join('');
+  const qs=les.qs.map((q,qi)=>`
+    <div class="q-box">
+      <div class="q-label">${q.label}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="choices" id="ch-${idx}-${qi}">
+        ${q.choices.map(c=>`<div class="choice-btn" onclick="pick(this,'${c.l}',${idx},${qi})"><span class="cl">${c.l}</span><div class="ct">${c.t}</div></div>`).join('')}
+      </div>
+      <div class="lock-row"><button class="btn btn-acc" id="lock-${idx}-${qi}" disabled onclick="lockIn(${idx},${qi})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="hint-${idx}-${qi}">Choose an answer. You can change it until you lock in. Nothing is revealed before that.</span></div>
+      <div class="feedback" id="fb-${idx}-${qi}"></div>
+    </div>`).join('');
+
+  results[idx]={q0:null,q1:null,pts:0};
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// LESSON ${idx+1} OF ${total}</div>
+    <div class="sec-title">SQL Injection Analysis</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Lesson ${idx+1}/${total}</span>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">PYTHON / SQL</span><span class="code-file">${les.label}</span></div>
+      <div class="code-body">${codeLines}</div>
+    </div>
+    <div class="query-sim">
+      <div class="qs-label">${les.simLabel}</div>
+      <div class="qs-input-row">${inputs}<button class="qs-btn" onclick="${les.simFn}(${idx})">▶ RUN</button></div>
+      <div class="qs-query" id="qs-query-${idx}">Query will appear here...</div>
+      <div class="qs-result" id="qs-result-${idx}">Result will appear here...</div>
+    </div>
+    ${qs}
+    <div class="nav"><div></div><button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT LESSON →'}</button></div>`;
+}
+
+function runAuthBypass(idx){
+  const user=document.getElementById('sim1-user').value||'admin';
+  const pass=document.getElementById('sim1-pass').value||'wrong';
+  const qEl=document.getElementById(`qs-query-${idx}`);
+  const rEl=document.getElementById(`qs-result-${idx}`);
+  const q=`SELECT * FROM users WHERE username='<span class="injected">${escHtml(user)}</span>' AND password='${escHtml(pass)}'`;
+  qEl.innerHTML=q;
+  if(user.includes("'--")||user.includes("' --")||user.includes("'/*")){
+    rEl.className='qs-result danger';
+    rEl.innerHTML='⚠️ INJECTION SUCCESS — Password check bypassed!\nReturned: {id:1, username:"admin", email:"admin@company.com", role:"ADMIN"}\nPassword was never checked.';
+  } else if(user.includes("'")){
+    rEl.className='qs-result error';rEl.innerHTML='ERROR: Unmatched quote — syntax error near \'...\'\nBut error messages reveal the vulnerability exists!';
+  } else {
+    rEl.className='qs-result safe';rEl.innerHTML='Login failed — incorrect credentials.';
+  }
+}
+function runUnionInject(idx){
+  const id=document.getElementById('sim2-id').value||'1';
+  const qEl=document.getElementById(`qs-query-${idx}`);
+  const rEl=document.getElementById(`qs-result-${idx}`);
+  qEl.innerHTML=`SELECT name, price FROM products WHERE id=<span class="injected">${escHtml(id)}</span>`;
+  if(/UNION\s+SELECT/i.test(id)){
+    rEl.className='qs-result danger';
+    rEl.innerHTML='⚠️ UNION INJECTION SUCCESS — Multiple result sets returned:\n[Product] Laptop Pro | $1299\n[INJECTED] admin | $2b$12$hashedpassword...\n[INJECTED] alice | $2b$12$alicehash...\n[INJECTED] bob | $2b$12$bobhash...\nAll user credentials appended to product results!';
+  } else {
+    rEl.className='qs-result safe';rEl.innerHTML='[Product] Laptop Pro | $1299\n[Product] Wireless Mouse | $29';
+  }
+}
+function runBlindInject(idx){
+  const id=document.getElementById('sim3-id').value||'1';
+  const qEl=document.getElementById(`qs-query-${idx}`);
+  const rEl=document.getElementById(`qs-result-${idx}`);
+  qEl.innerHTML=`SELECT * FROM accounts WHERE user_id=<span class="injected">${escHtml(id)}</span>`;
+  if(/AND\s+1=2/i.test(id)||/AND\s+1\s*=\s*2/i.test(id)){
+    rEl.className='qs-result error';rEl.innerHTML='Account not found. (1=2 is FALSE → no record returned)\nAttacker conclusion: condition was false.';
+  } else if(/AND\s+1=1/i.test(id)||/AND\s+SUBSTRING/i.test(id)){
+    rEl.className='qs-result danger';rEl.innerHTML='⚠️ Account found. (1=1 is always TRUE → record returned)\nAttacker conclusion: condition was TRUE.\nBy testing character-by-character, attacker reconstructs passwords one bit at a time.';
+  } else {
+    rEl.className='qs-result safe';rEl.innerHTML='Account found: UserID=1, Name=Alice Johnson, Balance=$4,200.00';
+  }
+}
+function runSecureCompare(idx){
+  const input=document.getElementById('sim4-input').value||"' OR '1'='1";
+  const qEl=document.getElementById(`qs-query-${idx}`);
+  const rEl=document.getElementById(`qs-result-${idx}`);
+  qEl.innerHTML=`Parameterized: SELECT * FROM users WHERE username=<span style="color:var(--green)">?</span> AND password=<span style="color:var(--green)">?</span>\nBound values: (<span style="color:var(--green)">"${escHtml(input)}"</span>, <span style="color:var(--green)">"..."</span>)`;
+  rEl.className='qs-result safe';
+  rEl.innerHTML=`✓ SECURE — Input treated as literal data:\nDB looks for username literally equal to: ${escHtml(input)}\nNo user has that exact username → Login failed.\nThe OR '1'='1 is DATA, not SQL logic.`;
+}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function pick(el,letter,idx,qi){
+  const k=idx+'-'+qi;
+  if(locked[k])return;
+  if(sel[k]&&sel[k]!==letter)_chg[k]=(_chg[k]||0)+1;
+  sel[k]=letter;
+  document.getElementById('ch-'+k).querySelectorAll('.choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+k).disabled=false;
+  document.getElementById('hint-'+k).textContent='Selected: '+letter+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockIn(idx,qi){
+  const k=idx+'-'+qi;
+  if(locked[k]||!sel[k])return;
+  locked[k]=true;
+  const q=LESSONS[idx].qs[qi],letter=sel[k],ok=letter===q.answer;
+  const box=document.getElementById('ch-'+k).closest('.q-box');
+  box.querySelector('.lock-row').style.display='none';
+  document.getElementById('ch-'+k).querySelectorAll('.choice-btn').forEach(c=>{
+    const l=c.querySelector('.cl').textContent;
+    c.classList.remove('picked');c.classList.add('locked');
+    if(l===q.answer)c.classList.add('correct-ans');
+    if(l===letter){if(!ok)c.classList.add('wrong-ans');c.querySelector('.ct').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  const pts=13;
+  if(ok){score+=pts;results[idx].pts+=pts;}
+  results[idx]['q'+qi]=ok;results[idx]['c'+qi]=letter;
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  const fb=document.getElementById('fb-'+k);
+  fb.className='feedback show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?`<div class="fb-lbl ok">// LOCKED IN — CORRECT +${pts} pts</div>`:`<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: ${q.answer}</div>`)+q.explain;
+  if(locked[idx+'-0']&&locked[idx+'-1'])document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*26))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['SQL Injection Expert 💉','You understand how SQL injection works mechanically and how to prevent it. Parameterized queries, least privilege, and avoiding verbose errors — these are the three defenses.'],mid:['Solid Understanding 🎯','Review the UNION attack (appending a second SELECT) and blind injection (extracting data through boolean responses). Both bypass visual output restrictions.'],low:['Keep Building 📚','Core principle: SQL injection works because user input becomes SQL syntax. Parameterized queries fix this by keeping SQL structure and user data permanently separate.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=LESSONS.map((les,i)=>{
+    const r=results[i]||{q0:false,q1:false,pts:0};
+    return `<div class="b-row"><div class="b-check">${r.q0&&r.q1?'✅':'⚠️'}</div><div class="b-text"><strong>${les.label.split('—')[1].trim()}</strong></div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];sel={};locked={};_chg={};document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:5,sim:'sqli',screenId:''+('s'+(total+1))+'',score:score,max:total*26,items:(function(){var o=[];LESSONS.forEach(function(ls,i){var r=results[i]||{};[0,1].forEach(function(qi){var q=ls.qs[qi];o.push({label:ls.label.split('—')[1].trim()+' — question '+(qi+1),result:r['q'+qi]?'correct':'incorrect',pts:r['q'+qi]?13:0,max:13,response:r['c'+qi]||'',expected:q.answer,changes:_chg[i+'-'+qi]||0});});});return o;})()});
+};
+const _apRestart=restart;
+restart=function(){sel={};locked={};_chg={};APSim.start(5,'sqli');_apRestart();};
+APSim.start(5,'sqli');
+
+goTo(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="1" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="hub">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Unit 1 Sim Lab — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--text) 2%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--text) 2%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+
+/* HERO */
+.hero{text-align:center;padding:40px 0 36px;border-bottom:1px solid var(--border);margin-bottom:36px;}
+.hero-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--text3);margin-bottom:14px;}
+.hero-title{font-family:var(--display);font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:1.0;margin-bottom:12px;}
+.hero-sub{font-size:16px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+.hero-stats{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat-val{font-family:var(--mono);font-size:28px;font-weight:700;display:block;margin-bottom:2px;}
+.stat-lbl{font-size:11px;color:var(--text3);letter-spacing:.08em;}
+
+/* SIM CARDS */
+.sims-title{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--text3);margin-bottom:18px;}
+.sims-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:36px;}
+.sim-card{background:var(--panel);border:1px solid var(--border);padding:0;cursor:pointer;text-decoration:none;display:block;transition:all .25s;position:relative;overflow:hidden;}
+.sim-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transition:background .3s;}
+.sim-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.sim-card-body{padding:20px;}
+.sim-num{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.15em;margin-bottom:10px;}
+.sim-icon{font-size:30px;display:block;margin-bottom:10px;}
+.sim-title{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px;}
+.sim-desc{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:12px;}
+.sim-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.sim-tag{font-family:var(--mono);font-size:9px;padding:3px 7px;background:var(--bg);border:1px solid var(--border2);color:var(--text3);letter-spacing:.06em;}
+.sim-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sim-meta{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.sim-cta{font-family:var(--mono);font-size:11px;letter-spacing:.08em;font-weight:700;transition:opacity .2s;}
+.sim-card:hover .sim-cta{opacity:1;}
+.sim-cta{opacity:.6;}
+
+/* Card color themes */
+.t-blue::before,.t-blue .sim-cta{color:var(--cyan);}.t-blue::before{background:var(--cyan);}
+.t-purple::before,.t-purple .sim-cta{color:var(--c-purple);}.t-purple::before{background:var(--c-purple);}
+.t-orange::before,.t-orange .sim-cta{color:var(--c-orange);}.t-orange::before{background:var(--c-orange);}
+.t-orange2::before,.t-orange2 .sim-cta{color:var(--c-orange);}.t-orange2::before{background:var(--c-orange);}
+.t-green::before,.t-green .sim-cta{color:var(--c-lime);}.t-green::before{background:var(--c-lime);}
+.t-sky::before,.t-sky .sim-cta{color:var(--c-sky);}.t-sky::before{background:var(--c-sky);}
+
+/* SKILLS */
+.skills-section{background:var(--panel);border:1px solid var(--border);padding:20px 24px;margin-bottom:28px;}
+.skills-title{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--text3);margin-bottom:14px;}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.skill-item{display:flex;align-items:flex-start;gap:10px;}
+.skill-check{color:var(--green);font-size:14px;flex-shrink:0;margin-top:1px;}
+.skill-text{font-size:12px;color:var(--text2);line-height:1.5;}
+.skill-text strong{display:block;color:var(--text);font-size:13px;margin-bottom:1px;}
+
+/* EXAM NOTE */
+.exam-note{display:flex;gap:14px;padding:16px 18px;background:color-mix(in srgb,var(--c-sky) 6%,transparent);border:1px solid color-mix(in srgb,var(--c-sky) 20%,transparent);margin-bottom:28px;}
+.exam-icon{font-size:20px;flex-shrink:0;}
+.exam-text{font-size:13px;color:var(--text2);line-height:1.6;}
+.exam-text strong{color:var(--text);}
+
+@media(max-width:640px){.sims-grid{grid-template-columns:1fr;}.skills-grid{grid-template-columns:1fr;}.hero-title{font-size:36px;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div id="u2-chip-host" style="float:right;"></div>
+
+<div class="hero">
+  <div class="hero-kicker">AP CYBERSECURITY · UNIT 1 · SIMULATION LABORATORY</div>
+  <div class="hero-title">Introduction<br>to Security</div>
+  <div class="hero-sub">Six interactive simulations — one for each major topic in Unit 1. Work through them in order, or target the concepts you need most.</div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-val" style="color:var(--cyan);">6</span><span class="stat-lbl">SIMULATIONS</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--green);">3</span><span class="stat-lbl">AP CORE SKILLS</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--amber);">~60</span><span class="stat-lbl">MINUTES TOTAL</span></div>
+  </div>
+</div>
+
+<div class="sims-title">// CHOOSE A SIMULATION</div>
+<div class="sims-grid">
+
+  <a class="sim-card t-blue" href="sim_cia.html">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 01</div>
+      <span class="sim-icon">🔐</span>
+      <div class="sim-title">CIA Triad Lab</div>
+      <div class="sim-desc">Read four real breach scenarios and classify which pillar — Confidentiality, Integrity, or Availability — was primarily violated. Learn why the distinction matters for response.</div>
+      <div class="sim-tags"><span class="sim-tag">CLASSIFY</span><span class="sim-tag">CIA TRIAD</span><span class="sim-tag">ANALYZE RISK</span></div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">4 SCENARIOS · ~8 MIN</span>
+      <span class="sim-cta t-blue">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a class="sim-card t-purple" href="sim_threat_actors.html">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 02</div>
+      <span class="sim-icon">🕵️</span>
+      <div class="sim-title">Threat Actor Profiler</div>
+      <div class="sim-desc">Study four intelligence reports — target, method, and motive — and identify whether the attacker is a nation-state, cybercriminal, hacktivist, insider, or script kiddie.</div>
+      <div class="sim-tags"><span class="sim-tag">PROFILING</span><span class="sim-tag">THREAT ACTORS</span><span class="sim-tag">ANALYZE RISK</span></div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">4 CASES · ~10 MIN</span>
+      <span class="sim-cta t-purple">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a class="sim-card t-orange2" href="phishing_simulation.html">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 03</div>
+      <span class="sim-icon">🎣</span>
+      <div class="sim-title">Spot the Phish</div>
+      <div class="sim-desc">A fake Sweet 16 party invite just landed in your inbox. Find all the red flags hidden in the email, identify who sent it, and choose the best defense — before your Google and Instagram credentials get stolen.</div>
+      <div class="sim-tags"><span class="sim-tag">PHISHING</span><span class="sim-tag">SOCIAL ENG.</span><span class="sim-tag">MITIGATE RISK</span></div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">3 PHASES · ~8 MIN</span>
+      <span class="sim-cta t-orange2">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a class="sim-card t-orange" href="sim_attack_surface.html">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 04</div>
+      <span class="sim-icon">🗺️</span>
+      <div class="sim-title">Attack Surface Mapper</div>
+      <div class="sim-desc">Study three organizations — a school district, a clinic, a utility — and tag each system component as Vulnerable or Secured. See how your assessment compares to expert analysis.</div>
+      <div class="sim-tags"><span class="sim-tag">ATTACK SURFACE</span><span class="sim-tag">VULNERABILITIES</span><span class="sim-tag">ANALYZE RISK</span></div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">3 ORGS · ~12 MIN</span>
+      <span class="sim-cta t-orange">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a class="sim-card t-green" href="sim_risk.html">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 05</div>
+      <span class="sim-icon">⚖️</span>
+      <div class="sim-title">Risk Matrix Lab</div>
+      <div class="sim-desc">Rate four threats facing a school district using the Risk = Likelihood × Impact formula. Your ratings are compared to expert assessments — learn to calibrate your risk intuition.</div>
+      <div class="sim-tags"><span class="sim-tag">RISK FORMULA</span><span class="sim-tag">PRIORITIZATION</span><span class="sim-tag">ANALYZE RISK</span></div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">4 THREATS · ~10 MIN</span>
+      <span class="sim-cta t-green">LAUNCH →</span>
+    </div>
+  </a>
+
+  <a class="sim-card t-sky" href="sim_defense.html">
+    <div class="sim-card-body">
+      <div class="sim-num">SIM 06</div>
+      <span class="sim-icon">🏰</span>
+      <div class="sim-title">Defense-in-Depth Builder</div>
+      <div class="sim-desc">Choose physical, technical, and administrative controls within a limited budget, then watch your layered defenses get tested against three live attack simulations. Every layer counts.</div>
+      <div class="sim-tags"><span class="sim-tag">LAYERED DEFENSE</span><span class="sim-tag">CONTROLS</span><span class="sim-tag">MITIGATE RISK</span></div>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-meta">3 ATTACKS · ~12 MIN</span>
+      <span class="sim-cta t-sky">LAUNCH →</span>
+    </div>
+  </a>
+
+</div>
+
+<div class="exam-note">
+  <span class="exam-icon">📋</span>
+  <div class="exam-text"><strong>AP Exam Connection:</strong> Every simulation in this lab trains the three core AP Cybersecurity skills: <strong>Analyze Risk</strong>, <strong>Mitigate Risk</strong>, and <strong>Detect Attacks</strong>. The scenario-based format mirrors both the MCQ and FRQ sections of the May 2027 exam — read a situation, identify the threat, justify a defense.</div>
+</div>
+
+<div class="skills-section">
+  <div class="skills-title">// UNIT 1 LEARNING OBJECTIVES COVERED</div>
+  <div class="skills-grid">
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>CIA Triad</strong>Classify breaches by Confidentiality, Integrity, or Availability violation</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Threat Actors</strong>Identify attacker type from motive, method, and target profile</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Social Engineering</strong>Recognize phishing tactics and psychological manipulation techniques</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Attack Surfaces</strong>Map vulnerabilities across physical, human, and technical dimensions</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Risk Analysis</strong>Apply the Risk = Likelihood × Impact framework to prioritize threats</div></div>
+    <div class="skill-item"><span class="skill-check">✓</span><div class="skill-text"><strong>Defense-in-Depth</strong>Layer physical, technical, and administrative controls strategically</div></div>
+  </div>
+</div>
+
+<div id="u2-record"></div>
+
+<div style="text-align:center;padding:20px 0;border-top:1px solid var(--border);">
+  <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:12px;">// CONTINUE TO UNIT 2</div>
+  <a href="sim2_hub.html" style="display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--c-orange);border:1px solid var(--c-orange);padding:10px 20px;text-decoration:none;">UNIT 2 — SECURING SPACES →</a>
+</div>
+<div style="text-align:center;margin-top:8px;"> &nbsp;·&nbsp; </div>
+</div>
+<script src="apsim_record.js"></script>
+<script>
+APSim.renderHub('u2-record',1);
+document.addEventListener('apsim-student',function(){APSim.renderHub('u2-record',1);});
+</script>
+</body>
+</html>

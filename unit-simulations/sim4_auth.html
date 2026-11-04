@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="4" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim4_auth">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Authentication Factor Builder — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#f59e0b;--red:#ef4444;--green:#22c55e;--cyan:#00d4ff;--purple:#c084fc;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--amber) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--amber) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--amber) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--amber) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--amber) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* FACTOR CATEGORIES */
+.factor-ref{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:580px;margin:0 auto 24px;}
+.fr{padding:14px;border:1px solid var(--border);background:var(--panel);text-align:center;}
+.fr-icon{font-size:28px;display:block;margin-bottom:6px;}
+.fr-name{font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:4px;}
+.fr.know .fr-name{color:var(--cyan);}
+.fr.have .fr-name{color:var(--purple);}
+.fr.are .fr-name{color:var(--green);}
+.fr-desc{font-size:11px;color:var(--text3);line-height:1.4;}
+.fr-examples{font-family:var(--mono);font-size:10px;margin-top:6px;}
+.fr.know .fr-examples{color:var(--cyan);}
+.fr.have .fr-examples{color:var(--purple);}
+.fr.are .fr-examples{color:var(--green);}
+
+/* FACTOR CARDS — drag/click to classify */
+.factor-bank{background:var(--panel);border:1px solid var(--border2);padding:14px;margin-bottom:16px;}
+.fb-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:10px;}
+.factor-pills{display:flex;gap:8px;flex-wrap:wrap;}
+.factor-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border2);background:var(--bg3);cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--text);transition:all .2s;user-select:none;}
+.factor-pill:hover{border-color:var(--acc);background:color-mix(in srgb,var(--amber) 8%,transparent);}
+.factor-pill.selected-pill{border-color:var(--acc);background:color-mix(in srgb,var(--amber) 15%,transparent);box-shadow:0 0 10px color-mix(in srgb,var(--amber) 20%,transparent);}
+.factor-pill.used{opacity:.3;pointer-events:none;}
+
+/* DROP ZONES */
+.drop-zones{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.drop-zone{border:2px dashed var(--border2);padding:12px;min-height:120px;}
+.drop-zone.know-zone{border-color:color-mix(in srgb,var(--cyan) 30%,transparent);}
+.drop-zone.have-zone{border-color:color-mix(in srgb,var(--c-purple) 30%,transparent);}
+.drop-zone.are-zone{border-color:color-mix(in srgb,var(--c-green) 30%,transparent);}
+.dz-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;margin-bottom:8px;}
+.know-zone .dz-label{color:var(--cyan);}
+.have-zone .dz-label{color:var(--purple);}
+.are-zone .dz-label{color:var(--green);}
+.dz-items{display:flex;flex-direction:column;gap:6px;}
+.dz-item{background:var(--panel2);border:1px solid var(--border);padding:6px 10px;font-family:var(--mono);font-size:10px;color:var(--text);display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.dz-item:hover{background:color-mix(in srgb,var(--red) 6%,transparent);}
+.dz-remove{color:var(--text3);font-size:12px;}
+.dz-item.correct-item{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 6%,transparent);}
+.dz-item.wrong-item{border-color:var(--red);background:color-mix(in srgb,var(--red) 6%,transparent);}
+.dz-empty{font-family:var(--mono);font-size:10px;color:var(--text3);font-style:italic;}
+
+/* SCENARIO */
+.scenario-box{background:var(--panel);border:1px solid var(--border2);padding:16px 18px;margin-bottom:14px;}
+.scenario-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;}
+.scenario-text{font-size:14px;line-height:1.7;color:var(--text);}
+.scenario-text strong{color:var(--acc);}
+
+/* INSTRUCTION */
+.instruction{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-bottom:10px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);}
+
+/* MCQ approach */
+.choices{display:grid;gap:8px;margin-bottom:12px;}
+.choice-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 15px;cursor:pointer;text-align:left;transition:all .2s;}
+.choice-btn:hover:not(.locked){border-color:var(--acc);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.choice-btn.correct-ans{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.choice-btn.wrong-ans{border-color:var(--red)!important;background:color-mix(in srgb,var(--red) 6%,transparent)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.choice-btn.locked{pointer-events:none;opacity:.5;}
+.choice-btn.correct-ans,.choice-btn.wrong-ans{opacity:1!important;}
+.cl{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px;display:block;}
+.ct{font-size:13px;color:var(--text);line-height:1.45;}
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.partial{border-color:var(--acc);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}.fb-lbl.warn{color:var(--acc);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--amber) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--acc);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.factor-ref,.drop-zones,.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--amber);--red:var(--red);--green:var(--c-green);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 4</div>
+  <div>
+    <div class="hdr-title">Authentication Factor Builder</div>
+    <div class="hdr-sub">UNIT 4 · SECURING DEVICES · MFA · KNOW · HAVE · ARE</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">S1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">S2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">S3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">S4</span><div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p5"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🔑</span>
+    <div class="intro-title">Authentication Factor Builder</div>
+    <div class="intro-desc">Authentication factors fall into three categories. MFA requires at least two DIFFERENT categories. Four scenarios — classify the factors and determine whether each login attempt constitutes true MFA or just multiple passwords.</div>
+    <div class="factor-ref">
+      <div class="fr know">
+        <span class="fr-icon">🧠</span>
+        <div class="fr-name">SOMETHING YOU KNOW</div>
+        <div class="fr-desc">Memorized secrets</div>
+        <div class="fr-examples">Password, PIN, Security question, Passphrase</div>
+      </div>
+      <div class="fr have">
+        <span class="fr-icon">📱</span>
+        <div class="fr-name">SOMETHING YOU HAVE</div>
+        <div class="fr-desc">Physical objects you possess</div>
+        <div class="fr-examples">Phone (TOTP), Hardware token, Smart card, USB key</div>
+      </div>
+      <div class="fr are">
+        <span class="fr-icon">👁️</span>
+        <div class="fr-name">SOMETHING YOU ARE</div>
+        <div class="fr-desc">Biometric characteristics</div>
+        <div class="fr-examples">Fingerprint, Face ID, Retina scan, Voice print</div>
+      </div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+
+<div class="screen" id="s5">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">WHAT MAKES REAL MFA</div><div class="concept-def">MFA requires factors from at least two DIFFERENT categories. Password + PIN = not MFA (both are "something you know"). Password + TOTP code = MFA (know + have). The AP exam specifically tests this distinction.</div></div>
+    <div class="concept-card"><div class="concept-term">TOTP (TIME-BASED OTP)</div><div class="concept-def">A 6-digit code generated by an authenticator app (Google Authenticator, Authy) that changes every 30 seconds. Requires possession of the registered device — classified as "something you have."</div></div>
+    <div class="concept-card"><div class="concept-term">HARDWARE TOKENS</div><div class="concept-def">Physical devices (YubiKey, RSA SecurID) that generate or store cryptographic credentials. Classified as "something you have." Harder to phish than TOTP codes because they require physical presence.</div></div>
+    <div class="concept-card"><div class="concept-term">BIOMETRICS AS AUTHENTICATION</div><div class="concept-def">Biometrics are "something you are" — fingerprint, face, retina, voice. They can't be forgotten or stolen the same way passwords can, but they also can't be changed if compromised. Best used as one layer in MFA, not standalone.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ TRY AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim4_hub.html'">← UNIT 4 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const SCENARIOS=[
+  {
+    label:"SCENARIO 01 — BANK LOGIN",
+    desc:"A bank's online portal prompts users for: (1) their <strong>account password</strong>, (2) their mother's maiden name (security question), and (3) a <strong>6-digit code from the bank's authenticator app</strong> on their smartphone.",
+    factors:[
+      {name:"Account Password",category:"know"},
+      {name:"Mother's Maiden Name",category:"know"},
+      {name:"Authenticator App Code",category:"have"}
+    ],
+    isMFA:true,
+    mfaQ:{
+      text:"Is this login process true MFA?",
+      choices:[
+        {l:"A",t:"Yes — three factors are used, which exceeds the MFA requirement of two"},
+        {l:"B",t:"Yes — it uses factors from at least two different categories (know + have)"},
+        {l:"C",t:"No — the authenticator app code counts as something you know, not something you have"},
+        {l:"D",t:"No — true MFA requires a biometric factor in addition to a password"}
+      ],
+      answer:"B",
+      explanation:"This IS true MFA. The password and security question are both 'something you know' (same category), but the authenticator app code is 'something you have' — it requires physical possession of the registered smartphone. Having factors from at least two different categories satisfies MFA. The number of total factors (3) is irrelevant — category diversity is what matters.",
+      trap:"Option A is wrong because counting factors doesn't determine MFA — categories do. Option C is wrong — the app code is 'something you have' because generating it requires the physical device. Option D is wrong — biometrics are not required for MFA."
+    }
+  },
+  {
+    label:"SCENARIO 02 — CORPORATE VPN",
+    desc:"An employee logs into the corporate VPN by entering: (1) their <strong>Active Directory username and password</strong>, then (2) a second password from a <strong>separate PIN they memorized</strong> for the VPN client.",
+    factors:[
+      {name:"AD Username + Password",category:"know"},
+      {name:"VPN PIN (memorized)",category:"know"}
+    ],
+    isMFA:false,
+    mfaQ:{
+      text:"Does this VPN login constitute true MFA?",
+      choices:[
+        {l:"A",t:"Yes — the employee uses two separate credentials, satisfying the two-factor requirement"},
+        {l:"B",t:"Yes — the VPN PIN is a different system from the AD password, making them different factors"},
+        {l:"C",t:"No — both the AD password and the VPN PIN are 'something you know,' so this is single-factor authentication with two steps"},
+        {l:"D",t:"No — MFA is only valid when used with a hardware token, not passwords"}
+      ],
+      answer:"C",
+      explanation:"This is NOT MFA — it's multi-step single-factor authentication. Both credentials are 'something you know.' An attacker who compromises the employee's passwords (e.g., via phishing or a breach) gets both. True MFA requires factors from different categories — adding a TOTP app or smart card would make this real MFA.",
+      trap:"Two steps ≠ two factors. This is the most common MFA misconception on the AP exam. The question is whether the factors come from different CATEGORIES — not whether there are multiple credentials or multiple steps."
+    }
+  },
+  {
+    label:"SCENARIO 03 — HOSPITAL EHR ACCESS",
+    desc:"A nurse accesses the EHR system by: (1) tapping their <strong>smart badge</strong> on a card reader at the workstation, then (2) placing their <strong>finger on the biometric scanner</strong> attached to the computer.",
+    factors:[
+      {name:"Smart Badge (tap)",category:"have"},
+      {name:"Fingerprint Scanner",category:"are"}
+    ],
+    isMFA:true,
+    mfaQ:{
+      text:"Is this EHR login process true MFA?",
+      choices:[
+        {l:"A",t:"No — a password is required for true MFA; badge + biometric alone doesn't count"},
+        {l:"B",t:"Yes — smart badge is 'something you have' and fingerprint is 'something you are' — two different categories"},
+        {l:"C",t:"No — biometrics cannot be used as an authentication factor because they can't be changed"},
+        {l:"D",t:"Yes, but this is weaker than password-based MFA because biometrics can be stolen"}
+      ],
+      answer:"B",
+      explanation:"This IS true MFA — and a strong implementation. Smart badge = 'something you have.' Fingerprint = 'something you are.' These are two different factor categories. Notably, this MFA implementation doesn't use a password at all — and that's valid. Passwords are not required for MFA; the requirement is two different categories.",
+      trap:"Option A is a common misconception — passwords are not a required component of MFA. Option C is wrong — biometrics ARE valid authentication factors. They do have a limitation (can't be changed if compromised), but that doesn't disqualify them as factors."
+    }
+  },
+  {
+    label:"SCENARIO 04 — DEVELOPER LAPTOP",
+    desc:"A developer unlocks their laptop by: (1) entering a <strong>6-digit PIN</strong>, then (2) the laptop scans their <strong>face using Windows Hello</strong>, and (3) requires them to tap a <strong>physical YubiKey USB token</strong>.",
+    factors:[
+      {name:"6-Digit PIN",category:"know"},
+      {name:"Windows Hello Face Scan",category:"are"},
+      {name:"YubiKey USB Token",category:"have"}
+    ],
+    isMFA:true,
+    mfaQ:{
+      text:"How would you classify this authentication method?",
+      choices:[
+        {l:"A",t:"Single-factor authentication — a PIN is not as secure as a password"},
+        {l:"B",t:"Two-factor authentication (2FA) — only the PIN and YubiKey count as valid factors"},
+        {l:"C",t:"Three-factor authentication — uses factors from all three categories: know, have, and are"},
+        {l:"D",t:"Multi-factor authentication, but the face scan makes it weaker than using only PIN + YubiKey"}
+      ],
+      answer:"C",
+      explanation:"This is three-factor authentication spanning all three categories: PIN = know, Face scan = are, YubiKey = have. This is an exceptionally strong authentication setup. A PIN qualifies as 'something you know' — it doesn't need to be a complex password. Adding face recognition and a hardware token creates layers that require the attacker to simultaneously compromise all three.",
+      trap:"Option A is wrong — a PIN is a valid 'something you know' factor. Option D is wrong — biometrics add strength, not weakness, by requiring the attacker to defeat an additional factor category."
+    }
+  }
+];
+
+let score=0,results=[],total=SCENARIOS.length;
+let placements={},selectedFactor={},cLocked=[],mSel=[],mLocked=[],_chg=[],_mchg=[];
+function refreshLock(idx){const n=SCENARIOS[idx].factors.length;const placed=['know','have','are'].reduce((a,z)=>a+placements[idx][z].length,0);const b=document.getElementById('lock-'+idx);if(b)b.disabled=placed<n;const h=document.getElementById('hint-'+idx);if(h)h.textContent=placed<n?'Place all '+n+' factors. You can move them until you lock in. Nothing is checked before that.':'All factors placed. You can still move them. Nothing is revealed until you lock in.';}
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildScenario(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildScenario(idx){
+  const sc=SCENARIOS[idx];
+  placements[idx]={know:[],have:[],are:[]};
+  selectedFactor[idx]=null;
+
+  const pills=sc.factors.map((f,fi)=>`<div class="factor-pill" id="pill-${idx}-${fi}" onclick="selectFactor(${idx},${fi})">${f.name}</div>`).join('');
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// SCENARIO ${idx+1} OF ${total}</div>
+    <div class="sec-title">Classify the Authentication Factors</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Scenario ${idx+1}/${total}</span>
+    </div>
+    <div class="scenario-box">
+      <div class="scenario-label">${sc.label}</div>
+      <div class="scenario-text">${sc.desc}</div>
+    </div>
+    <div class="instruction">STEP 1: Click a factor to select it → STEP 2: Click the correct category zone to place it</div>
+    <div class="factor-bank">
+      <div class="fb-label">// AUTHENTICATION FACTORS IN THIS SCENARIO</div>
+      <div class="factor-pills" id="pills-${idx}">${pills}</div>
+    </div>
+    <div class="drop-zones">
+      <div class="drop-zone know-zone" onclick="placeInZone(${idx},'know')">
+        <div class="dz-label">🧠 KNOW</div>
+        <div class="dz-items" id="dz-know-${idx}"><div class="dz-empty">Drop factors here</div></div>
+      </div>
+      <div class="drop-zone have-zone" onclick="placeInZone(${idx},'have')">
+        <div class="dz-label">📱 HAVE</div>
+        <div class="dz-items" id="dz-have-${idx}"><div class="dz-empty">Drop factors here</div></div>
+      </div>
+      <div class="drop-zone are-zone" onclick="placeInZone(${idx},'are')">
+        <div class="dz-label">👁️ ARE</div>
+        <div class="dz-items" id="dz-are-${idx}"><div class="dz-empty">Drop factors here</div></div>
+      </div>
+    </div>
+    <div id="mfa-q-${idx}" style="display:none;">
+      <div class="scenario-box" style="border-color:var(--border2);">
+        <div class="scenario-label">// MFA DETERMINATION QUESTION</div>
+        <div class="scenario-text" style="margin-bottom:14px;">${sc.mfaQ.text}</div>
+        <div class="choices" id="mfa-ch-${idx}">
+          ${sc.mfaQ.choices.map(c=>`<div class="choice-btn" onclick="mfaPick(this,'${c.l}',${idx})"><span class="cl">${c.l}</span><div class="ct">${c.t}</div></div>`).join('')}
+        </div>
+        <div class="lock-row"><button class="btn btn-acc" id="mlock-${idx}" disabled onclick="mfaLock(${idx})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="mhint-${idx}">Choose an answer. You can change it until you lock in.</span></div>
+        <div class="feedback" id="mfa-fb-${idx}"></div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav">
+      <div class="lock-row" id="lockbar-${idx}" style="margin:0;"><button class="btn btn-acc" id="lock-${idx}" disabled onclick="checkPlacement(${idx})">🔒 LOCK IN CLASSIFICATION</button><span class="lock-hint" id="hint-${idx}">Place all ${sc.factors.length} factors. You can move them until you lock in. Nothing is checked before that.</span></div>
+      <button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT SCENARIO →'}</button>
+    </div>`;
+}
+
+function selectFactor(idx,fi){
+  if(document.getElementById(`pill-${idx}-${fi}`).classList.contains('used'))return;
+  if(selectedFactor[idx]!==null){
+    document.getElementById(`pill-${idx}-${selectedFactor[idx]}`)?.classList.remove('selected-pill');
+  }
+  selectedFactor[idx]=fi;
+  document.getElementById(`pill-${idx}-${fi}`).classList.add('selected-pill');
+}
+
+function placeInZone(idx,zone){
+  if(selectedFactor[idx]===null)return;
+  const fi=selectedFactor[idx];
+  const sc=SCENARIOS[idx];
+  const factor=sc.factors[fi];
+  if(cLocked[idx])return;
+  placements[idx][zone].push({fi,name:factor.name,correct:factor.category===zone});
+  document.getElementById(`pill-${idx}-${fi}`).classList.add('used','selected-pill'.split(' ')[0]);
+  document.getElementById(`pill-${idx}-${fi}`).classList.remove('selected-pill');
+  selectedFactor[idx]=null;
+  renderZone(idx,zone);refreshLock(idx);
+}
+
+function renderZone(idx,zone){
+  const items=placements[idx][zone];
+  const el=document.getElementById(`dz-${zone}-${idx}`);
+  if(items.length===0){el.innerHTML='<div class="dz-empty">Drop factors here</div>';return;}
+  el.innerHTML=items.map((item,i)=>`<div class="dz-item" onclick="removeFromZone(${idx},'${zone}',${i})"><span>${item.name}</span><span class="dz-remove">✕</span></div>`).join('');
+}
+
+function removeFromZone(idx,zone,i){
+  if(cLocked[idx])return;
+  _chg[idx]=(_chg[idx]||0)+1;
+  const item=placements[idx][zone].splice(i,1)[0];
+  document.getElementById(`pill-${idx}-${item.fi}`).classList.remove('used');
+  renderZone(idx,zone);refreshLock(idx);
+}
+
+function checkPlacement(idx){
+  const sc=SCENARIOS[idx];
+  if(cLocked[idx])return;
+  if(['know','have','are'].reduce((a,z)=>a+placements[idx][z].length,0)<sc.factors.length)return;
+  cLocked[idx]=true;
+  document.getElementById('lockbar-'+idx).style.display='none';
+  let correct=0;
+  ['know','have','are'].forEach(zone=>{
+    const items=placements[idx][zone];
+    items.forEach(item=>{
+      const el=document.getElementById(`dz-${zone}-${idx}`);
+      // Re-render with correct/wrong indicators
+    });
+  });
+
+  // Re-render all zones with correct/wrong
+  ['know','have','are'].forEach(zone=>{
+    const items=placements[idx][zone];
+    const el=document.getElementById(`dz-${zone}-${idx}`);
+    if(items.length===0){el.innerHTML='<div class="dz-empty">Drop factors here</div>';return;}
+    el.innerHTML=items.map((item,i)=>{
+      const isCorrect=sc.factors[item.fi].category===zone;
+      if(isCorrect)correct++;
+      return `<div class="dz-item ${isCorrect?'correct-item':'wrong-item'}"><span>${item.name}</span><span>${isCorrect?'✓':'✗'}</span></div>`;
+    }).join('');
+  });
+
+  const total_factors=sc.factors.length;
+  const pct=Math.round((correct/total_factors)*100);
+  const pts=Math.round((correct/total_factors)*10);
+  score+=pts;
+  results[idx]={classifyCorrect:correct,classifyTotal:total_factors,pts,placed:['know','have','are'].map(z=>z.toUpperCase()+': '+placements[idx][z].map(x=>x.name).join(', ')).join(' | ')};
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+
+  const fb=document.getElementById('fb-'+idx);
+  fb.className='feedback show '+(pct===100?'correct':pct>=50?'partial':'wrong');
+  fb.innerHTML=`<div class="fb-lbl ${pct===100?'ok':pct>=50?'warn':'no'}">LOCKED IN — ${pct===100?'PERFECT CLASSIFICATION':'PARTIAL — SEE CORRECTIONS ABOVE'} (${correct}/${total_factors})</div>${pct===100?'All factors correctly classified. Now answer the MFA question below.':'Review which factors have been highlighted in red above — those were placed in the wrong category.'}`;
+
+  // Show MFA question regardless
+  document.getElementById(`mfa-q-${idx}`).style.display='block';
+  // Lock placement
+  document.querySelectorAll(`#pills-${idx} .factor-pill`).forEach(p=>p.style.pointerEvents='none');
+  document.querySelectorAll(`.drop-zone`).forEach(z=>z.style.pointerEvents='none');
+}
+
+function mfaPick(el,letter,idx){
+  if(mLocked[idx])return;
+  if(mSel[idx]&&mSel[idx]!==letter)_mchg[idx]=(_mchg[idx]||0)+1;
+  mSel[idx]=letter;
+  document.getElementById('mfa-ch-'+idx).querySelectorAll('.choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('mlock-'+idx).disabled=false;
+  document.getElementById('mhint-'+idx).textContent='Selected: '+letter+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function mfaLock(idx){
+  if(mLocked[idx]||!mSel[idx])return;
+  mLocked[idx]=true;
+  const sc=SCENARIOS[idx],letter=mSel[idx],ok=letter===sc.mfaQ.answer;
+  document.querySelector('#mfa-q-'+idx+' .lock-row').style.display='none';
+  document.getElementById('mfa-ch-'+idx).querySelectorAll('.choice-btn').forEach(c=>{
+    const l=c.querySelector('.cl').textContent;
+    c.classList.remove('picked');c.classList.add('locked');
+    if(l===sc.mfaQ.answer)c.classList.add('correct-ans');
+    if(l===letter){if(!ok)c.classList.add('wrong-ans');c.querySelector('.ct').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx].mfaCorrect=ok;results[idx].mfaChoice=letter;
+  if(ok){score+=15;results[idx].pts+=15;}
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  const fb=document.getElementById('mfa-fb-'+idx);
+  fb.className='feedback show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?'<div class="fb-lbl ok">// LOCKED IN — CORRECT +15 pts</div>':'<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: '+sc.mfaQ.answer+'</div>')+`${sc.mfaQ.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 Common trap: ${sc.mfaQ.trap}</em>`;
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const maxPts=total*25;
+  const pct=Math.round((score/maxPts)*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Authentication Expert 🔑','You correctly classified all factors and identified true vs. false MFA. The "two steps ≠ two factors" distinction appears directly on the AP exam.'],mid:['Solid Foundation 🎯','You understand the categories. Review the key distinction: two credentials from the same category is NOT MFA — you need different categories.'],low:['Keep Practicing 📚','Remember: Know (passwords, PINs, security questions), Have (phone, token, smart card), Are (biometrics). MFA requires at least two DIFFERENT categories.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=SCENARIOS.map((sc,i)=>{
+    const r=results[i]||{classifyCorrect:0,classifyTotal:sc.factors.length,pts:0,mfaCorrect:false};
+    return `<div class="b-row"><div class="b-check">${r.classifyCorrect===r.classifyTotal&&r.mfaCorrect?'✅':'⚠️'}</div><div class="b-text"><strong>${sc.label.split('—')[1].trim()}</strong> — Classification: ${r.classifyCorrect}/${r.classifyTotal} · MFA Q: ${r.mfaCorrect?'✓':'✗'}</div><div class="b-pts">+${r.pts||0} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];placements={};selectedFactor={};cLocked=[];mSel=[];mLocked=[];_chg=[];_mchg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:4,sim:'auth',screenId:''+('s'+(total+1))+'',score:score,max:total*25,items:(function(){var o=[];SCENARIOS.forEach(function(sc,i){var r=results[i]||{classifyCorrect:0,classifyTotal:sc.factors.length,pts:0};var cp=Math.round((r.classifyCorrect/r.classifyTotal)*10);o.push({label:sc.label.split('—')[1].trim()+' — classify factors',result:r.classifyCorrect===r.classifyTotal?'correct':(r.classifyCorrect>0?'partial':'incorrect'),pts:cp||0,max:10,response:(r.placed||''),expected:sc.factors.map(function(f){return f.name+'='+f.category;}).join(', '),changes:_chg[i]||0});o.push({label:sc.label.split('—')[1].trim()+' — is it MFA?',result:r.mfaCorrect?'correct':'incorrect',pts:r.mfaCorrect?15:0,max:15,response:r.mfaChoice||'',expected:sc.mfaQ.answer,changes:_mchg[i]||0});});return o;})()});
+};
+const _apRestart=restart;
+restart=function(){cLocked=[];mSel=[];mLocked=[];_chg=[];_mchg=[];APSim.start(4,'auth');_apRestart();};
+APSim.start(4,'auth');
+
+goTo(0);
+</script>
+</body>
+</html>

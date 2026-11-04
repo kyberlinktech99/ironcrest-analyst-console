@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="3" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim3_firewall">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Firewall Rule Builder — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#22c55e;--red:#ef4444;--amber:#ffd166;--cyan:#00d4ff;--purple:#c084fc;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-green) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-green) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-green) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-green) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;letter-spacing:-.03em;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* RULE TABLE */
+.rule-table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px;}
+.rule-table th{background:var(--panel2);border:1px solid var(--border2);padding:9px 12px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--text3);text-align:center;}
+.rule-table td{border:1px solid var(--border);padding:8px 10px;background:var(--panel);text-align:center;vertical-align:middle;}
+.rule-table tr:nth-child(even) td{background:var(--bg3);}
+.rule-num{font-family:var(--mono);font-size:11px;color:var(--text3);font-weight:700;}
+
+/* DROPDOWNS */
+select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:11px;padding:6px 8px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;width:100%;min-width:80px;}
+select:focus{border-color:var(--acc);box-shadow:0 0 0 2px color-mix(in srgb,var(--c-green) 15%,transparent);}
+select option{background:var(--bg3);}
+
+/* ACTION BADGES */
+.action-allow{color:var(--acc);font-family:var(--mono);font-size:11px;font-weight:700;}
+.action-deny{color:var(--red);font-family:var(--mono);font-size:11px;font-weight:700;}
+
+/* PORT REFERENCE */
+.port-ref{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px;padding:12px 14px;background:var(--panel);border:1px solid var(--border);}
+.port-item{font-family:var(--mono);font-size:10px;color:var(--text3);line-height:1.5;}
+.port-item span{color:var(--cyan);}
+
+/* SCENARIO */
+.scenario-box{background:var(--panel);border:1px solid var(--border2);padding:18px 20px;margin-bottom:16px;}
+.scenario-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;}
+.scenario-text{font-size:14px;line-height:1.7;color:var(--text);}
+.scenario-text strong{color:var(--acc);}
+
+/* TRAFFIC TEST */
+.traffic-test{margin-bottom:16px;}
+.tt-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:10px;}
+.traffic-rows{display:grid;gap:6px;}
+.traffic-row{display:grid;grid-template-columns:1fr auto 80px;gap:12px;align-items:center;padding:10px 14px;background:var(--panel);border:1px solid var(--border);font-size:12px;}
+.traffic-desc{color:var(--text2);font-family:var(--mono);font-size:11px;}
+.traffic-result{font-family:var(--mono);font-size:11px;font-weight:700;text-align:right;}
+.tr-allow{color:var(--acc);}
+.tr-deny{color:var(--red);}
+.tr-unknown{color:var(--text3);}
+.traffic-expected{font-family:var(--mono);font-size:10px;text-align:center;padding:4px 8px;border-radius:2px;}
+.traffic-expected.allow{background:color-mix(in srgb,var(--c-green) 10%,transparent);color:var(--acc);}
+.traffic-expected.deny{background:color-mix(in srgb,var(--red) 10%,transparent);color:var(--red);}
+
+/* CHECK BUTTON */
+.check-rules-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;cursor:pointer;border:1px solid var(--acc);background:color-mix(in srgb,var(--c-green) 8%,transparent);color:var(--acc);transition:all .2s;text-transform:uppercase;margin-bottom:12px;}
+.check-rules-btn:hover{background:color-mix(in srgb,var(--c-green) 15%,transparent);}
+
+/* FEEDBACK */
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.partial{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--acc);}.fb-lbl.warn{color:var(--amber);}.fb-lbl.no{color:var(--red);}
+
+/* RULE RESULT HIGHLIGHTS */
+.rule-correct{background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.rule-wrong{background:color-mix(in srgb,var(--red) 8%,transparent)!important;}
+
+/* round bar */
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+
+/* results */
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--acc);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+
+/* port ref intro */
+.port-intro{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:560px;margin:0 auto 24px;text-align:left;}
+.pi{padding:10px 12px;border:1px solid var(--border);background:var(--panel);}
+.pi-port{font-family:var(--mono);font-size:14px;color:var(--cyan);font-weight:700;margin-bottom:3px;}
+.pi-name{font-size:11px;color:var(--text2);}
+
+@media(max-width:640px){.port-ref,.concept-grid,.port-intro{grid-template-columns:1fr 1fr;}.rule-table{font-size:11px;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--c-green);--red:var(--red);--amber:var(--amber);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 3</div>
+  <div>
+    <div class="hdr-title">Firewall Rule Builder</div>
+    <div class="hdr-sub">UNIT 3 · SECURING NETWORKS · IPTABLES · ALLOW/DENY LOGIC</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">R1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">R2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">R3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p4"></div>
+</div>
+
+<!-- INTRO -->
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🔥</span>
+    <div class="intro-title">Firewall Rule Builder</div>
+    <div class="intro-desc">Firewalls make decisions based on rules: source, destination, port, protocol, and action. Build the correct ruleset for three different network scenarios — then test whether your rules pass legitimate traffic and block the bad stuff.</div>
+    <div class="port-intro">
+      <div class="pi"><div class="pi-port">22</div><div class="pi-name">SSH — Remote terminal</div></div>
+      <div class="pi"><div class="pi-port">23</div><div class="pi-name">Telnet — UNENCRYPTED (block it)</div></div>
+      <div class="pi"><div class="pi-port">80</div><div class="pi-name">HTTP — Web (unencrypted)</div></div>
+      <div class="pi"><div class="pi-port">443</div><div class="pi-name">HTTPS — Web (encrypted)</div></div>
+      <div class="pi"><div class="pi-port">3389</div><div class="pi-name">RDP — Remote Desktop</div></div>
+      <div class="pi"><div class="pi-port">ANY</div><div class="pi-name">Wildcard — matches all ports</div></div>
+    </div>
+    <div style="background:var(--panel);border:1px solid var(--border2);padding:12px 16px;max-width:500px;margin:0 auto 24px;font-family:var(--mono);font-size:11px;color:var(--text3);line-height:1.8;text-align:left;">
+      RULE FORMAT:<br>
+      <span style="color:var(--acc);">ACTION</span> <span style="color:var(--cyan);">PROTOCOL</span> FROM <span style="color:var(--amber);">SOURCE</span> TO <span style="color:var(--purple);">DEST</span> PORT <span style="color:var(--text2);">PORT#</span><br><br>
+      Rules are processed TOP TO BOTTOM — first match wins.
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BUILD RULES</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+
+<!-- RESULTS -->
+<div class="screen" id="s4">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">IMPLICIT DENY</div><div class="concept-def">Best practice firewall rule: the last rule DENY ALL. If no earlier rule matches the traffic, it's blocked by default. Never rely on "allow all" as your baseline.</div></div>
+    <div class="concept-card"><div class="concept-term">STATEFUL VS STATELESS</div><div class="concept-def">Stateless firewalls check each packet in isolation. Stateful firewalls track connection state — they know if a packet is part of an established session. Most modern firewalls are stateful.</div></div>
+    <div class="concept-card"><div class="concept-term">PRINCIPLE OF LEAST ACCESS</div><div class="concept-def">Only permit what is explicitly needed. Block everything else. This limits the blast radius if a device is compromised — it can only communicate on allowed ports and protocols.</div></div>
+    <div class="concept-card"><div class="concept-term">DANGEROUS PORTS</div><div class="concept-def">Port 23 (Telnet) transmits in plaintext — always block. Port 3389 (RDP) on public IPs is a brute force magnet. Port 445 (SMB) should never be internet-facing. Know your risky ports.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ TRY AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim3_hub.html'">← UNIT 3 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const SCENARIOS=[
+  {
+    label:"SCENARIO 01 — SMALL BUSINESS WEB SERVER",
+    desc:"A small business runs a web server at IP <strong>192.168.1.10</strong>. The server needs to serve websites over HTTPS. SSH access is allowed only from the admin's home IP <strong>203.0.113.5</strong>. All other inbound traffic should be blocked. Unencrypted HTTP should redirect to HTTPS but you're only writing the DENY rule here.",
+    rules:[
+      {action:"ALLOW",proto:"TCP",src:"ANY",dest:"192.168.1.10",port:"443"},
+      {action:"ALLOW",proto:"TCP",src:"203.0.113.5",dest:"192.168.1.10",port:"22"},
+      {action:"DENY",proto:"ANY",src:"ANY",dest:"192.168.1.10",port:"ANY"}
+    ],
+    tests:[
+      {desc:"203.0.113.5 → 192.168.1.10:22 (Admin SSH)",expected:"ALLOW"},
+      {desc:"ANY → 192.168.1.10:443 (HTTPS Web)",expected:"ALLOW"},
+      {desc:"185.220.101.1 → 192.168.1.10:22 (Unknown SSH)",expected:"DENY"},
+      {desc:"ANY → 192.168.1.10:3389 (RDP attempt)",expected:"DENY"},
+      {desc:"ANY → 192.168.1.10:23 (Telnet attempt)",expected:"DENY"}
+    ],
+    swap:[[0,1]],
+    explanation:"The correct ruleset uses explicit ALLOW rules for the two legitimate use cases (HTTPS from anyone, SSH from admin only) followed by an implicit DENY ALL. This blocks everything not explicitly permitted — including dangerous services like Telnet and RDP."
+  },
+  {
+    label:"SCENARIO 02 — HOSPITAL NETWORK SEGMENTATION",
+    desc:"A hospital has three segments: <strong>CLINICAL (10.1.0.0/24)</strong>, <strong>ADMIN (10.2.0.0/24)</strong>, and <strong>GUEST (10.3.0.0/24)</strong>. Clinical devices need to reach the EHR server at <strong>10.1.0.50</strong> only. Guest Wi-Fi must reach the internet but NOT internal networks. Admin can reach everything.",
+    rules:[
+      {action:"ALLOW",proto:"TCP",src:"10.1.0.0/24",dest:"10.1.0.50",port:"443"},
+      {action:"ALLOW",proto:"ANY",src:"10.2.0.0/24",dest:"ANY",port:"ANY"},
+      {action:"DENY",proto:"ANY",src:"10.3.0.0/24",dest:"10.0.0.0/8",port:"ANY"},
+      {action:"ALLOW",proto:"ANY",src:"10.3.0.0/24",dest:"ANY",port:"ANY"}
+    ],
+    tests:[
+      {desc:"10.1.0.15 → 10.1.0.50:443 (Clinical → EHR)",expected:"ALLOW"},
+      {desc:"10.2.0.5 → 10.1.0.50:443 (Admin → EHR)",expected:"ALLOW"},
+      {desc:"10.3.0.100 → 10.1.0.50:443 (Guest → EHR)",expected:"DENY"},
+      {desc:"10.3.0.100 → 8.8.8.8:443 (Guest → Internet)",expected:"ALLOW"},
+      {desc:"10.3.0.100 → 10.2.0.5:22 (Guest → Admin SSH)",expected:"DENY"}
+    ],
+    swap:[[0,1]],
+    explanation:"Network segmentation via firewall rules prevents lateral movement. The DENY for Guest→Internal comes BEFORE the ALLOW Guest→ANY — rule order matters. An attacker on the Guest network cannot reach clinical or admin systems, even if they compromise a guest device."
+  },
+  {
+    label:"SCENARIO 03 — BLOCKING DANGEROUS SERVICES",
+    desc:"A company's perimeter firewall sits between the internet and internal network <strong>10.0.0.0/8</strong>. Block all inbound Telnet (unencrypted), allow inbound HTTPS, block RDP from the internet (internal use only), block all other uninitiated inbound traffic.",
+    rules:[
+      {action:"DENY",proto:"TCP",src:"ANY",dest:"10.0.0.0/8",port:"23"},
+      {action:"DENY",proto:"TCP",src:"ANY",dest:"10.0.0.0/8",port:"3389"},
+      {action:"ALLOW",proto:"TCP",src:"ANY",dest:"10.0.0.0/8",port:"443"},
+      {action:"DENY",proto:"ANY",src:"ANY",dest:"10.0.0.0/8",port:"ANY"}
+    ],
+    tests:[
+      {desc:"Internet → 10.0.0.5:23 (Telnet inbound)",expected:"DENY"},
+      {desc:"Internet → 10.0.0.5:3389 (RDP inbound)",expected:"DENY"},
+      {desc:"Internet → 10.0.0.5:443 (HTTPS inbound)",expected:"ALLOW"},
+      {desc:"Internet → 10.0.0.5:22 (SSH inbound)",expected:"DENY"},
+      {desc:"Internet → 10.0.0.5:80 (HTTP inbound)",expected:"DENY"}
+    ],
+    swap:[[0,1]],
+    explanation:"Explicit DENY rules for dangerous services (Telnet, RDP) placed BEFORE the ALLOW HTTPS means these services are blocked even if someone tries to serve them on non-standard ports that match these rules. The final DENY ANY catches everything else. Port 80 is denied — in this scenario, only HTTPS is permitted inbound."
+  }
+];
+
+const ACTIONS=["ALLOW","DENY"];
+const PROTOS=["TCP","UDP","ANY"];
+const PORTS=["22","23","80","443","3389","ANY","10.0.0.0/8"];
+const DESTS=["192.168.1.10","10.1.0.50","10.0.0.0/8","10.2.0.0/24","ANY"];
+const SRCS=["ANY","203.0.113.5","10.1.0.0/24","10.2.0.0/24","10.3.0.0/24"];
+
+let score=0,results=[],total=SCENARIOS.length;
+let userRules={},locked=[],_chg=[];
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildScenario(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildScenario(idx){
+  const sc=SCENARIOS[idx];
+  // Initialize user rules with all dropdowns set to first option
+  userRules[idx]=sc.rules.map(()=>({action:'',proto:'',src:'',dest:'',port:''}));
+
+  function makeSelect(ruleIdx,field,options,current){
+    const id=`sel-${idx}-${ruleIdx}-${field}`;
+    return `<select id="${id}" onchange="updateRule(${idx},${ruleIdx},'${field}',this.value)">
+      <option value="" selected disabled>—</option>${options.map(o=>`<option value="${o}">${o}</option>`).join('')}
+    </select>`;
+  }
+
+  let tableHTML=`<div style="overflow-x:auto;"><table class="rule-table">
+    <thead><tr>
+      <th style="width:40px;">#</th>
+      <th>ACTION</th><th>PROTO</th><th>SOURCE</th><th>DEST</th><th>PORT</th>
+    </tr></thead>
+    <tbody id="rules-${idx}">
+    ${sc.rules.map((r,ri)=>`
+      <tr id="rule-row-${idx}-${ri}">
+        <td><span class="rule-num">${ri+1}</span></td>
+        <td>${makeSelect(ri,'action',ACTIONS,r.action)}</td>
+        <td>${makeSelect(ri,'proto',PROTOS,r.proto)}</td>
+        <td>${makeSelect(ri,'src',[...new Set([...SRCS,r.src])],r.src)}</td>
+        <td>${makeSelect(ri,'dest',[...new Set([...DESTS,r.dest])],r.dest)}</td>
+        <td>${makeSelect(ri,'port',[...new Set([...PORTS,r.port])],r.port)}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+
+  let testHTML=`<div class="traffic-test">
+    <div class="tt-label">// TRAFFIC TESTS — your ruleset will be run against these when you lock in</div>
+    <div class="traffic-rows" id="tests-${idx}">
+      ${sc.tests.map((t,ti)=>`
+        <div class="traffic-row" id="trow-${idx}-${ti}">
+          <span class="traffic-desc">${t.desc}</span>
+          <span class="traffic-expected" id="texp-${idx}-${ti}">?</span>
+          <span class="traffic-result tr-unknown" id="tres-${idx}-${ti}">—</span>
+        </div>`).join('')}
+    </div>
+  </div>`;
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// SCENARIO ${idx+1} OF ${total}</div>
+    <div class="sec-title">Build the Firewall Ruleset</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Scenario ${idx+1}/${total}</span>
+    </div>
+    <div class="scenario-box">
+      <div class="scenario-label">${sc.label}</div>
+      <div class="scenario-text">${sc.desc}</div>
+    </div>
+    <div class="port-ref">
+      <div class="port-item">Port <span>22</span> = SSH</div>
+      <div class="port-item">Port <span>23</span> = Telnet ⚠️</div>
+      <div class="port-item">Port <span>80</span> = HTTP</div>
+      <div class="port-item">Port <span>443</span> = HTTPS</div>
+      <div class="port-item">Port <span>3389</span> = RDP</div>
+      <div class="port-item"><span>ANY</span> = wildcard</div>
+      <div class="port-item"><span>Rules: top-down</span></div>
+      <div class="port-item"><span>First match wins</span></div>
+    </div>
+    ${tableHTML}
+    <div class="lock-row"><button class="btn btn-acc" id="lock-${idx}" disabled onclick="lockIn(${idx})">🔒 LOCK IN RULESET &amp; TEST IT</button><span class="lock-hint" id="hint-${idx}">Fill in every row. You can change any rule until you lock in. Nothing is checked or revealed before that.</span></div>
+    ${testHTML}
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav"><div></div><button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT SCENARIO →'}</button></div>`;
+}
+
+function updateRule(scIdx,ruleIdx,field,value){
+  if(locked[scIdx])return;
+  if(userRules[scIdx][ruleIdx][field]&&userRules[scIdx][ruleIdx][field]!==value)_chg[scIdx]=(_chg[scIdx]||0)+1;
+  userRules[scIdx][ruleIdx][field]=value;
+  const ready=userRules[scIdx].every(r=>r.action&&r.proto&&r.src&&r.dest&&r.port);
+  document.getElementById('lock-'+scIdx).disabled=!ready;
+  document.getElementById('hint-'+scIdx).textContent=ready?'Ruleset complete. You can still change it. Nothing is revealed until you lock in.':'Fill in every row. You can change any rule until you lock in. Nothing is checked or revealed before that.';
+}
+function ip2n(ip){return ip.split('.').reduce((a,b)=>a*256+(+b),0);}
+function inNet(ip,spec){
+  if(spec==='ANY')return true;
+  if(spec.indexOf('/')<0)return ip===spec;
+  const p=spec.split('/'),bits=+p[1],size=Math.pow(2,32-bits);
+  const base=Math.floor(ip2n(p[0])/size)*size;
+  return ip2n(ip)>=base&&ip2n(ip)<base+size;
+}
+// parse "src → dest:port (label)" into a packet
+function pktOf(desc){
+  const m=desc.match(/^(\S+) → (\S+):(\d+)/);
+  const src=/^\d/.test(m[1])?m[1]:'198.51.100.77';
+  const dst=/^\d/.test(m[2])?m[2]:'192.0.2.1';
+  return {src:src,dst:dst,port:m[3]};
+}
+function simulate(rules,pkt){
+  for(const r of rules){
+    if(!(r.proto==='ANY'||r.proto==='TCP'))continue;
+    if(!inNet(pkt.src,r.src)||!inNet(pkt.dst,r.dest))continue;
+    if(!(r.port==='ANY'||r.port===pkt.port))continue;
+    return r.action;
+  }
+  return 'DENY'; // implicit deny
+}
+function sameRule(a,b){return a.action===b.action&&a.proto===b.proto&&a.src===b.src&&a.dest===b.dest&&a.port===b.port;}
+function rowOk(sc,user,ri){
+  const ref=sc.rules; if(sameRule(user[ri],ref[ri]))return true;
+  return (sc.swap||[]).some(g=>g.indexOf(ri)>=0&&g.some(j=>j!==ri&&sameRule(user[ri],ref[j])));
+}
+function ruleStr(r){return r.action+' '+r.proto+' '+r.src+' → '+r.dest+':'+r.port;}
+
+function lockIn(idx){
+  if(locked[idx])return;
+  const sc=SCENARIOS[idx],user=userRules[idx];
+  if(!user.every(r=>r.action&&r.proto&&r.src&&r.dest&&r.port))return;
+  locked[idx]=true;
+  document.querySelector('#s'+(idx+1)+' .lock-row').style.display='none';
+  document.querySelectorAll('#rules-'+idx+' select').forEach(s=>s.disabled=true);
+  let rowScore=0;
+  sc.rules.forEach((r,ri)=>{
+    const ok=rowOk(sc,user,ri);
+    const row=document.getElementById(`rule-row-${idx}-${ri}`);
+    if(ok){rowScore++;row.classList.add('rule-correct');}else row.classList.add('rule-wrong');
+  });
+  let pass=0;
+  sc.tests.forEach((tt,ti)=>{
+    const got=simulate(user,pktOf(tt.desc));
+    const el=document.getElementById(`tres-${idx}-${ti}`),ex=document.getElementById(`texp-${idx}-${ti}`);
+    ex.textContent='NEEDS '+tt.expected;ex.className='traffic-expected '+tt.expected.toLowerCase();
+    el.textContent=got+(got===tt.expected?' ✓':' ✗');el.className='traffic-result '+(got===tt.expected?(got==='ALLOW'?'tr-allow':'tr-deny'):'tr-unknown');
+    if(got===tt.expected)pass++;
+  });
+  const pts=Math.round((rowScore/sc.rules.length)*25);
+  score+=pts;
+  results[idx]={rowScore,total:sc.rules.length,pts,pass,tests:sc.tests.length,resp:user.map(ruleStr).join(' | ')};
+  document.getElementById('score-disp').textContent='SCORE: '+Math.round(score)+' pts';
+  const ruleAcc=Math.round((rowScore/sc.rules.length)*100);
+  const fb=document.getElementById('fb-'+idx);
+  const cls=ruleAcc>=80?'correct':ruleAcc>=50?'partial':'wrong';
+  const lbl=ruleAcc>=80?['ok','// LOCKED IN — RULESET CORRECT']:ruleAcc>=50?['warn','// LOCKED IN — PARTIALLY CORRECT']:['no','// LOCKED IN — RULESET NEEDS WORK'];
+  fb.className='feedback show '+cls;
+  fb.innerHTML=`<div class="fb-lbl ${lbl[0]}">${lbl[1]} (${rowScore}/${sc.rules.length} RULES CORRECT · ${pass}/${sc.tests.length} TRAFFIC TESTS PASSED)</div>${sc.explanation}<br><br><strong>Reference ruleset:</strong><br>`+sc.rules.map((r,i)=>(i+1)+'. '+ruleStr(r)).join('<br>')+`<br><br>Rows highlighted in <span style="color:var(--acc)">green</span> match the reference. <span style="color:var(--red)">Red</span> rows differ from it.`;
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*25))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Firewall Engineer 🔥','You correctly configured all three rulesets. Understanding rule order, implicit deny, and port/protocol specifics is a critical network security skill.'],mid:['Good Foundation 🎯','You got most rules right. Review implicit deny (last rule = DENY ALL) and rule ordering — the first match wins.'],low:['Keep Building 📚','Focus on the rule format: action, protocol, source, destination, port. And always end with DENY ANY ANY.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=SCENARIOS.map((sc,i)=>{
+    const r=results[i]||{rowScore:0,total:sc.rules.length,pts:0};
+    return `<div class="b-row"><div class="b-check">${r.rowScore===r.total?'✅':'⚠️'}</div><div class="b-text"><strong>${sc.label.split('—')[1].trim()}</strong> — ${r.rowScore}/${r.total} rules correct</div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+
+function restart(){score=0;results=[];userRules={};locked=[];_chg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:3,sim:'fw',screenId:'s4',score:score,max:total*25,items:SCENARIOS.map(function(sc,i){var r=results[i]||{rowScore:0,total:sc.rules.length,pts:0,pass:0,tests:sc.tests.length,resp:''};return {label:sc.label.split('—')[1].trim(),result:r.rowScore===r.total?'correct':(r.rowScore>0?'partial':'incorrect'),pts:r.pts,max:25,response:r.rowScore+'/'+r.total+' rules, '+r.pass+'/'+r.tests+' tests: '+r.resp,expected:sc.rules.map(ruleStr).join(' | '),changes:_chg[i]||0};})});
+};
+const _apRestart=restart;
+restart=function(){locked=[];_chg=[];APSim.start(3,'fw');_apRestart();};
+APSim.start(3,'fw');
+
+goTo(0);
+</script>
+<script src="../training/firewall-adapter.js"></script></body>
+</html>

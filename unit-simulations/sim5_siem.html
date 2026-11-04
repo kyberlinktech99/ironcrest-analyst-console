@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="5" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim5_siem">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | SIEM Alert Investigator — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#c084fc;--red:#ef4444;--green:#22c55e;--amber:#f59e0b;--cyan:#00d4ff;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-purple) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-purple) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--c-purple) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-purple) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-purple) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* SIEM DASHBOARD */
+.siem-panel{background:#060d1a;border:1px solid var(--border2);margin-bottom:14px;overflow:hidden;}
+.siem-topbar{background:#0c1628;border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:12px;}
+.siem-brand{font-family:var(--mono);font-size:11px;color:var(--acc);font-weight:700;letter-spacing:.1em;}
+.siem-time{font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:auto;}
+.siem-tabs{display:flex;border-bottom:1px solid var(--border);}
+.siem-tab{font-family:var(--mono);font-size:10px;padding:7px 14px;cursor:pointer;color:var(--text3);transition:all .2s;border-bottom:2px solid transparent;background:transparent;border-top:none;border-left:none;border-right:none;}
+.siem-tab.active{color:var(--acc);border-bottom-color:var(--acc);}
+.siem-tab-content{padding:0;}
+.siem-tab-pane{display:none;padding:12px 14px;}
+.siem-tab-pane.active{display:block;}
+
+/* ALERT LIST */
+.alert-list{display:grid;gap:4px;}
+.alert-row{display:grid;grid-template-columns:80px 80px 1fr 90px 80px;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid color-mix(in srgb,var(--text) 3%,transparent);font-family:var(--mono);font-size:11px;transition:background .15s;cursor:pointer;}
+.alert-row:hover{background:color-mix(in srgb,var(--c-purple) 5%,transparent);}
+.alert-row.selected-row{background:color-mix(in srgb,var(--c-purple) 10%,transparent);}
+.alert-time{color:var(--text3);}
+.alert-sev{font-size:9px;padding:2px 6px;font-weight:700;text-align:center;}
+.sev-critical{background:color-mix(in srgb,var(--red) 20%,transparent);color:var(--red);}
+.sev-high{background:color-mix(in srgb,var(--amber) 20%,transparent);color:var(--amber);}
+.sev-medium{background:color-mix(in srgb,var(--c-purple) 20%,transparent);color:var(--acc);}
+.sev-info{background:color-mix(in srgb,var(--c-green) 15%,transparent);color:var(--green);}
+.alert-desc{color:var(--text2);}
+.alert-src{color:var(--text3);}
+.alert-status{font-size:9px;text-align:right;}
+.st-new{color:var(--red);}
+.st-inv{color:var(--amber);}
+.st-closed{color:var(--green);}
+
+/* DETAIL PANE */
+.detail-pane{background:#0c1628;border:1px solid var(--border);padding:14px;font-family:var(--mono);font-size:11px;line-height:1.8;min-height:100px;}
+.detail-empty{color:var(--text3);font-style:italic;}
+.detail-field{display:flex;gap:10px;border-bottom:1px solid color-mix(in srgb,var(--text) 4%,transparent);padding:3px 0;}
+.df-key{color:var(--text3);min-width:160px;flex-shrink:0;}
+.df-val{color:var(--text);}
+.df-val.bad{color:var(--red);font-weight:700;}
+.df-val.warn{color:var(--amber);}
+.df-val.good{color:var(--green);}
+
+/* CORRELATION TIMELINE */
+.corr-timeline{display:grid;gap:4px;}
+.ct-row{display:flex;gap:10px;align-items:flex-start;padding:4px 0;font-family:var(--mono);font-size:10px;}
+.ct-time{color:var(--text3);min-width:70px;flex-shrink:0;}
+.ct-source{min-width:80px;flex-shrink:0;}
+.ct-msg{color:var(--text2);flex:1;}
+.ct-msg .flag{color:var(--red);}
+
+/* VERDICT PANEL */
+.verdict-panel{background:var(--panel);border:1px solid var(--border2);padding:16px;margin-bottom:12px;}
+.vp-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:10px;}
+.verdict-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
+.verdict-btn{padding:14px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;transition:all .2s;}
+.verdict-btn:hover{border-color:var(--acc);background:color-mix(in srgb,var(--c-purple) 6%,transparent);}
+.verdict-btn.vb-correct{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.verdict-btn.vb-wrong{border-color:var(--red)!important;animation:shake .4s;}
+.verdict-btn.vb-locked{pointer-events:none;opacity:.5;}
+.verdict-btn.vb-correct,.verdict-btn.vb-wrong{opacity:1!important;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.vb-icon{font-size:22px;margin-bottom:4px;}
+.vb-name{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:3px;}
+.vb-sub{font-size:11px;color:var(--text3);}
+
+/* RESPONSE Q */
+.choices{display:grid;gap:8px;}
+.choice-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 15px;cursor:pointer;text-align:left;transition:all .2s;}
+.choice-btn:hover:not(.locked){border-color:var(--acc);background:color-mix(in srgb,var(--c-purple) 5%,transparent);}
+.choice-btn.correct-ans{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.choice-btn.wrong-ans{border-color:var(--red)!important;animation:shake .4s ease;}
+.choice-btn.locked{pointer-events:none;opacity:.5;}
+.choice-btn.correct-ans,.choice-btn.wrong-ans{opacity:1!important;}
+.cl{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px;display:block;}
+.ct{font-size:13px;color:var(--text);line-height:1.45;}
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:10px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--c-purple) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.verdict-grid,.concept-grid{grid-template-columns:1fr;}.alert-row{grid-template-columns:70px 1fr 70px;}.alert-src,.alert-sev{display:none;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--c-purple);--red:var(--red);--green:var(--c-green);--amber:var(--amber);--cyan:var(--cyan);}</style>
+<style>/*apsim-island*//* SIEM DASHBOARD */
+.siem-panel,.siem-topbar,/* DETAIL PANE */
+.detail-pane{--bg:#0c111f;--bg2:#101728;--bg3:#151e34;--panel:#131b2f;--panel2:#1a2441;--border:#232f4d;--border2:#344470;--text:#e9effc;--text2:#a3b0d0;--text3:#7384ab;--on-acc:#0b1020;--green:#34d399;--amber:#fbbf24;--warn:#fbbf24;--danger:#f87171;--red:#f87171;--cyan:#22d3ee;--purple:#a78bfa;--c-orange:#fb923c;--c-purple:#c084fc;--c-red:#f87171;--c-sky:#38bdf8;--c-lime:#a3e635;--c-amber:#fbbf24;--c-green:#34d399;--c-teal:#2dd4bf;color-scheme:dark;color:var(--text);--acc:var(--c-purple);--red:var(--red);--green:var(--c-green);--amber:var(--amber);--cyan:var(--cyan);}</style>
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 5</div>
+  <div>
+    <div class="hdr-title">SIEM Alert Investigator</div>
+    <div class="hdr-sub">UNIT 5 · SECURING APPS & DATA · SIEM · TRIAGE · CAPSTONE</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">A1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">A2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">A3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">A4</span><div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p5"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">📊</span>
+    <div class="intro-title">SIEM Alert Investigator</div>
+    <div class="intro-desc">Four SIEM alert queues from a simulated enterprise SOC. For each: read the alerts, click rows to inspect details, review the correlated timeline, determine the verdict, then answer the response question. This is the Unit 5 capstone — combining encryption, application security, data protection, and incident awareness.</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-width:480px;margin:0 auto 24px;text-align:left;">
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);"><div style="font-family:var(--mono);font-size:9px;color:var(--red);margin-bottom:3px;">CRITICAL</div><div style="font-size:11px;color:var(--text3);">Immediate escalation required</div></div>
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);"><div style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-bottom:3px;">HIGH</div><div style="font-size:11px;color:var(--text3);">Investigate within 1 hour</div></div>
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);"><div style="font-family:var(--mono);font-size:9px;color:var(--acc);margin-bottom:3px;">MEDIUM</div><div style="font-size:11px;color:var(--text3);">Investigate within 24 hours</div></div>
+      <div style="padding:10px;border:1px solid var(--border);background:var(--panel);"><div style="font-family:var(--mono);font-size:9px;color:var(--green);margin-bottom:3px;">INFO</div><div style="font-size:11px;color:var(--text3);">Low risk — monitor or close</div></div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ OPEN SOC CONSOLE</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+
+<div class="screen" id="s5">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div style="font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:10px;">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">SIEM CORRELATION</div><div class="concept-def">A SIEM aggregates logs from many sources and applies correlation rules to detect patterns that individual systems can't see. One failed login is noise; 500 failed logins in 30 seconds is a brute force alert. SIEMs detect patterns across time and sources.</div></div>
+    <div class="concept-card"><div class="concept-term">TRUE POSITIVE vs FALSE POSITIVE</div><div class="concept-def">True Positive (TP): real attack, alert fired correctly. False Positive (FP): benign activity, alert fired incorrectly. Security teams tune SIEM rules to reduce FPs without missing TPs. Alert fatigue from too many FPs is a real operational risk.</div></div>
+    <div class="concept-card"><div class="concept-term">DLP (DATA LOSS PREVENTION)</div><div class="concept-def">DLP systems monitor for sensitive data leaving the organization — through email, USB, cloud uploads, or web traffic. They can alert on or block transfers that match patterns (SSN, credit card numbers, classification labels). Used to enforce data classification policy.</div></div>
+    <div class="concept-card"><div class="concept-term">SIEM + SOAR</div><div class="concept-def">SIEM detects. SOAR (Security Orchestration, Automation, and Response) automates the response. When SIEM fires a brute force alert, SOAR can automatically block the IP, disable the account, and notify the analyst — reducing response time from hours to seconds.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ NEW ALERTS</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim5_hub.html'">← UNIT 5 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const ALERTS=[
+  {
+    id:"INC-2024-0892",
+    title:"Possible SQL Injection on Customer API",
+    alerts:[
+      {time:"14:22:01",sev:"high",desc:"WAF: SQL injection pattern in API request",src:"WAF",status:"NEW"},
+      {time:"14:22:03",sev:"critical",desc:"DB: Unusual query — 847,000 rows returned from customer table",src:"DB Monitor",status:"NEW"},
+      {time:"14:22:04",sev:"high",desc:"DLP: Large outbound response (2.1MB) from API endpoint",src:"DLP",status:"NEW"},
+      {time:"14:22:05",sev:"info",desc:"Firewall: Outbound connection to 203.0.113.88:443",src:"Firewall",status:"NEW"}
+    ],
+    details:{
+      0:{"Alert ID":"WAF-2024-4892","Source IP":"203.0.113.88","Target Endpoint":"/api/v2/customers/search","Payload":["UNION SELECT username,password,ssn FROM customers--"],"WAF Action":"Logged only — no block","Risk":"HIGH"},
+      1:{"Query Executed":["SELECT * FROM customers WHERE name='' UNION SELECT username,password,ssn FROM customers--"],"Rows Returned":"847,193","Execution Time":"2.3 seconds","Database User":"webapp_user","Tables Accessed":"customers, accounts"},
+      2:{"Data Volume":"2.1 MB response","Content-Type":"application/json","Destination":"203.0.113.88","Pattern Matched":"Structured PII data — SSN format detected","Action":"ALERT ONLY"}
+    },
+    timeline:[
+      {time:"14:22:01",src:"WAF",msg:"<span class='flag'>SQLi pattern detected in /api/v2/customers/search — UNION SELECT payload</span>"},
+      {time:"14:22:01",src:"API",msg:"Request passed to backend — WAF in log-only mode"},
+      {time:"14:22:02",src:"DB",msg:"Query executed against customers table"},
+      {time:"14:22:03",src:"DB",msg:"<span class='flag'>847,193 rows returned — entire customer table including SSNs</span>"},
+      {time:"14:22:04",src:"DLP",msg:"<span class='flag'>2.1MB response with SSN patterns exfiltrated to 203.0.113.88</span>"},
+      {time:"14:22:05",src:"FW",msg:"Outbound connection logged — not blocked"}
+    ],
+    verdicts:["True Positive — Active SQL Injection / Data Breach","False Positive — Normal API behavior","True Positive — Misconfigured Application (no attack)","False Positive — DLP false detection on test data"],
+    correctVerdict:0,
+    responseQ:{
+      text:"This is a confirmed SQL injection data breach. What are the FIRST TWO actions the SOC should take?",
+      choices:[
+        {l:"A",t:"File a police report and notify customers immediately"},
+        {l:"B",t:"Block 203.0.113.88 at the perimeter firewall AND disable the vulnerable API endpoint — stop the active data exfiltration"},
+        {l:"C",t:"Patch the SQL injection vulnerability by deploying a new code release"},
+        {l:"D",t:"Wait for the attacker to finish and then analyze what was taken"}
+      ],
+      answer:"B",
+      explain:"First: stop the bleeding — block the attacker's IP immediately and disable the vulnerable endpoint to prevent further exfiltration. Second: preserve evidence (logs, captures). Patching (C) is correct but comes after containment — deploying new code while the attack is active could destroy forensic evidence. Notifying customers (A) is required but comes after you understand the full scope of what was breached. Never wait for an attacker to finish."
+    }
+  },
+  {
+    id:"INC-2024-0893",
+    title:"TLS Certificate Expiry — Production Checkout",
+    alerts:[
+      {time:"09:15:00",sev:"critical",desc:"Cert Monitor: TLS certificate expires in 2 hours",src:"Cert Monitor",status:"NEW"},
+      {time:"09:15:01",sev:"high",desc:"Synthetic Monitor: Checkout page returning SSL_ERROR",src:"Uptime",status:"NEW"},
+      {time:"09:16:22",sev:"info",desc:"Web Log: Users abandoning checkout — error rate 94%",src:"Web Server",status:"NEW"},
+      {time:"09:17:01",sev:"medium",desc:"DLP: No data exfiltration detected — availability issue only",src:"DLP",status:"NEW"}
+    ],
+    details:{
+      0:{"Certificate CN":"checkout.company.com","Issuer":"DigiCert TLS RSA SHA256","Expiry":"2024-03-15 11:00:00 UTC","Status":"EXPIRES IN 1h 45m","Auto-Renewal":"FAILED — DNS validation error","Action Required":"Manual renewal required NOW"},
+      1:{"Error":"NET::ERR_CERT_DATE_INVALID","Affected URL":"https://checkout.company.com","Impact":"100% of checkout sessions failing","Revenue Impact":"~$4,200/minute at current rate","Browser Behavior":"Blocking access — showing red warning screen"},
+      3:{"Scan Result":"No anomalous outbound data","Assessment":"No security breach — operational failure","Recommendation":"Certificate renewal is the correct remediation"}
+    },
+    timeline:[
+      {time:"09:00:00",src:"Cert",msg:"Certificate valid — 2 hours remaining"},
+      {time:"09:14:59",src:"Cert",msg:"<span class='flag'>Auto-renewal failed — DNS-01 challenge failed due to DNS propagation issue</span>"},
+      {time:"09:15:00",src:"Monitor",msg:"<span class='flag'>CRITICAL ALERT: Certificate expires 2 hours</span>"},
+      {time:"09:15:30",src:"Browser",msg:"Users seeing ERR_CERT_DATE_INVALID — checkout blocked"},
+      {time:"09:16:00",src:"Web",msg:"Checkout error rate climbing — 94% of sessions failing"},
+      {time:"09:17:00",src:"DLP",msg:"No breach indicators — availability incident only"}
+    ],
+    verdicts:["True Positive — Active TLS MITM Attack intercepting checkout","True Positive — Certificate Expiry Causing Availability Incident","False Positive — Scheduled certificate rotation by DevOps","False Positive — Browser-side SSL configuration issue"],
+    correctVerdict:1,
+    responseQ:{
+      text:"The certificate expired and auto-renewal failed. What does this incident represent in terms of the CIA Triad, and what is the immediate fix?",
+      choices:[
+        {l:"A",t:"Confidentiality violation — attackers can now read payment data. Immediate fix: block all traffic to checkout until patched"},
+        {l:"B",t:"Availability violation — legitimate users cannot access the checkout page. Immediate fix: manually renew and deploy the TLS certificate"},
+        {l:"C",t:"Integrity violation — checkout data may have been modified in transit. Immediate fix: audit all transactions from the past 2 hours"},
+        {l:"D",t:"All three CIA pillars are violated when a certificate expires"}
+      ],
+      answer:"B",
+      explain:"An expired certificate causes an Availability violation — the checkout page is inaccessible to legitimate users. It does NOT mean encryption was broken or data was intercepted (browsers block the connection entirely before any data is sent). The immediate fix: manually renew the certificate through DigiCert (or use emergency Let's Encrypt renewal), resolve the DNS validation error, and redeploy. Total downtime cost: ~$4,200/minute makes this extremely time-sensitive."
+    }
+  },
+  {
+    id:"INC-2024-0894",
+    title:"DLP Alert — Bulk Customer PII Upload to Cloud Storage",
+    alerts:[
+      {time:"16:44:01",sev:"critical",desc:"DLP: 14.7GB upload to dropbox.com — PII detected",src:"DLP",status:"NEW"},
+      {time:"16:44:05",sev:"high",desc:"Proxy: Unusual cloud storage upload from finance workstation",src:"Web Proxy",status:"NEW"},
+      {time:"16:44:07",sev:"medium",desc:"HR System: Employee resignation submitted today",src:"HR",status:"NEW"},
+      {time:"16:44:10",sev:"info",desc:"Auth Log: Normal business-hours access to customer DB",src:"Auth",status:"NEW"}
+    ],
+    details:{
+      0:{"Source Host":"FINANCE-WS-14","Source User":"m.rodriguez","Destination":"dropbox.com/upload","Data Volume":"14.7 GB","PII Detected":"SSN patterns: 847,000 matches · Credit card: 12,400 matches","File Names":"customer_export_2024.csv, contacts_full.csv, billing_archive.zip","DLP Action":"ALERT — upload completed before block triggered"},
+      1:{"User Agent":"Dropbox Desktop Client","Upload Duration":"22 minutes","Files Transferred":"3 files","Corporate Policy":"Personal cloud storage prohibited for company data","Previous Violations":"None on record"},
+      2:{"Employee":"M. Rodriguez","Department":"Finance","Resignation Date":"2024-03-14 (today)","Last Day":"2024-03-28","Access Level":"Full customer database read access","Access Revocation":"Scheduled for last day — NOT yet revoked"}
+    },
+    timeline:[
+      {time:"08:30:00",src:"HR",msg:"M. Rodriguez submitted resignation notice via HR system"},
+      {time:"09:15:00",src:"Auth",msg:"Normal login — accessed customer database (routine)"},
+      {time:"16:30:00",src:"DB",msg:"<span class='flag'>Large export query: SELECT * FROM customers — 847,000 rows, 14.7GB</span>"},
+      {time:"16:44:00",src:"DLP",msg:"<span class='flag'>Upload to Dropbox initiated — 14.7GB, PII detected</span>"},
+      {time:"16:44:07",src:"HR",msg:"<span class='flag'>Resignation on record — last day 2024-03-28, access not yet revoked</span>"},
+      {time:"16:44:10",src:"DLP",msg:"<span class='flag'>Upload completed before DLP block rule fired — data exfiltrated</span>"}
+    ],
+    verdicts:["False Positive — Authorized employee backup before leaving","True Positive — Insider Threat: data exfiltration by departing employee","True Positive — External Attacker using stolen credentials","False Positive — Automated database backup to cloud storage"],
+    correctVerdict:1,
+    responseQ:{
+      text:"This is a confirmed insider threat data exfiltration. Which action should have PREVENTED this incident before it occurred?",
+      choices:[
+        {l:"A",t:"More sensitive DLP rules that block all cloud storage uploads"},
+        {l:"B",t:"Immediate access revocation upon resignation submission, not on the last day — with enhanced DLP monitoring during the notice period"},
+        {l:"C",t:"Encrypting the customer database so the employee couldn't export it"},
+        {l:"D",t:"Requiring manager approval for all database queries over 1MB"}
+      ],
+      answer:"B",
+      explain:"The access control failure was the 14-day gap between resignation and access revocation. Best practice: immediately revoke or significantly restrict system access upon resignation, especially for employees with sensitive data access. During any notice period, apply enhanced DLP monitoring and logging. 'Revoke on last day' creates a 2-week window for data theft. Database encryption (C) wouldn't have prevented an authorized user from exporting — they had read access. DLP rules (A) help detect but came too late."
+    }
+  },
+  {
+    id:"INC-2024-0895",
+    title:"Web Application Firewall — Spike in 403 Errors",
+    alerts:[
+      {time:"11:02:00",sev:"medium",desc:"WAF: 4,200 blocked requests in 5 minutes from multiple IPs",src:"WAF",status:"NEW"},
+      {time:"11:02:30",sev:"info",desc:"Web Log: 403 error rate at 8% of total traffic (baseline: 0.2%)",src:"Web Server",status:"NEW"},
+      {time:"11:03:00",sev:"info",desc:"Geo: Traffic spike from Tor exit nodes and VPN services",src:"Threat Intel",status:"NEW"},
+      {time:"11:04:00",sev:"info",desc:"App: No successful unauthorized access — all attempts blocked",src:"App Server",status:"NEW"}
+    ],
+    details:{
+      0:{"Blocked Patterns":"Path traversal (../../../etc/passwd), XSS (<script> tags), SQLi (UNION SELECT)","Source IPs":"Distributed — 847 unique IPs","Geo Distribution":"Mostly Tor exit nodes and commercial VPNs","Block Rate":"99.8% blocked — 8 requests reached app server (all failed at app layer too)","WAF Mode":"Block mode — rules functioning correctly"},
+      1:{"Total Requests":"52,000 in 5 minutes","Blocked by WAF":"4,200 (8%)","Legitimate Traffic":"47,800 (92%)","User Experience":"Normal — legitimate users unaffected","False Positive Rate":"<0.1% (3 legitimate requests incorrectly blocked)"},
+      3:{"Successful Breaches":"0","Compromised Accounts":"0","Data Accessed":"None","Assessment":"WAF functioning as intended — attack scan blocked","Recommended Action":"Monitor, add attacker IP ranges to blocklist, no escalation needed"}
+    },
+    timeline:[
+      {time:"11:00:00",src:"Web",msg:"Normal traffic baseline — 0.2% 403 rate"},
+      {time:"11:02:00",src:"WAF",msg:"<span class='flag'>Scanning attack detected — automated probing from 847 IPs</span>"},
+      {time:"11:02:00",src:"WAF",msg:"Block rules firing — path traversal, SQLi, XSS all blocked"},
+      {time:"11:02:30",src:"App",msg:"8 requests reached app server — all rejected at application layer"},
+      {time:"11:04:00",src:"WAF",msg:"Attack continuing — WAF blocking 99.8% — no breach"},
+      {time:"11:04:00",src:"TI",msg:"Source IPs match known scanning botnet — automated vulnerability scan"}
+    ],
+    verdicts:["True Positive — Active Web Application Breach","True Positive — Automated Vulnerability Scan Blocked by WAF (Defense Working)","False Positive — Legitimate traffic spike misidentified as attack","False Positive — Security researcher authorized pen test"],
+    correctVerdict:1,
+    responseQ:{
+      text:"The WAF blocked 99.8% of attack traffic and no breach occurred. How should the SOC classify this alert, and what is the appropriate response level?",
+      choices:[
+        {l:"A",t:"Critical — take the application offline immediately to prevent any remaining attack traffic from reaching the server"},
+        {l:"B",t:"Closed / Monitoring — defenses worked as intended; document the event, add attacker IP ranges to blocklist, and monitor for any change in attack pattern"},
+        {l:"C",t:"High — escalate to incident response team and begin full breach investigation"},
+        {l:"D",t:"High — the 8 requests that bypassed the WAF indicate a vulnerability that needs immediate patching"}
+      ],
+      answer:"B",
+      explain:"This is a successful defense scenario — the WAF performed exactly as designed. The correct response: document it (it's useful threat intelligence), add the attacking IP ranges to blocklists for proactive defense, and continue monitoring. Taking the app offline (A) would cause an unnecessary availability incident — the WAF is protecting it effectively. Escalating to IR (C) consumes limited incident response capacity that should be reserved for actual breaches. The 8 requests that bypassed the WAF were also blocked at the application layer — defense in depth working correctly."
+    }
+  }
+];
+
+let score=0,results=[],total=ALERTS.length;
+let activeTab={},sel=[],locked=[],_chg=[],rSel=[],rLocked=[],_rchg=[];
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildAlert(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildAlert(idx){
+  const inc=ALERTS[idx];
+  activeTab[idx]='alerts';
+  results[idx]={verdictCorrect:false,qCorrect:false,pts:0};
+
+  const alertRows=inc.alerts.map((a,ai)=>`
+    <div class="alert-row" id="arow-${idx}-${ai}" onclick="showDetail(${idx},${ai})">
+      <span class="alert-time">${a.time}</span>
+      <span class="alert-sev sev-${a.sev}">${a.sev.toUpperCase()}</span>
+      <span class="alert-desc">${a.desc}</span>
+      <span class="alert-src">${a.src}</span>
+      <span class="alert-status st-new">${a.status}</span>
+    </div>`).join('');
+
+  const corrRows=inc.timeline.map(t=>`<div class="ct-row"><span class="ct-time">${t.time}</span><span class="ct-source" style="color:var(--acc)">[${t.src}]</span><span class="ct-msg">${t.msg}</span></div>`).join('');
+
+  const verdictCards=inc.verdicts.map((v,vi)=>`<div class="verdict-btn" data-vi="${vi}" onclick="pickVerdict(this,${vi},${idx})">
+    <div class="vb-icon">${vi===0?'🚨':vi===1?'⚠️':vi===2?'✅':'❓'}</div>
+    <div class="vb-name">${vi===0?'TRUE POS':vi===1?'TRUE POS':vi===2?'FALSE POS':'FALSE POS'}</div>
+    <div class="vb-sub" style="font-size:10px;line-height:1.3;">${v}</div>
+  </div>`).join('');
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div style="font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;">// ALERT ${idx+1} OF ${total}</div>
+    <div style="font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:4px;">${inc.id}</div>
+    <div style="font-size:14px;color:var(--text2);margin-bottom:14px;">${inc.title}</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Alert ${idx+1}/${total}</span>
+    </div>
+    <div class="siem-panel">
+      <div class="siem-topbar">
+        <span class="siem-brand">◈ ELASTIC SIEM</span>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--text3);">INCIDENT — ${inc.id}</span>
+        <span class="siem-time">2024-03-14 ${inc.alerts[0].time}</span>
+      </div>
+      <div class="siem-tabs">
+        <button class="siem-tab active" onclick="switchTab(${idx},'alerts',this)">ALERTS (${inc.alerts.length})</button>
+        <button class="siem-tab" onclick="switchTab(${idx},'details',this)">EVENT DETAIL</button>
+        <button class="siem-tab" onclick="switchTab(${idx},'timeline',this)">CORRELATED TIMELINE</button>
+      </div>
+      <div class="siem-tab-pane active" id="tab-alerts-${idx}">
+        <div class="alert-list">${alertRows}</div>
+      </div>
+      <div class="siem-tab-pane" id="tab-details-${idx}">
+        <div class="detail-pane" id="detail-pane-${idx}"><span class="detail-empty">Click an alert row to inspect event details...</span></div>
+      </div>
+      <div class="siem-tab-pane" id="tab-timeline-${idx}">
+        <div class="corr-timeline">${corrRows}</div>
+      </div>
+    </div>
+    <div class="verdict-panel">
+      <div class="vp-label">// ANALYST VERDICT — SELECT THE CORRECT CLASSIFICATION</div>
+      <div class="verdict-grid" id="vgrid-${idx}">${verdictCards}</div>
+      <div class="lock-row"><button class="btn btn-acc" id="lock-${idx}" disabled onclick="lockVerdict(${idx})">🔒 LOCK IN VERDICT</button><span class="lock-hint" id="hint-${idx}">Choose a verdict. You can change it until you lock in. Nothing is revealed before that.</span></div>
+      <div class="feedback" id="vfb-${idx}"></div>
+    </div>
+    <div id="rq-${idx}" style="display:none;">
+      <div style="background:var(--panel);border:1px solid var(--border2);padding:16px;margin-bottom:12px;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;">// RESPONSE QUESTION (+12 pts)</div>
+        <div style="font-size:14px;line-height:1.7;margin-bottom:12px;">${inc.responseQ.text}</div>
+        <div class="choices" id="rqch-${idx}">
+          ${inc.responseQ.choices.map(c=>`<div class="choice-btn" onclick="pickRQ(this,'${c.l}',${idx})"><span class="cl">${c.l}</span><div class="ct">${c.t}</div></div>`).join('')}
+        </div>
+        <div class="lock-row"><button class="btn btn-acc" id="rqlock-${idx}" disabled onclick="lockRQ(${idx})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="rqhint-${idx}">Choose an answer. You can change it until you lock in.</span></div>
+        <div class="feedback" id="rqfb-${idx}"></div>
+      </div>
+    </div>
+    <div class="nav"><div></div><button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT ALERT →'}</button></div>`;
+}
+
+function switchTab(idx,tab,btn){
+  document.querySelectorAll(`#s${idx+1} .siem-tab`).forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll(`#s${idx+1} .siem-tab-pane`).forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`tab-${tab}-${idx}`).classList.add('active');
+  activeTab[idx]=tab;
+}
+
+function showDetail(idx,alertIdx){
+  document.querySelectorAll(`[id^="arow-${idx}-"]`).forEach(r=>r.classList.remove('selected-row'));
+  document.getElementById(`arow-${idx}-${alertIdx}`)?.classList.add('selected-row');
+  switchTab(idx,'details',document.querySelectorAll(`#s${idx+1} .siem-tab`)[1]);
+  const detail=ALERTS[idx].details[alertIdx];
+  const pane=document.getElementById(`detail-pane-${idx}`);
+  if(!detail){pane.innerHTML='<span class="detail-empty">No additional detail available for this alert.</span>';return;}
+  pane.dataset.shown=alertIdx;
+  pane.innerHTML=Object.entries(detail).map(([k,v])=>{
+    const val=Array.isArray(v)?v.join('<br>'):v;
+    const cls=String(v).includes('FAILED')||String(v).includes('⚠️')||String(v).includes('flag')||String(v).includes('CRITICAL')?'bad':String(v).includes('No breach')||String(v).includes('0')||String(v).includes('None')?'good':'';
+    return `<div class="detail-field"><span class="df-key">${k}</span><span class="df-val" data-cls="${cls}">${val}</span></div>`;
+  }).join('');
+}
+
+function pickVerdict(el,vi,idx){
+  if(locked[idx])return;
+  if(sel[idx]!=null&&sel[idx]!==vi)_chg[idx]=(_chg[idx]||0)+1;
+  sel[idx]=vi;
+  document.getElementById('vgrid-'+idx).querySelectorAll('.verdict-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+idx).disabled=false;
+  document.getElementById('hint-'+idx).textContent='Selected. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockVerdict(idx){
+  if(locked[idx]||sel[idx]==null)return;
+  locked[idx]=true;
+  const inc=ALERTS[idx],vi=sel[idx],ok=vi===inc.correctVerdict;
+  document.querySelector('#vgrid-'+idx).closest('.verdict-panel').querySelector('.lock-row').style.display='none';
+  document.querySelectorAll('#s'+(idx+1)+' .df-val').forEach(e=>{if(e.dataset.cls)e.classList.add(e.dataset.cls);});
+  document.getElementById('vgrid-'+idx).querySelectorAll('.verdict-btn').forEach(c=>{
+    const k=+c.dataset.vi;
+    c.classList.remove('picked');c.classList.add('vb-locked');
+    if(k===inc.correctVerdict)c.classList.add('vb-correct');
+    if(k===vi){if(!ok)c.classList.add('vb-wrong');c.querySelector('.vb-name').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx].verdictCorrect=ok;results[idx].verdict=inc.verdicts[vi];
+  if(ok){score+=13;results[idx].pts=13;}
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  const fb=document.getElementById('vfb-'+idx);
+  fb.className='feedback show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?'<div class="fb-lbl ok">// LOCKED IN — CORRECT CLASSIFICATION +13 pts</div>':'<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT CLASSIFICATION: '+inc.verdicts[inc.correctVerdict]+'</div>You chose: '+inc.verdicts[vi]+'. ')+'Now answer the response question below.';
+  document.getElementById('rq-'+idx).style.display='block';
+}
+
+function pickRQ(el,letter,idx){
+  if(rLocked[idx])return;
+  if(rSel[idx]&&rSel[idx]!==letter)_rchg[idx]=(_rchg[idx]||0)+1;
+  rSel[idx]=letter;
+  document.getElementById('rqch-'+idx).querySelectorAll('.choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('rqlock-'+idx).disabled=false;
+  document.getElementById('rqhint-'+idx).textContent='Selected: '+letter+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockRQ(idx){
+  if(rLocked[idx]||!rSel[idx])return;
+  rLocked[idx]=true;
+  const q=ALERTS[idx].responseQ,letter=rSel[idx],ok=letter===q.answer;
+  document.querySelector('#rq-'+idx+' .lock-row').style.display='none';
+  document.getElementById('rqch-'+idx).querySelectorAll('.choice-btn').forEach(c=>{
+    const l=c.querySelector('.cl').textContent;
+    c.classList.remove('picked');c.classList.add('locked');
+    if(l===q.answer)c.classList.add('correct-ans');
+    if(l===letter){if(!ok)c.classList.add('wrong-ans');c.querySelector('.ct').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx].qCorrect=ok;results[idx].qChoice=letter;
+  if(ok){score+=12;results[idx].pts+=12;}
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  const fb=document.getElementById('rqfb-'+idx);
+  fb.className='feedback show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?'<div class="fb-lbl ok">// LOCKED IN — CORRECT +12 pts</div>':'<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: '+q.answer+'</div>')+q.explain;
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*25))*100);
+  const el=document.getElementById('r-score');el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['SOC Analyst 📊','You correctly triaged all four SIEM alerts, classified them accurately, and recommended the right responses. This is the kind of multi-source correlation that the AP exam FRQ tests in scenario format.'],mid:['Good Triage Instincts 🎯','Review the true positive vs. false positive distinction — a WAF blocking attacks is a successful defense (TP, no escalation needed). A data exfiltration completing before DLP blocks is a confirmed breach (TP, immediate escalation).'],low:['Keep Building 📚','Focus on the outcome: did a breach occur? Did controls work? A blocked attack = defense functioning. A completed exfiltration = breach. The SIEM verdict drives the response level.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=ALERTS.map((inc,i)=>{
+    const r=results[i]||{verdictCorrect:false,qCorrect:false,pts:0};
+    return `<div class="b-row"><div class="b-check">${r.verdictCorrect&&r.qCorrect?'✅':'⚠️'}</div><div class="b-text"><strong>${inc.id} — ${inc.title}</strong> · Verdict: ${r.verdictCorrect?'✓':'✗'} · Response: ${r.qCorrect?'✓':'✗'}</div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];activeTab={};sel=[];locked=[];_chg=[];rSel=[];rLocked=[];_rchg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:5,sim:'siem',screenId:''+('s'+(total+1))+'',score:score,max:total*25,items:(function(){var o=[];ALERTS.forEach(function(inc,i){var r=results[i]||{};o.push({label:inc.id+' — verdict',result:r.verdictCorrect?'correct':'incorrect',pts:r.verdictCorrect?13:0,max:13,response:r.verdict||'',expected:inc.verdicts[inc.correctVerdict],changes:_chg[i]||0});o.push({label:inc.id+' — response',result:r.qCorrect?'correct':'incorrect',pts:r.qCorrect?12:0,max:12,response:r.qChoice||'',expected:inc.responseQ.answer,changes:_rchg[i]||0});});return o;})()});
+};
+const _apRestart=restart;
+restart=function(){sel=[];locked=[];_chg=[];rSel=[];rLocked=[];_rchg=[];APSim.start(5,'siem');_apRestart();};
+APSim.start(5,'siem');
+
+goTo(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="3" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim3_timeline">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Network Attack Timeline — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#22c55e;--red:#ef4444;--amber:#ffd166;--cyan:#00d4ff;--purple:#c084fc;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-green) 2%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-green) 2%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-green) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-green) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* LOG VIEWER */
+.log-viewer{background:#0d1117;border:1px solid var(--border2);margin-bottom:16px;overflow:hidden;}
+.log-toolbar{background:#161b22;border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:8px;}
+.log-toolbar-title{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;}
+.log-toolbar-source{font-family:var(--mono);font-size:9px;padding:2px 8px;border:1px solid var(--border2);color:var(--text3);}
+.log-body{padding:12px 14px;max-height:220px;overflow-y:auto;}
+.log-entry{font-family:var(--mono);font-size:11px;padding:4px 0;border-bottom:1px solid color-mix(in srgb,var(--text) 3%,transparent);line-height:1.5;display:flex;gap:12px;align-items:flex-start;}
+.log-entry:last-child{border-bottom:none;}
+.log-time{color:var(--text3);flex-shrink:0;min-width:70px;}
+.log-level{flex-shrink:0;min-width:52px;font-weight:700;}
+.log-level.info{color:var(--cyan);}
+.log-level.warn{color:var(--amber);}
+.log-level.crit{color:var(--red);}
+.log-level.alert{color:var(--purple);}
+.log-msg{color:var(--text2);flex:1;line-height:1.45;}
+.log-msg .hl{color:var(--text);}
+.log-msg .bad{color:var(--red);}
+.log-msg .good{color:var(--acc);}
+
+/* SORTING GAME */
+.sort-container{margin-bottom:16px;}
+.sort-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:10px;}
+.sort-bank{background:var(--panel);border:1px solid var(--border2);padding:12px;margin-bottom:12px;min-height:60px;}
+.sort-bank-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.12em;margin-bottom:8px;}
+.sort-timeline{display:grid;gap:6px;}
+.sort-slot{border:1px dashed var(--border2);padding:10px 14px;min-height:44px;position:relative;display:flex;align-items:center;transition:all .2s;}
+.sort-slot.has-card{border-style:solid;border-color:var(--border);}
+.sort-slot.correct-slot{border-color:var(--acc)!important;background:color-mix(in srgb,var(--c-green) 6%,transparent)!important;}
+.sort-slot.wrong-slot{border-color:var(--red)!important;background:color-mix(in srgb,var(--red) 6%,transparent)!important;}
+.slot-num{font-family:var(--mono);font-size:10px;color:var(--text3);margin-right:10px;flex-shrink:0;min-width:24px;}
+.slot-num.correct-slot{color:var(--acc);}
+.slot-content{flex:1;font-size:13px;color:var(--text2);}
+.sort-slot.has-card .slot-content{color:var(--text);}
+.slot-remove{font-size:16px;cursor:pointer;color:var(--text3);padding:0 4px;flex-shrink:0;}
+.slot-remove:hover{color:var(--red);}
+.sort-cards{display:grid;gap:6px;}
+.sort-card{background:var(--bg3);border:1px solid var(--border2);padding:10px 14px;cursor:pointer;font-size:13px;color:var(--text);transition:all .2s;line-height:1.45;}
+.sort-card:hover{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.sort-card.used{opacity:.3;pointer-events:none;}
+.sort-card.selected-card{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 10%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--c-green) 20%,transparent);}
+
+/* FEEDBACK */
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--acc);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.partial{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.feedback.wrong-fb{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--acc);}.fb-lbl.warn{color:var(--amber);}.fb-lbl.no{color:var(--red);}
+
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--c-green) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--acc);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+@media(max-width:600px){.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--c-green);--red:var(--red);--amber:var(--amber);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<style>/*apsim-island*//* LOG VIEWER */
+.log-viewer,.log-toolbar{--bg:#0c111f;--bg2:#101728;--bg3:#151e34;--panel:#131b2f;--panel2:#1a2441;--border:#232f4d;--border2:#344470;--text:#e9effc;--text2:#a3b0d0;--text3:#7384ab;--on-acc:#0b1020;--green:#34d399;--amber:#fbbf24;--warn:#fbbf24;--danger:#f87171;--red:#f87171;--cyan:#22d3ee;--purple:#a78bfa;--c-orange:#fb923c;--c-purple:#c084fc;--c-red:#f87171;--c-sky:#38bdf8;--c-lime:#a3e635;--c-amber:#fbbf24;--c-green:#34d399;--c-teal:#2dd4bf;color-scheme:dark;color:var(--text);--acc:var(--c-green);--red:var(--red);--amber:var(--amber);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 3</div>
+  <div>
+    <div class="hdr-title">Network Attack Timeline</div>
+    <div class="hdr-sub">UNIT 3 · SECURING NETWORKS · LOG ANALYSIS · ATTACK RECONSTRUCTION</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">T1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">T2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">T3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p4"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🔎</span>
+    <div class="intro-title">Attack Timeline Reconstructor</div>
+    <div class="intro-desc">Three sets of scrambled log entries from real attack scenarios. Drag — or click to select — entries and place them in the correct chronological order. Understanding attack sequencing is a core SOC analyst skill and a frequent AP exam FRQ component.</div>
+    <div style="background:var(--panel);border:1px solid var(--border2);padding:14px 18px;max-width:480px;margin:0 auto 24px;text-align:left;">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.15em;margin-bottom:8px;">// HOW TO USE</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.75;">1. Click a card from the bank to select it (green highlight)<br>2. Click an empty slot in the timeline to place it<br>3. Click ✕ on a placed card to move it back<br>4. Submit when your timeline is complete</div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN RECONSTRUCTION</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+
+<div class="screen" id="s4">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">CYBER KILL CHAIN</div><div class="concept-def">Lockheed Martin's 7-stage attack model: Reconnaissance → Weaponization → Delivery → Exploitation → Installation → Command & Control → Actions on Objectives. Every attack follows a version of this sequence.</div></div>
+    <div class="concept-card"><div class="concept-term">RECONNAISSANCE INDICATORS</div><div class="concept-def">Port scans, DNS lookups, OSINT activity, HTTP requests to admin pages. Often the first evidence of an attack. Detecting recon early gives defenders the most time to respond.</div></div>
+    <div class="concept-card"><div class="concept-term">LATERAL MOVEMENT</div><div class="concept-def">After initial compromise, attackers move through the network to reach higher-value targets. Indicators: unusual internal connections, privilege escalation events, access to new systems from a recently compromised host.</div></div>
+    <div class="concept-card"><div class="concept-term">LOG CORRELATION</div><div class="concept-def">Connecting events across multiple log sources (firewall, auth logs, IDS, endpoint) to reconstruct the full attack sequence. No single log tells the whole story — correlation is the analyst's primary skill.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ NEW TIMELINES</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim3_hub.html'">← UNIT 3 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const TIMELINES=[
+  {
+    label:"TIMELINE 01 — BRUTE FORCE TO LATERAL MOVEMENT",
+    attack:"SSH Brute Force → Credential Compromise → Lateral Movement",
+    logs:[
+      {time:"02:14:01",level:"WARN",src:"Firewall",msg:"Inbound SSH connection attempt from 185.220.101.33 → 10.0.0.5:22"},
+      {time:"02:14:02",level:"WARN",src:"auth.log",msg:"Failed password for root from 185.220.101.33 via ssh"},
+      {time:"02:14:03",level:"WARN",src:"auth.log",msg:"Failed password for admin from 185.220.101.33 via ssh"},
+      {time:"02:14:31",level:"CRIT",src:"auth.log",msg:"Accepted password for backup_svc from 185.220.101.33 via ssh"},
+      {time:"02:14:45",level:"ALERT",src:"IDS",msg:"Lateral movement: 10.0.0.5 → 10.0.0.22 (SSH internal, unusual source)"},
+      {time:"02:15:12",level:"CRIT",src:"auth.log",msg:"sudo: backup_svc used privilege escalation on 10.0.0.22"},
+      {time:"02:16:44",level:"ALERT",src:"FIM",msg:"File /etc/passwd modified on 10.0.0.22 — new account added"},
+      {time:"02:18:03",level:"CRIT",src:"NetFlow",msg:"10.0.0.22 → 185.220.101.33: 2.3GB outbound data transfer"}
+    ],
+    cards:[
+      "Attacker sends thousands of failed SSH login attempts using common usernames (root, admin)",
+      "Service account 'backup_svc' successfully authenticates — weak/default password cracked",
+      "Initial external SSH connection attempt to internal server 10.0.0.5",
+      "Data exfiltration: 2.3GB transferred from internal server to attacker IP",
+      "Attacker uses compromised account to SSH laterally to a second internal server (10.0.0.22)",
+      "New backdoor account added to /etc/passwd for persistent access",
+      "Privilege escalation: attacker runs sudo commands on the second server"
+    ],
+    correctOrder:[2,0,1,4,6,5,3],
+    explanation:"The attack sequence: (1) Initial external connection attempt → (2) Brute force many credentials → (3) Successful login with weak service account → (4) Lateral movement to second server → (5) Backdoor account created for persistence → (6) Privilege escalation → (7) Data exfiltration. This follows the Cyber Kill Chain: Delivery → Exploitation → Installation → Actions on Objectives."
+  },
+  {
+    label:"TIMELINE 02 — WEB APPLICATION ATTACK",
+    attack:"Reconnaissance → SQL Injection → Data Exfiltration",
+    logs:[
+      {time:"14:02:11",level:"INFO",src:"Web Log",msg:"GET /robots.txt HTTP/1.1 from 203.0.113.88 — 200 OK"},
+      {time:"14:02:45",level:"WARN",src:"Web Log",msg:"GET /admin/login.php HTTP/1.1 from 203.0.113.88 — 403 Forbidden"},
+      {time:"14:03:22",level:"WARN",src:"WAF",msg:"SQL injection pattern detected: GET /products?id=1 OR 1=1-- from 203.0.113.88"},
+      {time:"14:04:01",level:"CRIT",src:"WAF",msg:"WAF bypass attempt: encoded SQL in User-Agent header — ALLOWED (WAF rule gap)"},
+      {time:"14:04:15",level:"CRIT",src:"DB Log",msg:"Unusual query: SELECT * FROM users — 2,847 rows returned to web app"},
+      {time:"14:04:44",level:"ALERT",src:"NetFlow",msg:"203.0.113.88 ← webserver: 890KB response — abnormally large for /products endpoint"},
+      {time:"14:05:01",level:"ALERT",src:"IDS",msg:"Data exfiltration signature: large outbound HTTP response with structured data pattern"}
+    ],
+    cards:[
+      "WAF SQL injection detection fires — attacker attempts encoded bypass to evade detection",
+      "Attacker probes /robots.txt to understand site structure and discover hidden paths",
+      "Database executes unusual SELECT * query returning thousands of user records",
+      "IDS detects outbound data exfiltration pattern — large structured data response",
+      "SQLi pattern detected in URL parameter — WAF initially catches the attempt",
+      "Attacker probes admin login page — receives 403 Forbidden (page exists but access blocked)",
+      "890KB HTTP response sent to attacker — abnormally large for a product query"
+    ],
+    correctOrder:[1,5,4,0,2,6,3],
+    explanation:"Web attack sequence: (1) robots.txt recon to understand site structure → (2) Admin page probe → (3) SQL injection attempt detected → (4) WAF bypass with encoded payload → (5) Database returns full user table → (6) Abnormally large response → (7) IDS exfiltration alert. The WAF gap (allowing encoded payloads) was the critical failure."
+  },
+  {
+    label:"TIMELINE 03 — PHISHING TO RANSOMWARE",
+    attack:"Phishing Email → Malware Execution → Ransomware Deployment",
+    logs:[
+      {time:"09:14:22",level:"INFO",src:"Email Gateway",msg:"Inbound email accepted: sender spoof@legit-looking.com → employee@company.com — subject: 'Invoice #4892'"},
+      {time:"09:17:44",level:"WARN",src:"Endpoint",msg:"User opened email attachment: Invoice_4892.docx on WORKSTATION-14"},
+      {time:"09:17:51",level:"CRIT",src:"Endpoint",msg:"Macro execution detected: Word document spawned powershell.exe on WORKSTATION-14"},
+      {time:"09:18:03",level:"CRIT",src:"Firewall",msg:"C2 beacon: WORKSTATION-14 → 185.220.55.77:443 (known C2 IP) — ALLOWED"},
+      {time:"09:18:45",level:"ALERT",src:"Endpoint",msg:"Suspicious file writes: WORKSTATION-14 writing .encrypted files to C:\\Users and mapped drives"},
+      {time:"09:19:02",level:"ALERT",src:"SIEM",msg:"Lateral movement: WORKSTATION-14 attempting SMB connections to 47 internal IPs"},
+      {time:"09:19:44",level:"CRIT",src:"Endpoint",msg:"Ransom note created: README_DECRYPT.txt on WORKSTATION-14 and 12 network shares"}
+    ],
+    cards:[
+      "Ransomware encryption begins — files on local drive and mapped network shares encrypted",
+      "Malicious Word document macro spawns PowerShell to download second-stage payload",
+      "Ransomware attempts to spread laterally via SMB to other network hosts",
+      "Phishing email with malicious attachment arrives at email gateway",
+      "Ransom note dropped on local drive and 12 network shares",
+      "Employee opens the malicious email attachment",
+      "Malware beacons to command-and-control server to receive ransomware payload"
+    ],
+    correctOrder:[3,5,1,6,0,2,4],
+    explanation:"Ransomware kill chain: (1) Phishing email delivered → (2) Employee opens attachment → (3) Macro executes PowerShell (initial infection) → (4) C2 beacon to download ransomware → (5) Encryption begins on local files → (6) Lateral movement via SMB → (7) Ransom notes dropped. The critical control failures: email gateway allowed spoofed sender, macro execution was enabled, known C2 IP wasn't blocked at firewall."
+  }
+];
+
+let score=0,results=[],total=TIMELINES.length;
+let selectedCard={},slotContents={},locked=[],_chg=[];
+function refreshLock(idx){const ok=slotContents[idx].every(v=>v!==null);const b=document.getElementById('lock-'+idx);if(b)b.disabled=!ok;const h=document.getElementById('hint-'+idx);if(h)h.textContent=ok?'Timeline complete. You can still rearrange it. Nothing is revealed until you lock in.':'Place every event. You can rearrange until you lock in. Nothing is checked or revealed before that.';}
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildTimeline(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildTimeline(idx){
+  const tl=TIMELINES[idx];
+  selectedCard[idx]=null;
+  slotContents[idx]=new Array(tl.cards.length).fill(null);
+
+  // Shuffle cards for display
+  const shuffled=[...tl.cards.map((c,i)=>({text:c,origIdx:i}))].sort(()=>Math.random()-.5);
+
+  const logLines=tl.logs.map(l=>`<div class="log-entry"><span class="log-time">${l.time}</span><span class="log-level ${l.level.toLowerCase()}">[${l.level}]</span><span class="log-msg"><span class="hl">${l.src}</span>: ${l.msg}</span></div>`).join('');
+  const cardEls=shuffled.map((c,si)=>`<div class="sort-card" id="card-${idx}-${c.origIdx}" onclick="selectCard(${idx},${c.origIdx})">${c.text}</div>`).join('');
+  const slotEls=tl.cards.map((_,i)=>`<div class="sort-slot" id="slot-${idx}-${i}" onclick="placeCard(${idx},${i})"><span class="slot-num">${i+1}.</span><span class="slot-content" id="slotcontent-${idx}-${i}">Click a card below, then click here to place it</span></div>`).join('');
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// TIMELINE ${idx+1} OF ${total}</div>
+    <div class="sec-title">Reconstruct the Attack Timeline</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Timeline ${idx+1}/${total}</span>
+    </div>
+    <div style="background:var(--panel);border:1px solid var(--border2);padding:12px 16px;margin-bottom:14px;font-family:var(--mono);font-size:11px;color:var(--text3);">
+      INCIDENT: <span id="atk-${idx}" style="color:var(--text)">Attack type is revealed after you lock in your timeline.</span>
+    </div>
+    <div class="log-viewer">
+      <div class="log-toolbar">
+        <span class="log-toolbar-title">RAW LOG EVIDENCE</span>
+        <span class="log-toolbar-source">MULTI-SOURCE CORRELATION</span>
+      </div>
+      <div class="log-body">${logLines}</div>
+    </div>
+    <div class="sort-container">
+      <div class="sort-label">// STEP 1: CLICK A CARD TO SELECT IT</div>
+      <div class="sort-bank">
+        <div class="sort-bank-label">AVAILABLE EVENTS (SHUFFLED)</div>
+        <div class="sort-cards" id="cards-bank-${idx}">${cardEls}</div>
+      </div>
+      <div class="sort-label">// STEP 2: CLICK A SLOT TO PLACE SELECTED CARD</div>
+      <div class="sort-timeline" id="timeline-${idx}">${slotEls}</div>
+    </div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav" id="lockbar-${idx}">
+      <button class="btn btn-ghost" onclick="clearTimeline(${idx})">CLEAR ALL</button>
+      <div class="lock-row" style="margin:0;"><span class="lock-hint" id="hint-${idx}">Place every event. You can rearrange until you lock in. Nothing is checked or revealed before that.</span><button class="btn btn-acc" id="lock-${idx}" disabled onclick="submitTimeline(${idx})">🔒 LOCK IN TIMELINE</button></div>
+    </div>`;
+}
+
+function selectCard(idx,cardIdx){
+  // Deselect previous
+  if(selectedCard[idx]!==null){
+    const prev=document.getElementById(`card-${idx}-${selectedCard[idx]}`);
+    if(prev)prev.classList.remove('selected-card');
+  }
+  const el=document.getElementById(`card-${idx}-${cardIdx}`);
+  if(!el||el.classList.contains('used'))return;
+  selectedCard[idx]=cardIdx;
+  el.classList.add('selected-card');
+}
+
+function placeCard(idx,slotIdx){
+  if(selectedCard[idx]===null)return;
+  const slot=document.getElementById(`slot-${idx}-${slotIdx}`);
+  if(!slot)return;
+  // If slot already has content, return the card to the bank
+  if(locked[idx])return;
+  if(slotContents[idx][slotIdx]!==null){
+    _chg[idx]=(_chg[idx]||0)+1;
+    const oldCardIdx=slotContents[idx][slotIdx];
+    const oldCard=document.getElementById(`card-${idx}-${oldCardIdx}`);
+    if(oldCard)oldCard.classList.remove('used');
+    slotContents[idx][slotIdx]=null;
+  }
+  const cardEl=document.getElementById(`card-${idx}-${selectedCard[idx]}`);
+  const contentEl=document.getElementById(`slotcontent-${idx}-${slotIdx}`);
+  const tl=TIMELINES[idx];
+  slotContents[idx][slotIdx]=selectedCard[idx];
+  contentEl.textContent=tl.cards[selectedCard[idx]];
+  cardEl.classList.add('used');
+  cardEl.classList.remove('selected-card');
+  slot.classList.add('has-card');
+  slot.innerHTML=`<span class="slot-num">${slotIdx+1}.</span><span class="slot-content">${tl.cards[selectedCard[idx]]}</span><span class="slot-remove" onclick="removeCard(${idx},${slotIdx},event)">✕</span>`;
+  selectedCard[idx]=null;refreshLock(idx);
+}
+
+function removeCard(idx,slotIdx,e){
+  e.stopPropagation();
+  if(locked[idx])return;
+  _chg[idx]=(_chg[idx]||0)+1;
+  const cardIdx=slotContents[idx][slotIdx];
+  const cardEl=document.getElementById(`card-${idx}-${cardIdx}`);
+  if(cardEl){cardEl.classList.remove('used','selected-card');}
+  slotContents[idx][slotIdx]=null;
+  const slot=document.getElementById(`slot-${idx}-${slotIdx}`);
+  slot.classList.remove('has-card');
+  slot.innerHTML=`<span class="slot-num">${slotIdx+1}.</span><span class="slot-content" id="slotcontent-${idx}-${slotIdx}">Click a card below, then click here to place it</span>`;
+  slot.onclick=()=>placeCard(idx,slotIdx);
+  refreshLock(idx);
+}
+
+function clearTimeline(idx){
+  if(locked[idx])return;
+  const tl=TIMELINES[idx];
+  if(slotContents[idx].some(v=>v!==null))_chg[idx]=(_chg[idx]||0)+1;
+  tl.cards.forEach((_,ci)=>{
+    const cardEl=document.getElementById(`card-${idx}-${ci}`);
+    if(cardEl)cardEl.classList.remove('used','selected-card');
+  });
+  slotContents[idx]=new Array(tl.cards.length).fill(null);
+  selectedCard[idx]=null;
+  tl.cards.forEach((_,si)=>{
+    const slot=document.getElementById(`slot-${idx}-${si}`);
+    slot.classList.remove('has-card','correct-slot','wrong-slot');
+    slot.innerHTML=`<span class="slot-num">${si+1}.</span><span class="slot-content" id="slotcontent-${idx}-${si}">Click a card below, then click here to place it</span>`;
+    slot.onclick=()=>placeCard(idx,si);
+  });
+  refreshLock(idx);
+}
+
+function submitTimeline(idx){
+  const tl=TIMELINES[idx];
+  if(locked[idx]||!slotContents[idx].every(v=>v!==null))return;
+  locked[idx]=true;
+  document.getElementById('lockbar-'+idx).style.display='none';
+  document.getElementById('atk-'+idx).textContent=tl.attack;
+  let correct=0;
+  tl.correctOrder.forEach((cardIdx,slotIdx)=>{
+    const slot=document.getElementById(`slot-${idx}-${slotIdx}`);
+    if(slotContents[idx][slotIdx]===cardIdx){
+      correct++;
+      slot.classList.add('correct-slot');
+    } else {
+      slot.classList.add('wrong-slot');
+    }
+  });
+  // Lock all slots
+  document.querySelectorAll(`[id^="slot-${idx}-"]`).forEach(s=>{s.style.pointerEvents='none';});
+  document.querySelectorAll(`[id^="card-${idx}-"]`).forEach(c=>{c.style.pointerEvents='none';});
+
+  const pct=Math.round((correct/tl.cards.length)*100);
+  const pts=Math.round((correct/tl.cards.length)*25);
+  score+=pts;
+  results[idx]={correct,total:tl.cards.length,pts,order:slotContents[idx].map(ci=>tl.cards[ci])};
+  document.getElementById('score-disp').textContent='SCORE: '+Math.round(score)+' pts';
+  const fb=document.getElementById('fb-'+idx);
+  const cls=pct>=80?'correct':pct>=50?'partial':'wrong-fb';
+  const lbl=pct>=80?['ok','// EXCELLENT RECONSTRUCTION']:pct>=50?['warn','// PARTIAL — REVIEW CORRECT ORDER']:['no','// NEEDS WORK — REVIEW THE LOG SEQUENCE'];
+  fb.className='feedback show '+cls;
+  fb.innerHTML=`<div class="fb-lbl ${lbl[0]}">LOCKED IN — ${lbl[1].replace('// ','')} (${correct}/${tl.cards.length} STEPS CORRECT)</div>${tl.explanation}<br><br><strong>Correct order:</strong><br>${tl.correctOrder.map((ci,k)=>(k+1)+'. '+tl.cards[ci]).join('<br>')}<br><br><em style="color:var(--text3);font-size:12px;">Green slots = correct position. Red slots = wrong position.</em>`;
+
+  const nextBtn=document.createElement('div');
+  nextBtn.className='nav';
+  nextBtn.style.cssText='display:flex;justify-content:flex-end;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);';
+  nextBtn.innerHTML=`<button class="btn btn-acc" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT TIMELINE →'}</button>`;
+  fb.after(nextBtn);
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*25))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Attack Timeline Expert 🔎','You correctly sequenced all three attack timelines. This is exactly the kind of multi-source log correlation that appears in the AP exam FRQ.'],mid:['Good Analysis 🎯','You reconstructed most of the sequence correctly. Review how reconnaissance always precedes exploitation, and how lateral movement follows initial compromise.'],low:['Keep Building 📚','Focus on the Cyber Kill Chain: Recon → Delivery → Exploitation → Installation → C2 → Actions. Every network attack follows a version of this sequence.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=TIMELINES.map((tl,i)=>{
+    const r=results[i]||{correct:0,total:tl.cards.length,pts:0};
+    return `<div class="b-row"><div class="b-check">${r.correct===r.total?'✅':'⚠️'}</div><div class="b-text"><strong>${tl.label.split('—')[1].trim()}</strong> — ${r.correct}/${r.total} steps correct</div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];selectedCard={};slotContents={};locked=[];_chg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:3,sim:'tl',screenId:'s4',score:score,max:total*25,items:TIMELINES.map(function(tl,i){var r=results[i]||{correct:0,total:tl.cards.length,pts:0,order:[]};return {label:tl.label.split('—')[1].trim(),result:r.correct===r.total?'correct':(r.correct>0?'partial':'incorrect'),pts:r.pts,max:25,response:r.correct+'/'+r.total+' in place. Order: '+(r.order||[]).map(function(s,k){return (k+1)+') '+s;}).join(' '),expected:tl.correctOrder.map(function(ci,k){return (k+1)+') '+tl.cards[ci];}).join(' '),changes:_chg[i]||0};})});
+};
+const _apRestart=restart;
+restart=function(){locked=[];_chg=[];APSim.start(3,'tl');_apRestart();};
+APSim.start(3,'tl');
+
+goTo(0);
+</script>
+</body>
+</html>

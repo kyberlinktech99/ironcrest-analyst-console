@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="5" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim5_certs">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Certificate Trust Chain — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#c084fc;--red:#ef4444;--green:#22c55e;--amber:#f59e0b;--cyan:#00d4ff;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-purple) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-purple) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--c-purple) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-purple) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-purple) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+
+/* CERT CARD */
+.cert-card{background:var(--panel);border:2px solid var(--border);padding:0;margin-bottom:8px;overflow:hidden;transition:all .2s;cursor:pointer;user-select:none;}
+.cert-card:hover{border-color:var(--acc);}
+.cert-card.selected{border-color:var(--acc);box-shadow:0 0 12px color-mix(in srgb,var(--c-purple) 25%,transparent);}
+.cert-card.placed{opacity:.35;pointer-events:none;}
+.cert-card.correct-slot{border-color:var(--green)!important;}
+.cert-card.wrong-slot{border-color:var(--red)!important;}
+.cert-header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);}
+.cert-icon{font-size:20px;flex-shrink:0;}
+.cert-cn{font-family:var(--mono);font-size:12px;color:var(--text);font-weight:700;}
+.cert-type-badge{font-family:var(--mono);font-size:9px;padding:2px 8px;margin-left:auto;flex-shrink:0;}
+.cert-type-badge.root{background:color-mix(in srgb,var(--c-purple) 15%,transparent);color:var(--acc);}
+.cert-type-badge.inter{background:color-mix(in srgb,var(--cyan) 15%,transparent);color:var(--cyan);}
+.cert-type-badge.end{background:color-mix(in srgb,var(--c-green) 15%,transparent);color:var(--green);}
+.cert-body{padding:10px 16px;display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.cert-field{font-family:var(--mono);font-size:10px;}
+.cf-label{color:var(--text3);margin-bottom:1px;}
+.cf-val{color:var(--text2);}
+.cf-val.root-val{color:var(--acc);}
+.cf-val.inter-val{color:var(--cyan);}
+.cf-val.end-val{color:var(--green);}
+
+/* CHAIN BUILDER */
+.chain-slots{display:grid;gap:6px;margin-bottom:16px;}
+.chain-slot{border:2px dashed var(--border2);padding:12px 16px;min-height:52px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;}
+.chain-slot:hover{border-color:var(--acc);background:color-mix(in srgb,var(--c-purple) 4%,transparent);}
+.chain-slot.has-cert{border-style:solid;border-color:var(--border);}
+.chain-slot.verified{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 5%,transparent)!important;}
+.chain-slot.invalid{border-color:var(--red)!important;background:color-mix(in srgb,var(--red) 5%,transparent)!important;}
+.slot-pos{font-family:var(--mono);font-size:10px;color:var(--text3);min-width:80px;flex-shrink:0;}
+.slot-pos.top{color:var(--acc);}
+.slot-content{flex:1;font-family:var(--mono);font-size:11px;color:var(--text2);}
+.chain-slot.has-cert .slot-content{color:var(--text);}
+.slot-remove{color:var(--text3);cursor:pointer;padding:0 4px;}
+.slot-remove:hover{color:var(--red);}
+.arrow-down{text-align:center;font-size:18px;color:var(--text3);margin:2px 0;}
+
+/* BROWSER SIM */
+.browser-sim{background:#1a1a2e;border:1px solid var(--border2);overflow:hidden;margin-bottom:14px;}
+.browser-bar{background:#252540;padding:8px 14px;display:flex;align-items:center;gap:8px;}
+.browser-lock{font-size:14px;}
+.browser-url{flex:1;font-family:var(--mono);font-size:11px;padding:4px 10px;background:#1a1a2e;border:1px solid var(--border);color:var(--text2);}
+.browser-content{padding:20px;font-size:13px;color:var(--text2);min-height:60px;line-height:1.6;}
+.browser-warning{background:color-mix(in srgb,var(--red) 8%,transparent);border-top:1px solid color-mix(in srgb,var(--red) 20%,transparent);padding:14px 20px;font-size:12px;color:var(--red);display:flex;gap:10px;align-items:flex-start;}
+.browser-warning-icon{font-size:18px;flex-shrink:0;}
+
+/* QUESTIONS */
+.q-box{background:var(--panel);border:1px solid var(--border2);padding:16px 18px;margin-bottom:12px;}
+.q-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;}
+.q-text{font-size:14px;line-height:1.7;margin-bottom:12px;}
+.q-text strong{color:var(--acc);}
+.choices{display:grid;gap:8px;}
+.choice-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 15px;cursor:pointer;text-align:left;transition:all .2s;}
+.choice-btn:hover:not(.locked){border-color:var(--acc);background:color-mix(in srgb,var(--c-purple) 5%,transparent);}
+.choice-btn.correct-ans{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.choice-btn.wrong-ans{border-color:var(--red)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.choice-btn.locked{pointer-events:none;opacity:.5;}
+.choice-btn.correct-ans,.choice-btn.wrong-ans{opacity:1!important;}
+.cl{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px;display:block;}
+.ct{font-size:13px;color:var(--text);line-height:1.45;}
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:10px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.partial{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.feedback.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}.fb-lbl.warn{color:var(--amber);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--c-purple) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+.cert-bank{display:grid;gap:6px;}
+.instruction{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-bottom:10px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);}
+@media(max-width:600px){.concept-grid{grid-template-columns:1fr;}.cert-body{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--c-purple);--red:var(--red);--green:var(--c-green);--amber:var(--amber);--cyan:var(--cyan);}</style>
+<style>/*apsim-island*//* BROWSER SIM */
+.browser-sim,.browser-bar,.browser-url{--bg:#0c111f;--bg2:#101728;--bg3:#151e34;--panel:#131b2f;--panel2:#1a2441;--border:#232f4d;--border2:#344470;--text:#e9effc;--text2:#a3b0d0;--text3:#7384ab;--on-acc:#0b1020;--green:#34d399;--amber:#fbbf24;--warn:#fbbf24;--danger:#f87171;--red:#f87171;--cyan:#22d3ee;--purple:#a78bfa;--c-orange:#fb923c;--c-purple:#c084fc;--c-red:#f87171;--c-sky:#38bdf8;--c-lime:#a3e635;--c-amber:#fbbf24;--c-green:#34d399;--c-teal:#2dd4bf;color-scheme:dark;color:var(--text);--acc:var(--c-purple);--red:var(--red);--green:var(--c-green);--amber:var(--amber);--cyan:var(--cyan);}</style>
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 5</div>
+  <div>
+    <div class="hdr-title">Certificate Trust Chain Builder</div>
+    <div class="hdr-sub">UNIT 5 · SECURING APPS & DATA · PKI · TLS · CERTIFICATE AUTHORITY</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">S1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">S2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">S3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p4"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🔗</span>
+    <div class="intro-title">Certificate Trust Chain Builder</div>
+    <div class="intro-desc">Every HTTPS connection depends on a chain of trust from a Root CA to the website you're visiting. Three scenarios — arrange certificates in the correct chain order, then answer questions about what breaks trust and why browsers show warnings.</div>
+    <div style="display:flex;flex-direction:column;gap:4px;max-width:440px;margin:0 auto 24px;">
+      <div style="padding:12px 16px;border:2px solid var(--acc);background:color-mix(in srgb,var(--c-purple) 8%,transparent);text-align:center;"><span style="font-family:var(--mono);font-size:10px;color:var(--acc);">ROOT CA</span><div style="font-size:12px;color:var(--text2);margin-top:3px;">Self-signed · Pre-installed in OS/browser · Trusted by default</div></div>
+      <div style="text-align:center;font-size:14px;color:var(--text3);">↓ signs</div>
+      <div style="padding:12px 16px;border:2px solid var(--cyan);background:color-mix(in srgb,var(--cyan) 6%,transparent);text-align:center;"><span style="font-family:var(--mono);font-size:10px;color:var(--cyan);">INTERMEDIATE CA</span><div style="font-size:12px;color:var(--text2);margin-top:3px;">Signed by Root · Signs end-entity certs · Insulates Root CA</div></div>
+      <div style="text-align:center;font-size:14px;color:var(--text3);">↓ signs</div>
+      <div style="padding:12px 16px;border:2px solid var(--green);background:color-mix(in srgb,var(--c-green) 6%,transparent);text-align:center;"><span style="font-family:var(--mono);font-size:10px;color:var(--green);">END-ENTITY CERT</span><div style="font-size:12px;color:var(--text2);margin-top:3px;">Signed by Intermediate · Issued to website/server</div></div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BUILD CHAINS</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+
+<div class="screen" id="s4">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">CHAIN OF TRUST</div><div class="concept-def">Each certificate is signed by the one above it. Root CA → Intermediate CA → End-entity cert. Browsers trust Root CAs pre-installed in the OS. If any link in the chain is broken (expired, revoked, self-signed), the browser warns the user.</div></div>
+    <div class="concept-card"><div class="concept-term">WHY INTERMEDIATE CAs?</div><div class="concept-def">Root CAs are kept offline for security. If an Intermediate CA is compromised, the Root CA can revoke it without affecting the entire trust ecosystem. This separation limits the blast radius of a CA compromise.</div></div>
+    <div class="concept-card"><div class="concept-term">CERTIFICATE REVOCATION</div><div class="concept-def">CRL (Certificate Revocation List) and OCSP (Online Certificate Status Protocol) allow CAs to mark certificates as untrusted before they expire — e.g., if a private key is compromised. Browsers check revocation status during TLS handshakes.</div></div>
+    <div class="concept-card"><div class="concept-term">SELF-SIGNED CERTIFICATES</div><div class="concept-def">A self-signed certificate is signed by itself — no CA verifies the identity. Browsers show a warning because there's no third-party trust anchor. Fine for internal/dev use, never acceptable for public-facing sites.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ TRY AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim5_hub.html'">← UNIT 5 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const SCENARIOS=[
+  {
+    label:"SCENARIO 01 — VALID HTTPS CHAIN",
+    browserUrl:"https://www.amazon.com",
+    browserLock:"🔒",
+    browserStatus:"secure",
+    browserContent:"Welcome to Amazon! Your connection to this site is secure.",
+    browserWarning:null,
+    certs:[
+      {id:"root1",cn:"Amazon Root CA 1",issuedBy:"Amazon Root CA 1 (self-signed)",validTo:"2038-01-16",type:"root",icon:"🏛️",keyUsage:"Certificate Signing, CRL Signing"},
+      {id:"end1",cn:"www.amazon.com",issuedBy:"Amazon RSA 2048 M03",validTo:"2025-08-01",type:"end",icon:"🌐",keyUsage:"Digital Signature, Key Encipherment"},
+      {id:"inter1",cn:"Amazon RSA 2048 M03",issuedBy:"Amazon Root CA 1",validTo:"2030-10-18",type:"inter",icon:"🔗",keyUsage:"Certificate Signing, CRL Signing"}
+    ],
+    correctOrder:["root1","inter1","end1"],
+    slotLabels:["ROOT CA (top of chain — trusted anchor)","INTERMEDIATE CA (signed by root)","END-ENTITY (website certificate)"],
+    q:{
+      text:"After verifying this certificate chain, your browser shows a green padlock. What does this confirm about your connection to amazon.com?",
+      choices:[
+        {l:"A",t:"The website is safe and cannot contain malware or scams"},
+        {l:"B",t:"The connection is encrypted (TLS) and the certificate was issued by a trusted CA to the domain amazon.com"},
+        {l:"C",t:"Amazon's servers are physically secure and have no vulnerabilities"},
+        {l:"D",t:"Your personal data is permanently protected and cannot be shared with third parties"}
+      ],
+      answer:"B",
+      explain:"The padlock means two things: (1) the connection is encrypted — eavesdroppers can't read the traffic, and (2) the certificate was verified as issued to amazon.com by a CA in the browser's trusted store. It does NOT mean the site is free of malware, legally trustworthy, or privacy-respecting. Phishing sites can get TLS certificates too — HTTPS means encrypted, not safe."
+    }
+  },
+  {
+    label:"SCENARIO 02 — EXPIRED CERTIFICATE",
+    browserUrl:"https://old-site.example.com",
+    browserLock:"⚠️",
+    browserStatus:"warning",
+    browserContent:"",
+    browserWarning:"Your connection is not private. Attackers might be trying to steal your information from old-site.example.com (for example, passwords, messages, or credit cards).\n\nNET::ERR_CERT_DATE_INVALID",
+    certs:[
+      {id:"root2",cn:"DigiCert Global Root CA",issuedBy:"DigiCert Global Root CA (self-signed)",validTo:"2031-11-10",type:"root",icon:"🏛️",keyUsage:"Certificate Signing, CRL Signing"},
+      {id:"end2",cn:"old-site.example.com",issuedBy:"DigiCert TLS RSA SHA256 2020 CA1",validTo:"2022-03-15 ⚠️ EXPIRED",type:"end",icon:"💀",keyUsage:"Digital Signature, Key Encipherment"},
+      {id:"inter2",cn:"DigiCert TLS RSA SHA256 2020 CA1",issuedBy:"DigiCert Global Root CA",validTo:"2031-04-13",type:"inter",icon:"🔗",keyUsage:"Certificate Signing, CRL Signing"}
+    ],
+    correctOrder:["root2","inter2","end2"],
+    slotLabels:["ROOT CA (top of chain — trusted anchor)","INTERMEDIATE CA (signed by root)","END-ENTITY (website certificate — check expiry)"],
+    q:{
+      text:"The browser shows 'NET::ERR_CERT_DATE_INVALID'. The chain is valid but the end-entity certificate expired in 2022. What risk does an expired certificate create?",
+      choices:[
+        {l:"A",t:"The connection is no longer encrypted — expired certificates disable TLS"},
+        {l:"B",t:"The certificate can no longer be verified as current — it may have been compromised after expiry and revoked, but browsers can't verify its current status"},
+        {l:"C",t:"Expired certificates are automatically revoked, so the site's private key has been deleted"},
+        {l:"D",t:"An expired certificate means the website is definitely operated by a malicious actor"}
+      ],
+      answer:"B",
+      explain:"An expired certificate creates uncertainty — the CA validated the domain at issuance, but the certificate is past its validity window. Browsers can't confirm: (1) whether the private key has been compromised since, (2) whether the domain ownership has changed. The connection may still be encrypted, but without current validation, the browser can't confirm the site is who it claims to be. The site admin needs to renew their certificate."
+    }
+  },
+  {
+    label:"SCENARIO 03 — SELF-SIGNED CERTIFICATE",
+    browserUrl:"https://dev-server.internal",
+    browserLock:"🔴",
+    browserStatus:"warning",
+    browserContent:"",
+    browserWarning:"Attackers might be trying to steal your information from dev-server.internal.\n\nThis server could not prove that it is dev-server.internal; its security certificate is not trusted by your computer's operating system. This may be caused by a misconfiguration or an attacker intercepting your connection.\n\nNET::ERR_CERT_AUTHORITY_INVALID",
+    certs:[
+      {id:"self1",cn:"dev-server.internal",issuedBy:"dev-server.internal (SELF-SIGNED)",validTo:"2026-01-01",type:"end",icon:"🔴",keyUsage:"Digital Signature, Key Encipherment"},
+      {id:"placeholder2",cn:"[NO INTERMEDIATE CA]",issuedBy:"—",validTo:"—",type:"inter",icon:"❌",keyUsage:"—"},
+      {id:"placeholder3",cn:"[NO ROOT CA IN TRUST STORE]",issuedBy:"—",validTo:"—",type:"root",icon:"❌",keyUsage:"—"}
+    ],
+    correctOrder:["placeholder3","placeholder2","self1"],
+    slotLabels:["ROOT CA (not present — no trust anchor)","INTERMEDIATE CA (not present)","END-ENTITY (self-signed — no CA verification)"],
+    q:{
+      text:"A self-signed certificate causes the browser to show ERR_CERT_AUTHORITY_INVALID. In what scenario is using a self-signed certificate acceptable?",
+      choices:[
+        {l:"A",t:"Never — self-signed certificates are always a security risk and should be replaced with commercial certificates"},
+        {l:"B",t:"Internal development and testing environments where the risk is understood, users manually add the cert to their trust store, and the server is not public-facing"},
+        {l:"C",t:"Any internal network where no external users can access the server"},
+        {l:"D",t:"When the organization cannot afford a commercial certificate authority"}
+      ],
+      answer:"B",
+      explain:"Self-signed certificates are acceptable for internal development, test environments, and lab setups where: (1) users know and accept the risk, (2) they manually import the cert into their browser's trust store, (3) the service is not public-facing. For any public service, free CAs like Let's Encrypt provide valid TLS certificates at no cost — cost is no longer a justification for self-signed certs on production systems."
+    }
+  }
+];
+
+let score=0,results=[],total=SCENARIOS.length;
+let selectedCert={},chainSlots={},cLocked=[],_chg=[],qSel=[],qLocked=[],_qchg=[];
+function refreshLock(idx){const ok=chainSlots[idx].every(v=>v);const b=document.getElementById('lock-'+idx);if(b)b.disabled=!ok;const h=document.getElementById('hint-'+idx);if(h)h.textContent=ok?'Chain complete. You can still rearrange it. Nothing is revealed until you lock in.':'Fill all three slots. You can rearrange until you lock in. Nothing is checked or revealed before that.';}
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildScenario(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildScenario(idx){
+  const sc=SCENARIOS[idx];
+  selectedCert[idx]=null;
+  chainSlots[idx]=[null,null,null];
+  const shuffled=[...sc.certs].sort(()=>Math.random()-.5);
+  const certCards=shuffled.map(c=>`<div class="cert-card" id="cert-${idx}-${c.id}" onclick="selectCert(${idx},'${c.id}')">
+    <div class="cert-header">
+      <span class="cert-icon">${c.icon}</span>
+      <div>
+        <div class="cert-cn">${c.cn}</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);">Issued by: ${c.issuedBy}</div>
+      </div>
+      <span class="cert-type-badge" data-type="${c.type}" style="display:none"></span>
+    </div>
+    <div class="cert-body">
+      <div class="cert-field"><div class="cf-label">Valid To</div><div class="cf-val ${c.validTo.includes('⚠️')?'root-val':''}">${c.validTo}</div></div>
+      <div class="cert-field"><div class="cf-label">Key Usage</div><div class="cf-val">${c.keyUsage}</div></div>
+    </div>
+  </div>`).join('');
+
+  const slots=sc.slotLabels.map((lbl,i)=>`
+    <div>
+      <div class="chain-slot" id="cslot-${idx}-${i}" onclick="placeInChain(${idx},${i})">
+        <span class="slot-pos ${i===0?'top':''}">${i===0?'TOP':i===1?'MIDDLE':'BOTTOM'}</span>
+        <span class="slot-content" style="color:var(--text3);font-style:italic;">${lbl}</span>
+      </div>
+      ${i<2?`<div class="arrow-down">↓ signs ↓</div>`:''}
+    </div>`).join('');
+
+  const bw=sc.browserWarning?`<div class="browser-warning"><span class="browser-warning-icon">⚠️</span><div style="white-space:pre-line;">${sc.browserWarning}</div></div>`:'';
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div style="font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;">// SCENARIO ${idx+1} OF ${total}</div>
+    <div style="font-family:var(--display);font-size:24px;font-weight:700;margin-bottom:14px;">${sc.label}</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Scenario ${idx+1}/${total}</span>
+    </div>
+    <div class="browser-sim">
+      <div class="browser-bar">
+        <span class="browser-lock">${sc.browserLock}</span>
+        <input class="browser-url" value="${sc.browserUrl}" readonly>
+      </div>
+      ${sc.browserContent?`<div class="browser-content">${sc.browserContent}</div>`:''}
+      ${bw}
+    </div>
+    <div class="instruction">STEP 1: Click a certificate card to select it · STEP 2: Click the correct chain slot · Build from ROOT (top) to END-ENTITY (bottom)</div>
+    <div class="cert-bank" id="cbank-${idx}">${certCards}</div>
+    <div style="margin-top:14px;font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:8px;">// CERTIFICATE CHAIN — ARRANGE TOP TO BOTTOM</div>
+    <div class="chain-slots">${slots}</div>
+    <div class="feedback" id="chain-fb-${idx}"></div>
+    <div id="q-section-${idx}" style="display:none;"></div>
+    <div class="nav" id="lockbar-${idx}">
+      <button class="btn btn-ghost" onclick="clearChain(${idx})">CLEAR</button>
+      <div class="lock-row" style="margin:0;"><span class="lock-hint" id="hint-${idx}">Fill all three slots. You can rearrange until you lock in. Nothing is checked or revealed before that.</span><button class="btn btn-acc" id="lock-${idx}" disabled onclick="checkChain(${idx})">🔒 LOCK IN CHAIN</button></div>
+    </div>`;
+}
+
+function selectCert(idx,certId){
+  if(document.getElementById(`cert-${idx}-${certId}`)?.classList.contains('placed'))return;
+  if(selectedCert[idx]){
+    document.getElementById(`cert-${idx}-${selectedCert[idx]}`)?.classList.remove('selected');
+  }
+  selectedCert[idx]=certId;
+  document.getElementById(`cert-${idx}-${certId}`)?.classList.add('selected');
+}
+
+function placeInChain(idx,slotIdx){
+  if(cLocked[idx]||!selectedCert[idx])return;
+  const cid=selectedCert[idx];
+  // Remove from current slot if placed
+  const prev=chainSlots[idx].indexOf(cid);
+  if(prev!==-1){
+    _chg[idx]=(_chg[idx]||0)+1;
+    chainSlots[idx][prev]=null;
+    const ps=document.getElementById(`cslot-${idx}-${prev}`);
+    ps.classList.remove('has-cert');
+    const lbl=SCENARIOS[idx].slotLabels[prev];
+    ps.innerHTML=`<span class="slot-pos ${prev===0?'top':''}">${prev===0?'TOP':prev===1?'MIDDLE':'BOTTOM'}</span><span class="slot-content" style="color:var(--text3);font-style:italic;">${lbl}</span>`;
+    ps.onclick=()=>placeInChain(idx,prev);
+  }
+  // Remove whatever was in this slot
+  if(chainSlots[idx][slotIdx]){
+    _chg[idx]=(_chg[idx]||0)+1;
+    const old=chainSlots[idx][slotIdx];
+    document.getElementById(`cert-${idx}-${old}`)?.classList.remove('placed');
+  }
+  chainSlots[idx][slotIdx]=cid;
+  const cert=SCENARIOS[idx].certs.find(c=>c.id===cid);
+  const slot=document.getElementById(`cslot-${idx}-${slotIdx}`);
+  slot.classList.add('has-cert');
+  slot.innerHTML=`<span class="slot-pos ${slotIdx===0?'top':''}">${slotIdx===0?'TOP':slotIdx===1?'MIDDLE':'BOTTOM'}</span><span class="slot-content">${cert.icon} ${cert.cn}</span><span class="slot-remove" onclick="removeFromChain(${idx},${slotIdx},event)">✕</span>`;
+  document.getElementById(`cert-${idx}-${cid}`)?.classList.add('placed');
+  document.getElementById(`cert-${idx}-${cid}`)?.classList.remove('selected');
+  selectedCert[idx]=null;refreshLock(idx);
+}
+
+function removeFromChain(idx,slotIdx,e){
+  e.stopPropagation();
+  if(cLocked[idx])return;
+  _chg[idx]=(_chg[idx]||0)+1;
+  const cid=chainSlots[idx][slotIdx];
+  chainSlots[idx][slotIdx]=null;
+  document.getElementById(`cert-${idx}-${cid}`)?.classList.remove('placed','selected');
+  const slot=document.getElementById(`cslot-${idx}-${slotIdx}`);
+  slot.classList.remove('has-cert');
+  const lbl=SCENARIOS[idx].slotLabels[slotIdx];
+  slot.innerHTML=`<span class="slot-pos ${slotIdx===0?'top':''}">${slotIdx===0?'TOP':slotIdx===1?'MIDDLE':'BOTTOM'}</span><span class="slot-content" style="color:var(--text3);font-style:italic;">${lbl}</span>`;
+  slot.onclick=()=>placeInChain(idx,slotIdx);
+  refreshLock(idx);
+}
+
+function clearChain(idx){
+  if(cLocked[idx])return;
+  if(chainSlots[idx].some(v=>v))_chg[idx]=(_chg[idx]||0)+1;
+  chainSlots[idx]=[null,null,null];
+  selectedCert[idx]=null;
+  SCENARIOS[idx].certs.forEach(c=>{
+    document.getElementById(`cert-${idx}-${c.id}`)?.classList.remove('placed','selected');
+  });
+  SCENARIOS[idx].slotLabels.forEach((lbl,i)=>{
+    const slot=document.getElementById(`cslot-${idx}-${i}`);
+    slot.classList.remove('has-cert','verified','invalid');
+    slot.innerHTML=`<span class="slot-pos ${i===0?'top':''}">${i===0?'TOP':i===1?'MIDDLE':'BOTTOM'}</span><span class="slot-content" style="color:var(--text3);font-style:italic;">${lbl}</span>`;
+    slot.onclick=()=>placeInChain(idx,i);
+  });
+  refreshLock(idx);
+}
+
+function checkChain(idx){
+  const sc=SCENARIOS[idx];
+  if(cLocked[idx]||!chainSlots[idx].every(v=>v))return;
+  cLocked[idx]=true;
+  document.getElementById('lockbar-'+idx).style.display='none';
+  document.querySelectorAll('#s'+(idx+1)+' .cert-type-badge').forEach(b=>{b.className='cert-type-badge '+b.dataset.type;b.textContent=b.dataset.type.toUpperCase();b.style.display='';});
+  let correct=0;
+  sc.correctOrder.forEach((certId,i)=>{
+    const slot=document.getElementById(`cslot-${idx}-${i}`);
+    if(chainSlots[idx][i]===certId){correct++;slot.classList.add('verified');}
+    else slot.classList.add('invalid');
+  });
+  document.querySelectorAll(`[id^="cert-${idx}-"]`).forEach(c=>c.style.pointerEvents='none');
+  document.querySelectorAll(`[id^="cslot-${idx}-"]`).forEach(s=>s.style.pointerEvents='none');
+
+  const pct=Math.round((correct/3)*100);
+  const pts=Math.round((correct/3)*15);
+  score+=pts;results[idx]={chainCorrect:correct,pts,qCorrect:false,order:chainSlots[idx].map(cid=>sc.certs.find(c=>c.id===cid).cn)};
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  const fb=document.getElementById(`chain-fb-${idx}`);
+  fb.className='feedback show '+(pct===100?'correct':pct>=66?'partial':'wrong');
+  fb.innerHTML=`<div class="fb-lbl ${pct===100?'ok':pct>=66?'warn':'no'}">LOCKED IN — ${pct===100?'CHAIN VERIFIED':'PARTIAL'} (${correct}/3 POSITIONS CORRECT)</div>${pct===100?'':'<strong>Correct chain (top to bottom):</strong><br>'+sc.correctOrder.map((cid,k)=>(k+1)+'. '+sc.certs.find(c=>c.id===cid).cn).join('<br>')}`;
+  document.getElementById(`q-section-${idx}`).style.display='block';
+  document.getElementById(`q-section-${idx}`).innerHTML=`<div class="q-box" style="margin-top:12px;">
+    <div class="q-label">// TRUST CHAIN QUESTION (+10 pts)</div>
+    <div class="q-text">${sc.q.text}</div>
+    <div class="choices" id="qch-${idx}">
+      ${sc.q.choices.map(c=>`<div class="choice-btn" onclick="pickQ(this,'${c.l}',${idx})"><span class="cl">${c.l}</span><div class="ct">${c.t}</div></div>`).join('')}
+    </div>
+    <div class="lock-row"><button class="btn btn-acc" id="qlock-${idx}" disabled onclick="lockQ(${idx})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="qhint-${idx}">Choose an answer. You can change it until you lock in.</span></div>
+    <div class="feedback" id="qfb-${idx}"></div>
+  </div>`;
+}
+
+function pickQ(el,letter,idx){
+  if(qLocked[idx])return;
+  if(qSel[idx]&&qSel[idx]!==letter)_qchg[idx]=(_qchg[idx]||0)+1;
+  qSel[idx]=letter;
+  document.getElementById('qch-'+idx).querySelectorAll('.choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('qlock-'+idx).disabled=false;
+  document.getElementById('qhint-'+idx).textContent='Selected: '+letter+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockQ(idx){
+  if(qLocked[idx]||!qSel[idx])return;
+  qLocked[idx]=true;
+  const sc=SCENARIOS[idx],letter=qSel[idx],ok=letter===sc.q.answer;
+  document.querySelector('#q-section-'+idx+' .lock-row').style.display='none';
+  document.getElementById('qch-'+idx).querySelectorAll('.choice-btn').forEach(c=>{
+    const l=c.querySelector('.cl').textContent;
+    c.classList.remove('picked');c.classList.add('locked');
+    if(l===sc.q.answer)c.classList.add('correct-ans');
+    if(l===letter){if(!ok)c.classList.add('wrong-ans');c.querySelector('.ct').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx].qCorrect=ok;results[idx].qChoice=letter;
+  if(ok){score+=10;results[idx].pts+=10;}
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  const fb=document.getElementById('qfb-'+idx);
+  fb.className='feedback show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?'<div class="fb-lbl ok">// LOCKED IN — CORRECT +10 pts</div>':'<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: '+sc.q.answer+'</div>')+sc.q.explain;
+  const nextDiv=document.createElement('div');
+  nextDiv.className='nav';nextDiv.style.cssText='display:flex;justify-content:flex-end;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);';
+  nextDiv.innerHTML=`<button class="btn btn-acc" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT SCENARIO →'}</button>`;
+  document.getElementById('q-section-'+idx).appendChild(nextDiv);
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*25))*100);
+  const el=document.getElementById('r-score');el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['PKI Expert 🔗','You understand how certificate trust chains work, what browser warnings mean, and when self-signed certs are acceptable. This maps directly to AP exam questions on HTTPS and PKI.'],mid:['Good Foundation 🎯','Review the chain order: Root CA (self-signed, trusted) → Intermediate CA (signed by root) → End-entity cert (issued to the site). Each signs the one below it.'],low:['Keep Building 📚','Focus on the trust anchor concept: browsers trust Root CAs pre-installed in the OS. Any chain that can\'t trace back to a trusted root fails — that\'s every browser warning.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=SCENARIOS.map((sc,i)=>{
+    const r=results[i]||{chainCorrect:0,pts:0,qCorrect:false};
+    return `<div class="b-row"><div class="b-check">${r.chainCorrect===3&&r.qCorrect?'✅':'⚠️'}</div><div class="b-text"><strong>${sc.label.split('—')[1].trim()}</strong> — Chain: ${r.chainCorrect}/3 · Q: ${r.qCorrect?'✓':'✗'}</div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];selectedCert={};chainSlots={};cLocked=[];_chg=[];qSel=[];qLocked=[];_qchg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:5,sim:'cert',screenId:''+('s'+(total+1))+'',score:score,max:total*25,items:(function(){var o=[];SCENARIOS.forEach(function(sc,i){var r=results[i]||{chainCorrect:0,pts:0,qCorrect:false};var lb=sc.label.split('—')[1].trim();var cp=Math.round((r.chainCorrect/3)*15);o.push({label:lb+' — build chain',result:r.chainCorrect===3?'correct':(r.chainCorrect>0?'partial':'incorrect'),pts:cp,max:15,response:(r.order||[]).map(function(s,k){return (k+1)+') '+s;}).join(' '),expected:sc.correctOrder.map(function(cid,k){return (k+1)+') '+sc.certs.find(function(c){return c.id===cid;}).cn;}).join(' '),changes:_chg[i]||0});o.push({label:lb+' — trust question',result:r.qCorrect?'correct':'incorrect',pts:r.qCorrect?10:0,max:10,response:r.qChoice||'',expected:sc.q.answer,changes:_qchg[i]||0});});return o;})()});
+};
+const _apRestart=restart;
+restart=function(){cLocked=[];_chg=[];qSel=[];qLocked=[];_qchg=[];APSim.start(5,'cert');_apRestart();};
+APSim.start(5,'cert');
+
+goTo(0);
+</script>
+</body>
+</html>

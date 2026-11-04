@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="4" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim4_ir">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Incident Response Sequencer — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#f59e0b;--red:#ef4444;--green:#22c55e;--cyan:#00d4ff;--purple:#c084fc;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--amber) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--amber) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--amber) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--amber) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--amber) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* IR PHASES */
+.phase-strip{display:flex;gap:0;margin-bottom:24px;overflow:hidden;border:1px solid var(--border2);}
+.phase{flex:1;padding:12px 8px;text-align:center;position:relative;}
+.phase:not(:last-child)::after{content:'▶';position:absolute;right:-8px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;z-index:1;}
+.ph1{background:color-mix(in srgb,var(--cyan) 6%,transparent);}
+.ph2{background:color-mix(in srgb,var(--amber) 6%,transparent);}
+.ph3{background:color-mix(in srgb,var(--red) 6%,transparent);}
+.ph4{background:color-mix(in srgb,var(--c-purple) 6%,transparent);}
+.ph5{background:color-mix(in srgb,var(--c-green) 6%,transparent);}
+.ph6{background:color-mix(in srgb,var(--c-sky) 6%,transparent);}
+.phase-num{font-family:var(--mono);font-size:9px;display:block;margin-bottom:3px;}
+.ph1 .phase-num{color:var(--cyan);}
+.ph2 .phase-num{color:var(--acc);}
+.ph3 .phase-num{color:var(--red);}
+.ph4 .phase-num{color:var(--purple);}
+.ph5 .phase-num{color:var(--green);}
+.ph6 .phase-num{color:var(--c-sky);}
+.phase-name{font-family:var(--mono);font-size:9px;color:var(--text2);letter-spacing:.04em;line-height:1.3;}
+
+/* INCIDENT BRIEF */
+.incident-box{background:var(--panel);border:1px solid var(--border2);padding:0;margin-bottom:16px;overflow:hidden;}
+.incident-header{background:color-mix(in srgb,var(--red) 8%,transparent);border-bottom:1px solid color-mix(in srgb,var(--red) 20%,transparent);padding:12px 16px;display:flex;align-items:center;gap:12px;}
+.incident-alert{font-family:var(--mono);font-size:9px;padding:3px 8px;background:var(--red);color:#fff;letter-spacing:.1em;}
+.incident-title{font-family:var(--mono);font-size:11px;color:var(--text);}
+.incident-body{padding:16px;}
+.incident-text{font-size:14px;line-height:1.75;color:var(--text);}
+.incident-text strong{color:var(--acc);}
+
+/* SEQUENCING */
+.sort-container{margin-bottom:16px;}
+.sort-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:8px;}
+.bank-area{background:var(--panel);border:1px solid var(--border2);padding:12px;margin-bottom:14px;}
+.bank-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.12em;margin-bottom:8px;}
+.action-cards{display:grid;gap:6px;}
+.action-card{background:var(--bg3);border:1px solid var(--border2);padding:11px 14px;cursor:pointer;font-size:13px;color:var(--text);transition:all .2s;line-height:1.45;display:flex;align-items:flex-start;gap:10px;}
+.action-card:hover:not(.used){border-color:var(--acc);background:color-mix(in srgb,var(--amber) 6%,transparent);}
+.action-card.selected-card{border-color:var(--acc);background:color-mix(in srgb,var(--amber) 12%,transparent);box-shadow:0 0 10px color-mix(in srgb,var(--amber) 20%,transparent);}
+.action-card.used{opacity:.25;pointer-events:none;}
+.ac-phase{font-family:var(--mono);font-size:9px;padding:2px 6px;flex-shrink:0;margin-top:2px;}
+.ph1-tag{background:color-mix(in srgb,var(--cyan) 12%,transparent);color:var(--cyan);}
+.ph2-tag{background:color-mix(in srgb,var(--amber) 12%,transparent);color:var(--acc);}
+.ph3-tag{background:color-mix(in srgb,var(--red) 12%,transparent);color:var(--red);}
+.ph4-tag{background:color-mix(in srgb,var(--c-purple) 12%,transparent);color:var(--purple);}
+.ph5-tag{background:color-mix(in srgb,var(--c-green) 12%,transparent);color:var(--green);}
+.ph6-tag{background:color-mix(in srgb,var(--c-sky) 12%,transparent);color:var(--c-sky);}
+
+/* TIMELINE SLOTS */
+.timeline-slots{display:grid;gap:6px;}
+.timeline-slot{border:1px dashed var(--border2);padding:10px 14px;min-height:46px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;}
+.timeline-slot:hover{border-color:var(--acc);background:color-mix(in srgb,var(--amber) 4%,transparent);}
+.timeline-slot.has-action{border-style:solid;border-color:var(--border);}
+.timeline-slot.correct-slot{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 6%,transparent)!important;}
+.timeline-slot.wrong-slot{border-color:var(--red)!important;background:color-mix(in srgb,var(--red) 6%,transparent)!important;}
+.ts-num{font-family:var(--mono);font-size:11px;color:var(--acc);font-weight:700;min-width:28px;}
+.ts-content{flex:1;font-size:13px;color:var(--text2);}
+.timeline-slot.has-action .ts-content{color:var(--text);}
+.ts-remove{color:var(--text3);cursor:pointer;padding:0 4px;font-size:14px;}
+.ts-remove:hover{color:var(--red);}
+
+/* FEEDBACK */
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.partial{border-color:var(--acc);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.feedback.wrong-fb{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}.fb-lbl.warn{color:var(--acc);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--amber) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--acc);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+.instruction{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-bottom:10px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);}
+@media(max-width:600px){.phase-strip{flex-wrap:wrap;}.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--amber);--red:var(--red);--green:var(--c-green);--cyan:var(--cyan);--purple:var(--c-purple);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 4</div>
+  <div>
+    <div class="hdr-title">Incident Response Sequencer</div>
+    <div class="hdr-sub">UNIT 4 · SECURING DEVICES · NIST IR LIFECYCLE · RESPONSE ORDER</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">IR1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">IR2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">IR3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p4"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🚨</span>
+    <div class="intro-title">Incident Response Sequencer</div>
+    <div class="intro-desc">Three real breach scenarios. For each one, arrange the response actions in the correct order. The NIST Incident Response Lifecycle is your guide — but within each phase, the specific order of actions matters too.</div>
+    <div class="phase-strip" style="max-width:600px;margin:0 auto 24px;">
+      <div class="phase ph1"><span class="phase-num">PHASE 1</span><div class="phase-name">PREPARATION</div></div>
+      <div class="phase ph2"><span class="phase-num">PHASE 2</span><div class="phase-name">DETECTION & ANALYSIS</div></div>
+      <div class="phase ph3"><span class="phase-num">PHASE 3</span><div class="phase-name">CONTAINMENT</div></div>
+      <div class="phase ph4"><span class="phase-num">PHASE 4</span><div class="phase-name">ERADICATION</div></div>
+      <div class="phase ph5"><span class="phase-num">PHASE 5</span><div class="phase-name">RECOVERY</div></div>
+      <div class="phase ph6"><span class="phase-num">PHASE 6</span><div class="phase-name">POST-INCIDENT</div></div>
+    </div>
+    <div style="background:var(--panel);border:1px solid var(--border2);padding:12px 16px;max-width:500px;margin:0 auto 24px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--text3);line-height:1.8;">
+      HOW TO USE:<br>
+      <span style="color:var(--text);">1.</span> Click an action card to select it<br>
+      <span style="color:var(--text);">2.</span> Click a numbered timeline slot to place it<br>
+      <span style="color:var(--text);">3.</span> Click ✕ to remove and reorder<br>
+      <span style="color:var(--text);">4.</span> Submit when your order is complete
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN RESPONSE</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+
+<div class="screen" id="s4">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">NIST IR LIFECYCLE</div><div class="concept-def">Preparation → Detection & Analysis → Containment → Eradication → Recovery → Post-Incident Activity. The AP exam tests this order directly. Containment BEFORE eradication is the most commonly tested sequence rule.</div></div>
+    <div class="concept-card"><div class="concept-term">CONTAINMENT BEFORE ERADICATION</div><div class="concept-def">You must stop the bleeding before removing the malware. Isolating the infected system prevents further spread while preserving forensic evidence. Removing malware from a still-connected system risks incomplete eradication.</div></div>
+    <div class="concept-card"><div class="concept-term">PRESERVE EVIDENCE FIRST</div><div class="concept-def">Before any remediation, capture forensic images, memory dumps, and logs. Once you wipe a system or restore from backup, the forensic evidence is gone. Legal proceedings and root cause analysis depend on this data.</div></div>
+    <div class="concept-card"><div class="concept-term">LESSONS LEARNED</div><div class="concept-def">The Post-Incident phase always ends with a lessons learned review — what happened, what worked, what didn't, what changes prevent recurrence. This closes the loop back to Preparation, making the next response better.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ TRY AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim4_hub.html'">← UNIT 4 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const INCIDENTS=[
+  {
+    label:"INCIDENT 01 — RANSOMWARE",
+    alert:"CRITICAL INCIDENT",
+    title:"Finance Department Ransomware — Multiple Systems Encrypted",
+    desc:"At 9:07 AM, the IT helpdesk receives calls from 6 finance employees — they cannot access their files. Screens show a ransom note demanding $50,000 in Bitcoin. The SIEM shows 3 servers and 14 workstations actively encrypting files. Network shares are also being encrypted. Internet access is still active from the affected systems.",
+    actions:[
+      {text:"Isolate all affected workstations and servers from the network immediately — cut network cables or disable switch ports",phase:"ph3",tag:"CONTAINMENT"},
+      {text:"Notify executive leadership, legal counsel, and the incident response team per the IRP",phase:"ph2",tag:"DETECTION"},
+      {text:"Preserve forensic evidence — capture memory dumps and disk images before any remediation",phase:"ph2",tag:"ANALYSIS"},
+      {text:"Remove ransomware malware from cleaned systems — run EDR remediation tools",phase:"ph4",tag:"ERADICATION"},
+      {text:"Restore encrypted files from verified, clean backups after confirming malware removal",phase:"ph5",tag:"RECOVERY"},
+      {text:"Document the full timeline, attack vector, and all response actions — conduct lessons learned meeting",phase:"ph6",tag:"POST-INCIDENT"},
+      {text:"Patch the email filtering system and user endpoint that was the initial infection vector",phase:"ph4",tag:"ERADICATION"},
+      {text:"Verify restored systems are clean, monitor closely for 72 hours, and return to production",phase:"ph5",tag:"RECOVERY"}
+    ],
+    correctOrder:[1,0,2,3,6,4,7,5],
+    explanation:"(1) Notify leadership first — the IRP defines who gets called and when. (2) Isolate affected systems immediately to stop encryption spread. (3) Preserve forensics BEFORE touching anything. (4) Remove malware after isolation. (5) Patch the infection vector so recovery systems aren't immediately re-infected. (6) Restore from clean backups. (7) Verify and monitor restored systems. (8) Document and hold lessons learned."
+  },
+  {
+    label:"INCIDENT 02 — DATA BREACH",
+    alert:"HIGH SEVERITY",
+    title:"Customer Database Exfiltration — SQL Injection",
+    desc:"A web application firewall alert fires at 2:14 AM. Log analysis shows 847,000 customer records queried via SQL injection from IP 203.0.113.88 over the past 3 hours. The data includes names, email addresses, and hashed passwords. The database server is still actively processing requests from the attacker.",
+    actions:[
+      {text:"Block the attacker's IP at the perimeter firewall and apply emergency WAF rules",phase:"ph3",tag:"CONTAINMENT"},
+      {text:"Analyze the SQL injection payload and determine the full scope of exfiltrated data",phase:"ph2",tag:"ANALYSIS"},
+      {text:"Notify affected customers and relevant authorities per breach notification laws (GDPR/state law)",phase:"ph5",tag:"RECOVERY"},
+      {text:"Apply SQL injection fix to the web application and redeploy patched code",phase:"ph4",tag:"ERADICATION"},
+      {text:"Preserve WAF logs, database query logs, and network captures as forensic evidence",phase:"ph2",tag:"ANALYSIS"},
+      {text:"Force password resets for all affected customer accounts",phase:"ph4",tag:"ERADICATION"},
+      {text:"Review and update WAF rules, input validation policy, and penetration testing schedule",phase:"ph6",tag:"POST-INCIDENT"},
+      {text:"Verify the patched application passes security testing before returning to production",phase:"ph5",tag:"RECOVERY"}
+    ],
+    correctOrder:[4,1,0,3,5,2,7,6],
+    explanation:"(1) Preserve logs/evidence before any action that might alter state. (2) Scope the breach — understand what was taken. (3) Block the attacker immediately. (4) Fix the SQL injection vulnerability. (5) Force password resets for affected accounts. (6) Notify affected customers (legal requirement). (7) Security test the patched application before returning to production. (8) Lessons learned and policy updates."
+  },
+  {
+    label:"INCIDENT 03 — INSIDER THREAT",
+    alert:"CONFIDENTIAL",
+    title:"Unauthorized Data Access — Privileged Insider",
+    desc:"HR reports that a finance analyst submitted their resignation this morning. The DLP system flags an alert: the employee has uploaded 14GB of financial data to a personal cloud storage account over the past week. The employee still has full system access. The data includes unreleased earnings reports and M&A documents.",
+    actions:[
+      {text:"Immediately revoke all system access — disable AD account, VPN, email, and all SSO applications",phase:"ph3",tag:"CONTAINMENT"},
+      {text:"Engage legal counsel — determine whether law enforcement notification is required",phase:"ph2",tag:"ANALYSIS"},
+      {text:"Preserve DLP logs, access logs, and all forensic evidence with chain of custody documentation",phase:"ph2",tag:"ANALYSIS"},
+      {text:"Work with legal to determine whether the exfiltrated data can be requested for deletion from the cloud service",phase:"ph4",tag:"ERADICATION"},
+      {text:"Review and tighten DLP policies, data classification, and offboarding procedures",phase:"ph6",tag:"POST-INCIDENT"},
+      {text:"Conduct a full audit of what data was accessed and exfiltrated, and by whom",phase:"ph2",tag:"ANALYSIS"},
+      {text:"Notify affected business units and, if required by regulation, executive leadership and the board",phase:"ph5",tag:"RECOVERY"},
+      {text:"Implement additional monitoring on accounts with similar privilege levels",phase:"ph5",tag:"RECOVERY"}
+    ],
+    correctOrder:[2,5,1,0,3,7,6,4],
+    explanation:"(1) Preserve evidence first — critically important in insider threat cases for potential litigation. (2) Conduct full scope audit. (3) Engage legal before taking further action — legal counsel guides the response to avoid compromising a potential case. (4) Revoke access — containment. (5) Work with legal on data recovery/deletion. (6) Implement additional monitoring on similar accounts. (7) Notify stakeholders and regulators as required. (8) Policy improvements and offboarding procedure updates."
+  }
+];
+
+let score=0,results=[],total=INCIDENTS.length;
+let selectedAction={},slotContents={},locked=[],_chg=[];
+function refreshLock(idx){const ok=slotContents[idx].every(v=>v!==null);const b=document.getElementById('lock-'+idx);if(b)b.disabled=!ok;const h=document.getElementById('hint-'+idx);if(h)h.textContent=ok?'Response complete. You can still rearrange it. Nothing is revealed until you lock in.':'Place every action. You can rearrange until you lock in. Nothing is checked or revealed before that.';}
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildIncident(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildIncident(idx){
+  const inc=INCIDENTS[idx];
+  selectedAction[idx]=null;
+  slotContents[idx]=new Array(inc.actions.length).fill(null);
+  const shuffled=[...inc.actions.map((a,i)=>({...a,origIdx:i}))].sort(()=>Math.random()-.5);
+
+  const actionCards=shuffled.map(a=>`<div class="action-card" id="acard-${idx}-${a.origIdx}" onclick="selectAction(${idx},${a.origIdx})">
+    <span class="ac-phase" data-phase="${a.phase}" data-tag="${a.tag}" style="display:none"></span>
+    <span>${a.text}</span>
+  </div>`).join('');
+
+  const slots=inc.actions.map((_,i)=>`<div class="timeline-slot" id="tslot-${idx}-${i}" onclick="placeAction(${idx},${i})">
+    <span class="ts-num">STEP ${i+1}</span>
+    <span class="ts-content" style="color:var(--text3);font-style:italic;">Click an action above, then click here</span>
+  </div>`).join('');
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div class="sec-lbl">// INCIDENT ${idx+1} OF ${total}</div>
+    <div class="sec-title">Sequence the Response</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Incident ${idx+1}/${total}</span>
+    </div>
+    <div class="incident-box">
+      <div class="incident-header">
+        <span class="incident-alert">${inc.alert}</span>
+        <span class="incident-title">${inc.title}</span>
+      </div>
+      <div class="incident-body">
+        <div class="incident-text">${inc.desc}</div>
+      </div>
+    </div>
+    <div class="phase-strip">
+      <div class="phase ph1"><span class="phase-num">1</span><div class="phase-name">PREPARATION</div></div>
+      <div class="phase ph2"><span class="phase-num">2</span><div class="phase-name">DETECT & ANALYZE</div></div>
+      <div class="phase ph3"><span class="phase-num">3</span><div class="phase-name">CONTAINMENT</div></div>
+      <div class="phase ph4"><span class="phase-num">4</span><div class="phase-name">ERADICATION</div></div>
+      <div class="phase ph5"><span class="phase-num">5</span><div class="phase-name">RECOVERY</div></div>
+      <div class="phase ph6"><span class="phase-num">6</span><div class="phase-name">POST-INCIDENT</div></div>
+    </div>
+    <div class="instruction">SELECT an action card → then CLICK a step slot to place it. Click ✕ to return to bank.</div>
+    <div class="bank-area">
+      <div class="bank-label">// AVAILABLE RESPONSE ACTIONS (shuffled)</div>
+      <div class="action-cards" id="bank-${idx}">${actionCards}</div>
+    </div>
+    <div class="sort-label">// YOUR RESPONSE TIMELINE — STEP 1 FIRST</div>
+    <div class="timeline-slots" id="tslots-${idx}">${slots}</div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav" id="lockbar-${idx}">
+      <button class="btn btn-ghost" onclick="clearTimeline(${idx})">CLEAR</button>
+      <div class="lock-row" style="margin:0;"><span class="lock-hint" id="hint-${idx}">Place every action. You can rearrange until you lock in. Nothing is checked or revealed before that.</span><button class="btn btn-acc" id="lock-${idx}" disabled onclick="submitTimeline(${idx})">🔒 LOCK IN RESPONSE</button></div>
+    </div>`;
+}
+
+function selectAction(idx,actionIdx){
+  const el=document.getElementById(`acard-${idx}-${actionIdx}`);
+  if(el.classList.contains('used'))return;
+  if(selectedAction[idx]!==null){
+    document.getElementById(`acard-${idx}-${selectedAction[idx]}`)?.classList.remove('selected-card');
+  }
+  selectedAction[idx]=actionIdx;
+  el.classList.add('selected-card');
+}
+
+function placeAction(idx,slotIdx){
+  if(locked[idx]||selectedAction[idx]===null)return;
+  const ai=selectedAction[idx];
+  const inc=INCIDENTS[idx];
+
+  // If another card is in this slot, return it
+  if(slotContents[idx][slotIdx]!==null){
+    _chg[idx]=(_chg[idx]||0)+1;
+    const old=slotContents[idx][slotIdx];
+    document.getElementById(`acard-${idx}-${old}`)?.classList.remove('used','selected-card');
+  }
+  // If this action was already placed, clear old slot
+  const prevSlot=slotContents[idx].indexOf(ai);
+  if(prevSlot!==-1){
+    _chg[idx]=(_chg[idx]||0)+1;
+    slotContents[idx][prevSlot]=null;
+    const ps=document.getElementById(`tslot-${idx}-${prevSlot}`);
+    ps.classList.remove('has-action');
+    ps.innerHTML=`<span class="ts-num">STEP ${prevSlot+1}</span><span class="ts-content" style="color:var(--text3);font-style:italic;">Click an action above, then click here</span>`;
+    ps.onclick=()=>placeAction(idx,prevSlot);
+  }
+
+  slotContents[idx][slotIdx]=ai;
+  const action=inc.actions[ai];
+  const slot=document.getElementById(`tslot-${idx}-${slotIdx}`);
+  slot.classList.add('has-action');
+  slot.innerHTML=`<span class="ts-num">STEP ${slotIdx+1}</span><span class="ts-content">${action.text}</span><span class="ts-remove" onclick="removeAction(${idx},${slotIdx},event)">✕</span>`;
+  document.getElementById(`acard-${idx}-${ai}`).classList.add('used');
+  document.getElementById(`acard-${idx}-${ai}`).classList.remove('selected-card');
+  selectedAction[idx]=null;refreshLock(idx);
+}
+
+function removeAction(idx,slotIdx,e){
+  e.stopPropagation();
+  if(locked[idx])return;
+  _chg[idx]=(_chg[idx]||0)+1;
+  const ai=slotContents[idx][slotIdx];
+  slotContents[idx][slotIdx]=null;
+  document.getElementById(`acard-${idx}-${ai}`)?.classList.remove('used','selected-card');
+  const slot=document.getElementById(`tslot-${idx}-${slotIdx}`);
+  slot.classList.remove('has-action');
+  slot.innerHTML=`<span class="ts-num">STEP ${slotIdx+1}</span><span class="ts-content" style="color:var(--text3);font-style:italic;">Click an action above, then click here</span>`;
+  slot.onclick=()=>placeAction(idx,slotIdx);
+  refreshLock(idx);
+}
+
+function clearTimeline(idx){
+  if(locked[idx])return;
+  const inc=INCIDENTS[idx];
+  if(slotContents[idx].some(v=>v!==null))_chg[idx]=(_chg[idx]||0)+1;
+  slotContents[idx]=new Array(inc.actions.length).fill(null);
+  selectedAction[idx]=null;
+  inc.actions.forEach((_,ai)=>{
+    const card=document.getElementById(`acard-${idx}-${ai}`);
+    if(card)card.classList.remove('used','selected-card');
+  });
+  inc.actions.forEach((_,si)=>{
+    const slot=document.getElementById(`tslot-${idx}-${si}`);
+    slot.classList.remove('has-action','correct-slot','wrong-slot');
+    slot.innerHTML=`<span class="ts-num">STEP ${si+1}</span><span class="ts-content" style="color:var(--text3);font-style:italic;">Click an action above, then click here</span>`;
+    slot.onclick=()=>placeAction(idx,si);
+  });
+  refreshLock(idx);
+}
+
+function submitTimeline(idx){
+  const inc=INCIDENTS[idx];
+  if(locked[idx]||!slotContents[idx].every(v=>v!==null))return;
+  locked[idx]=true;
+  document.getElementById('lockbar-'+idx).style.display='none';
+  document.querySelectorAll('#s'+(idx+1)+' .ac-phase').forEach(e=>{e.className='ac-phase '+e.dataset.phase+'-tag';e.textContent=e.dataset.tag;e.style.display='';});
+  let correct=0;
+  inc.correctOrder.forEach((actionIdx,step)=>{
+    const userPlaced=slotContents[idx][step];
+    const slot=document.getElementById(`tslot-${idx}-${step}`);
+    if(userPlaced===actionIdx){correct++;slot.classList.add('correct-slot');}
+    else slot.classList.add('wrong-slot');
+  });
+
+  document.querySelectorAll(`[id^="tslot-${idx}-"]`).forEach(s=>s.style.pointerEvents='none');
+  document.querySelectorAll(`[id^="acard-${idx}-"]`).forEach(c=>c.style.pointerEvents='none');
+
+  const pct=Math.round((correct/inc.actions.length)*100);
+  const pts=Math.round((correct/inc.actions.length)*25);
+  score+=pts;results[idx]={correct,total:inc.actions.length,pts,order:slotContents[idx].map(ai=>inc.actions[ai].text)};
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+
+  const cls=pct>=80?'correct':pct>=50?'partial':'wrong-fb';
+  const lbl=pct>=80?['ok','// EXCELLENT RESPONSE']:pct>=50?['warn','// PARTIAL — REVIEW ORDER']:['no','// NEEDS WORK'];
+  const fb=document.getElementById('fb-'+idx);
+  fb.className='feedback show '+cls;
+  fb.innerHTML=`<div class="fb-lbl ${lbl[0]}">LOCKED IN — ${lbl[1].replace('// ','')} (${correct}/${inc.actions.length} STEPS CORRECT)</div>${inc.explanation}<br><br><strong>Correct order:</strong><br>${inc.correctOrder.map((ai,k)=>(k+1)+'. '+inc.actions[ai].text).join('<br>')}`;
+
+  const nextBtn=document.createElement('div');
+  nextBtn.className='nav';
+  nextBtn.style.cssText='display:flex;justify-content:flex-end;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);';
+  nextBtn.innerHTML=`<button class="btn btn-acc" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT INCIDENT →'}</button>`;
+  fb.after(nextBtn);
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*25))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['IR Team Lead 🚨','You sequenced all three incident responses correctly. The NIST lifecycle order — especially containment before eradication and evidence preservation before everything else — is directly tested on the AP exam FRQ.'],mid:['Good IR Instincts 🎯','Review the key sequencing rules: preserve evidence first, contain before eradicate, patch before restore, and lessons learned always closes the loop.'],low:['Keep Building 📚','Focus on the NIST lifecycle order and the two critical rules: (1) preserve forensics before touching anything, and (2) containment always comes before eradication.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=INCIDENTS.map((inc,i)=>{
+    const r=results[i]||{correct:0,total:inc.actions.length,pts:0};
+    return `<div class="b-row"><div class="b-check">${r.correct===r.total?'✅':'⚠️'}</div><div class="b-text"><strong>${inc.label.split('—')[1].trim()}</strong> — ${r.correct}/${r.total} steps correct</div><div class="b-pts">+${r.pts} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];selectedAction={};slotContents={};locked=[];_chg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:4,sim:'ir',screenId:''+('s'+(total+1))+'',score:score,max:total*25,items:INCIDENTS.map(function(inc,i){var r=results[i]||{correct:0,total:inc.actions.length,pts:0,order:[]};return {label:inc.label.split('—')[1].trim(),result:r.correct===r.total?'correct':(r.correct>0?'partial':'incorrect'),pts:r.pts,max:25,response:r.correct+'/'+r.total+' in place. Order: '+(r.order||[]).map(function(s,k){return (k+1)+') '+s.slice(0,60);}).join(' '),expected:inc.correctOrder.map(function(ai,k){return (k+1)+') '+inc.actions[ai].text.slice(0,60);}).join(' '),changes:_chg[i]||0};})});
+};
+const _apRestart=restart;
+restart=function(){locked=[];_chg=[];APSim.start(4,'ir');_apRestart();};
+APSim.start(4,'ir');
+
+goTo(0);
+</script>
+</body>
+</html>

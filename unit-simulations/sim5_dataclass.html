@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="5" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim5_dataclass">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Data Classification Lab — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--acc:#c084fc;--red:#ef4444;--green:#22c55e;--amber:#f59e0b;--cyan:#00d4ff;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--c-purple) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c-purple) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--acc);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--acc);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.prog-step.done{background:color-mix(in srgb,var(--c-purple) 50%,transparent);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-acc{background:var(--acc);color:var(--on-acc);font-weight:700;}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--c-purple) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--c-purple) 8%,transparent);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:28px 20px 20px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:34px;font-weight:800;color:var(--acc);margin-bottom:10px;}
+.intro-desc{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 24px;line-height:1.65;}
+
+/* CLASSIFICATION TIERS */
+.tier-ref{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+.tier{padding:12px;border:1px solid var(--border);text-align:center;}
+.tier-icon{font-size:22px;display:block;margin-bottom:5px;}
+.tier-name{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;margin-bottom:3px;}
+.t-pub .tier-name{color:var(--green);}
+.t-int .tier-name{color:var(--cyan);}
+.t-conf .tier-name{color:var(--amber);}
+.t-res .tier-name{color:var(--red);}
+.tier-desc{font-size:10px;color:var(--text3);line-height:1.4;}
+
+/* DATA ITEMS */
+.data-bank{background:var(--panel);border:1px solid var(--border2);padding:14px;margin-bottom:14px;}
+.db-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;margin-bottom:10px;}
+.data-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.data-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border2);background:var(--bg3);cursor:pointer;font-size:12px;color:var(--text);transition:all .2s;user-select:none;}
+.data-pill:hover:not(.dp-used){border-color:var(--acc);background:color-mix(in srgb,var(--c-purple) 8%,transparent);}
+.data-pill.dp-selected{border-color:var(--acc);background:color-mix(in srgb,var(--c-purple) 15%,transparent);box-shadow:0 0 10px color-mix(in srgb,var(--c-purple) 20%,transparent);}
+.data-pill.dp-used{opacity:.25;pointer-events:none;}
+
+/* DROP ZONES */
+.drop-zones{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+.drop-zone{border:2px dashed var(--border2);padding:12px;min-height:100px;transition:all .2s;cursor:pointer;}
+.drop-zone:hover{border-style:solid;}
+.dz-pub{border-color:color-mix(in srgb,var(--c-green) 30%,transparent);}.dz-pub:hover{border-color:var(--green);}
+.dz-int{border-color:color-mix(in srgb,var(--cyan) 30%,transparent);}.dz-int:hover{border-color:var(--cyan);}
+.dz-conf{border-color:color-mix(in srgb,var(--amber) 30%,transparent);}.dz-conf:hover{border-color:var(--amber);}
+.dz-res{border-color:color-mix(in srgb,var(--red) 30%,transparent);}.dz-res:hover{border-color:var(--red);}
+.dz-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;margin-bottom:6px;}
+.dz-pub .dz-label{color:var(--green);}
+.dz-int .dz-label{color:var(--cyan);}
+.dz-conf .dz-label{color:var(--amber);}
+.dz-res .dz-label{color:var(--red);}
+.dz-items{display:flex;flex-direction:column;gap:4px;}
+.dz-item{background:var(--panel2);border:1px solid var(--border);padding:5px 10px;font-size:11px;color:var(--text);display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.dz-item:hover{background:color-mix(in srgb,var(--red) 6%,transparent);}
+.dz-item.di-correct{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 6%,transparent);}
+.dz-item.di-wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 6%,transparent);}
+.dz-rm{font-size:12px;color:var(--text3);}
+.dz-empty{font-family:var(--mono);font-size:10px;color:var(--text3);font-style:italic;}
+
+/* SCENARIO + Q */
+.context-box{background:var(--panel);border:1px solid var(--border2);padding:14px 16px;margin-bottom:14px;}
+.ctx-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:6px;}
+.ctx-text{font-size:14px;line-height:1.7;color:var(--text);}
+.ctx-text strong{color:var(--acc);}
+.choices{display:grid;gap:8px;}
+.choice-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 15px;cursor:pointer;text-align:left;transition:all .2s;}
+.choice-btn:hover:not(.locked){border-color:var(--acc);background:color-mix(in srgb,var(--c-purple) 5%,transparent);}
+.choice-btn.correct-ans{border-color:var(--green)!important;background:color-mix(in srgb,var(--c-green) 8%,transparent)!important;}
+.choice-btn.wrong-ans{border-color:var(--red)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.choice-btn.locked{pointer-events:none;opacity:.5;}
+.choice-btn.correct-ans,.choice-btn.wrong-ans{opacity:1!important;}
+.cl{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px;display:block;}
+.ct{font-size:13px;color:var(--text);line-height:1.45;}
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:10px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--green);background:color-mix(in srgb,var(--c-green) 5%,transparent);}
+.feedback.partial{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 5%,transparent);}
+.feedback.wrong-fb{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--green);}.fb-lbl.warn{color:var(--amber);}.fb-lbl.no{color:var(--red);}
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:color-mix(in srgb,var(--c-purple) 50%,transparent);}.round-pip.active{background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.result-hero{text-align:center;padding:28px 0 20px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--green);text-shadow:0 0 30px color-mix(in srgb,var(--c-green) 40%,transparent);}
+.result-score.mid{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--acc);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+.instruction{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-bottom:10px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);}
+@media(max-width:600px){.tier-ref,.drop-zones,.concept-grid{grid-template-columns:1fr 1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--acc:var(--c-purple);--red:var(--red);--green:var(--c-green);--amber:var(--amber);--cyan:var(--cyan);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div class="badge">Unit 5</div>
+  <div>
+    <div class="hdr-title">Data Classification Lab</div>
+    <div class="hdr-sub">UNIT 5 · SECURING APPS & DATA · CLASSIFY · PROTECT · COMPLY</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+<div class="prog">
+  <span class="prog-lbl">INTRO</span><div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">R1</span><div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">R2</span><div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">R3</span><div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">RESULTS</span><div class="prog-step" id="p4"></div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🗂️</span>
+    <div class="intro-title">Data Classification Lab</div>
+    <div class="intro-desc">Data classification determines what protections data requires. Three organizational scenarios — classify each data item into the correct tier, then answer a compliance or handling question. Classification errors cause both over-protection (wasted resources) and under-protection (breaches).</div>
+    <div class="tier-ref" style="max-width:600px;margin:0 auto 24px;">
+      <div class="tier t-pub"><span class="tier-icon">📢</span><div class="tier-name">PUBLIC</div><div class="tier-desc">Freely shareable. No harm if disclosed. Marketing, press releases.</div></div>
+      <div class="tier t-int"><span class="tier-icon">🏢</span><div class="tier-name">INTERNAL</div><div class="tier-desc">For employees only. Not secret, but not for outside sharing.</div></div>
+      <div class="tier t-conf"><span class="tier-icon">🔐</span><div class="tier-name">CONFIDENTIAL</div><div class="tier-desc">Sensitive business data. Limited distribution. Encrypted at rest.</div></div>
+      <div class="tier t-res"><span class="tier-icon">🚫</span><div class="tier-name">RESTRICTED</div><div class="tier-desc">Highest sensitivity. Regulatory/legal requirements. Strict access controls.</div></div>
+    </div>
+    <button class="btn btn-acc" onclick="goTo(1)">▶ BEGIN CLASSIFICATION</button>
+  </div>
+</div>
+
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+
+<div class="screen" id="s4">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div style="font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:10px;">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">WHY CLASSIFY DATA?</div><div class="concept-def">Classification drives protection decisions — encryption requirements, access controls, retention periods, disposal methods, and regulatory compliance. Without classification, organizations either over-protect (expensive) or under-protect (breaches).</div></div>
+    <div class="concept-card"><div class="concept-term">PII vs PHI vs PCI</div><div class="concept-def">PII (Personally Identifiable Information) — any data that identifies a person. PHI (Protected Health Information) — medical data, regulated by HIPAA. PCI-DSS (Payment Card Industry) — cardholder data, regulated by card networks. All require Restricted classification.</div></div>
+    <div class="concept-card"><div class="concept-term">DATA AT REST vs IN TRANSIT</div><div class="concept-def">Confidential and Restricted data must be encrypted both at rest (stored on disk) and in transit (moving across networks). Public data requires neither. Internal data typically requires encryption in transit only.</div></div>
+    <div class="concept-card"><div class="concept-term">PRINCIPLE OF LEAST PRIVILEGE</div><div class="concept-def">Access to data should be limited to those who need it for their job function. Restricted data requires formal access requests, logging, and periodic access reviews. Even authorized users should only access what they need when they need it.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ TRY AGAIN</button>
+    <button class="btn btn-acc" onclick="window.location.href='sim5_hub.html'">← UNIT 5 HUB</button>
+  </div>
+</div>
+</div>
+
+<script src="apsim_record.js"></script>
+<script>
+const ROUNDS=[
+  {
+    label:"ROUND 01 — HOSPITAL",
+    context:"A regional hospital collects and stores many types of data. The Chief Security Officer needs to assign classification tiers to determine appropriate protections under HIPAA and general security policy.",
+    items:[
+      {id:"h1",text:"Patient medical records (diagnoses, medications, treatment history)",tier:"Restricted"},
+      {id:"h2",text:"Hospital visiting hours posted on the public website",tier:"Public"},
+      {id:"h3",text:"Employee payroll and salary information",tier:"Confidential"},
+      {id:"h4",text:"Internal IT helpdesk ticketing system URLs",tier:"Internal"},
+      {id:"h5",text:"Social Security Numbers collected for insurance billing",tier:"Restricted"},
+      {id:"h6",text:"Hospital org chart (department names and manager names)",tier:"Internal"},
+      {id:"h7",text:"Credit card numbers stored for copay billing",tier:"Restricted"},
+      {id:"h8",text:"Press release about new hospital wing opening",tier:"Public"}
+    ],
+    q:{
+      text:"An employee emails a spreadsheet containing patient names, diagnoses, and insurance IDs to a colleague at another hospital using a personal Gmail account. Which data handling violation has occurred?",
+      choices:[
+        {l:"A",t:"No violation — the recipient is a healthcare professional so sharing PHI is always permitted"},
+        {l:"B",t:"HIPAA violation — PHI transmitted outside an encrypted, approved channel to an unauthorized recipient without a data sharing agreement"},
+        {l:"C",t:"Minor internal policy violation — using personal email is inconvenient but not a regulatory issue"},
+        {l:"D",t:"PCI-DSS violation — payment card data was transmitted insecurely"}
+      ],
+      answer:"B",
+      explain:"Patient health information (PHI) is Restricted and regulated by HIPAA. Transmitting PHI via personal Gmail violates HIPAA on two counts: (1) the channel is not an approved, encrypted HIPAA-compliant communication method, and (2) the receiving organization requires a Business Associate Agreement (BAA) to legally receive PHI. Even if the recipient is a healthcare professional, the transmission must comply with HIPAA — professional status alone doesn't authorize receiving PHI."
+    }
+  },
+  {
+    label:"ROUND 02 — FINANCIAL SERVICES FIRM",
+    context:"An investment bank classifies data across its trading, customer, and corporate operations. Mis-classification of financial data can result in SEC violations, PCI-DSS fines, or competitive harm.",
+    items:[
+      {id:"f1",text:"Unpublished earnings report (pre-announcement)",tier:"Restricted"},
+      {id:"f2",text:"Client investment portfolio balances and trade history",tier:"Restricted"},
+      {id:"f3",text:"Publicly filed 10-K annual report",tier:"Public"},
+      {id:"f4",text:"Internal meeting agenda for Q3 strategy review",tier:"Internal"},
+      {id:"f5",text:"Customer credit card numbers (stored for recurring fees)",tier:"Restricted"},
+      {id:"f6",text:"M&A target company name and deal valuation",tier:"Restricted"},
+      {id:"f7",text:"Employee training completion records",tier:"Internal"},
+      {id:"f8",text:"Algorithm used by the proprietary trading system",tier:"Confidential"}
+    ],
+    q:{
+      text:"A trader uses the firm's unpublished earnings report to purchase stock before the public announcement. From a data classification perspective, what made this possible and what control would have prevented it?",
+      choices:[
+        {l:"A",t:"The report was misclassified as Internal instead of Restricted — reclassification alone would have prevented the trade"},
+        {l:"B",t:"Restricted data access was not properly controlled — need-to-know access logging, DLP controls, and insider trading policies with enforcement"},
+        {l:"C",t:"The report should have been encrypted — encryption would have prevented the trader from reading it"},
+        {l:"D",t:"The report should have been stored on paper instead of digitally to prevent unauthorized copying"}
+      ],
+      answer:"B",
+      explain:"The classification itself may have been correct (Restricted), but access controls and DLP (Data Loss Prevention) were insufficient. Controls for Restricted financial data include: need-to-know access restrictions with logging, Chinese walls between trading and advisory teams, DLP preventing unauthorized copying/emailing, and insider trading policy enforcement. Classification is the first step — the controls that enforcement classification tiers matter equally."
+    }
+  },
+  {
+    label:"ROUND 03 — TECH STARTUP",
+    context:"A SaaS startup collects user data and intellectual property. As they prepare for SOC 2 audit and handle personal data from EU users (GDPR), the CTO needs data classification to inform their security controls.",
+    items:[
+      {id:"t1",text:"User email addresses and account passwords (hashed)",tier:"Confidential"},
+      {id:"t2",text:"Product roadmap and unreleased feature plans",tier:"Confidential"},
+      {id:"t3",text:"Public API documentation on the developer portal",tier:"Public"},
+      {id:"t4",text:"EU user behavioral data (clicks, session times) tied to user IDs",tier:"Restricted"},
+      {id:"t5",text:"Source code for the core proprietary algorithm",tier:"Restricted"},
+      {id:"t6",text:"Employee onboarding checklist template",tier:"Internal"},
+      {id:"t7",text:"TechCrunch press coverage links saved in Slack",tier:"Public"},
+      {id:"t8",text:"Investor pitch deck (shared under NDA)",tier:"Confidential"}
+    ],
+    q:{
+      text:"Under GDPR, an EU user requests deletion of all their personal data ('right to be forgotten'). The startup's database stores user behavioral data tied to user IDs in an analytics table. What must the startup do?",
+      choices:[
+        {l:"A",t:"Delete the user's account — this automatically satisfies GDPR erasure requirements"},
+        {l:"B",t:"The behavioral data is anonymized so GDPR doesn't apply — no action needed"},
+        {l:"C",t:"Locate and delete all personal data across all systems including the analytics table, confirm deletion, and respond to the user within 30 days"},
+        {l:"D",t:"Archive the data instead of deleting it — GDPR only prohibits active use, not storage"}
+      ],
+      answer:"C",
+      explain:"GDPR's right to erasure (Article 17) requires deletion of ALL personal data across ALL systems where it's stored — not just the primary account table. Behavioral data tied to a user ID is personal data under GDPR. The startup must: identify all locations where the user's data appears (analytics, backups, logs, third-party processors), delete it from each, confirm deletion, and respond within 30 days. Account deletion alone is insufficient if data exists in other tables or systems."
+    }
+  }
+];
+
+const TIERS=["Public","Internal","Confidential","Restricted"];
+const TIER_CLASSES={Public:"dz-pub",Internal:"dz-int",Confidential:"dz-conf",Restricted:"dz-res"};
+
+let score=0,results=[],total=ROUNDS.length;
+let selectedItem={},zonePlacements={},cLocked=[],_chg=[],qSel=[],qLocked=[],_qchg=[];
+function refreshLock(idx){const n=ROUNDS[idx].items.length;const placed=TIERS.reduce((a,z)=>a+zonePlacements[idx][z].length,0);const b=document.getElementById('lock-'+idx);if(b)b.disabled=placed<n;const h=document.getElementById('hint-'+idx);if(h)h.textContent=placed<n?'Place all '+n+' items ('+placed+' placed). You can move them until you lock in. Nothing is checked before that.':'All items placed. You can still move them. Nothing is revealed until you lock in.';}
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){const el=document.getElementById('p'+i);if(!el)continue;el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total)buildRound(n-1);
+  if(n===total+1)buildResults();
+}
+
+function buildRound(idx){
+  const round=ROUNDS[idx];
+  selectedItem[idx]=null;
+  zonePlacements[idx]={Public:[],Internal:[],Confidential:[],Restricted:[]};
+  const shuffled=[...round.items].sort(()=>Math.random()-.5);
+  const pills=shuffled.map(item=>`<div class="data-pill" id="dp-${idx}-${item.id}" onclick="selectItem(${idx},'${item.id}')">${item.text}</div>`).join('');
+  const zones=TIERS.map(tier=>`<div class="drop-zone ${TIER_CLASSES[tier]}" onclick="placeInZone(${idx},'${tier}')">
+    <div class="dz-label">${{Public:'📢 PUBLIC',Internal:'🏢 INTERNAL',Confidential:'🔐 CONFIDENTIAL',Restricted:'🚫 RESTRICTED'}[tier]}</div>
+    <div class="dz-items" id="dz-${idx}-${tier}"><div class="dz-empty">Select item → click here</div></div>
+  </div>`).join('');
+
+  results[idx]={classifyPts:0,qCorrect:false,pts:0};
+
+  document.getElementById('s'+(idx+1)).innerHTML=`
+    <div style="font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.2em;margin-bottom:6px;">// ROUND ${idx+1} OF ${total}</div>
+    <div style="font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:10px;">${round.label}</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Round ${idx+1}/${total}</span>
+    </div>
+    <div class="context-box"><div class="ctx-label">// CONTEXT</div><div class="ctx-text">${round.context}</div></div>
+    <div class="instruction">STEP 1: Click a data item to select it · STEP 2: Click the correct classification zone · Click an item in a zone to return it</div>
+    <div class="data-bank"><div class="db-label">// DATA ITEMS TO CLASSIFY</div><div class="data-pills" id="pills-${idx}">${pills}</div></div>
+    <div class="drop-zones">${zones}</div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div id="qsec-${idx}" style="display:none;"></div>
+    <div class="nav">
+      <div class="lock-row" id="lockbar-${idx}" style="margin:0;"><button class="btn btn-acc" id="lock-${idx}" disabled onclick="checkClassification(${idx})">🔒 LOCK IN CLASSIFICATION</button><span class="lock-hint" id="hint-${idx}">Place all ${round.items.length} items. You can move them until you lock in. Nothing is checked before that.</span></div>
+      <button class="btn btn-acc" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT ROUND →'}</button>
+    </div>`;
+}
+
+function selectItem(idx,itemId){
+  if(document.getElementById(`dp-${idx}-${itemId}`)?.classList.contains('dp-used'))return;
+  if(selectedItem[idx]){document.getElementById(`dp-${idx}-${selectedItem[idx]}`)?.classList.remove('dp-selected');}
+  selectedItem[idx]=itemId;
+  document.getElementById(`dp-${idx}-${itemId}`)?.classList.add('dp-selected');
+}
+
+function placeInZone(idx,tier){
+  if(cLocked[idx]||!selectedItem[idx])return;
+  const itemId=selectedItem[idx];
+  // Remove from previous zone
+  TIERS.forEach(t=>{
+    const pos=zonePlacements[idx][t].findIndex(i=>i===itemId);
+    if(pos!==-1){_chg[idx]=(_chg[idx]||0)+1;zonePlacements[idx][t].splice(pos,1);renderZone(idx,t);}
+  });
+  zonePlacements[idx][tier].push(itemId);
+  document.getElementById(`dp-${idx}-${itemId}`)?.classList.add('dp-used');
+  document.getElementById(`dp-${idx}-${itemId}`)?.classList.remove('dp-selected');
+  selectedItem[idx]=null;
+  renderZone(idx,tier);refreshLock(idx);
+}
+
+function renderZone(idx,tier){
+  const items=zonePlacements[idx][tier];
+  const el=document.getElementById(`dz-${idx}-${tier}`);
+  if(!el)return;
+  if(items.length===0){el.innerHTML='<div class="dz-empty">Select item → click here</div>';return;}
+  const round=ROUNDS[idx];
+  el.innerHTML=items.map(itemId=>{
+    const item=round.items.find(i=>i.id===itemId);
+    return `<div class="dz-item" onclick="returnItem(${idx},'${itemId}','${tier}')"><span>${item.text.substring(0,50)}${item.text.length>50?'...':''}</span><span class="dz-rm">✕</span></div>`;
+  }).join('');
+}
+
+function returnItem(idx,itemId,tier){
+  if(cLocked[idx])return;
+  _chg[idx]=(_chg[idx]||0)+1;
+  const pos=zonePlacements[idx][tier].indexOf(itemId);
+  if(pos!==-1)zonePlacements[idx][tier].splice(pos,1);
+  document.getElementById(`dp-${idx}-${itemId}`)?.classList.remove('dp-used','dp-selected');
+  renderZone(idx,tier);refreshLock(idx);
+}
+
+function checkClassification(idx){
+  const round=ROUNDS[idx];
+  if(cLocked[idx]||TIERS.reduce((a,z)=>a+zonePlacements[idx][z].length,0)<round.items.length)return;
+  cLocked[idx]=true;
+  document.getElementById('lockbar-'+idx).style.display='none';
+  results[idx].placed=TIERS.map(z=>z+': '+zonePlacements[idx][z].map(id=>id).join(',')).join(' | ');
+  let correct=0,total_items=round.items.length;
+  TIERS.forEach(tier=>{
+    const items=zonePlacements[idx][tier];
+    const zEl=document.getElementById(`dz-${idx}-${tier}`);
+    if(!zEl)return;
+    const correctItems=round.items.filter(i=>i.tier===tier).map(i=>i.id);
+    zEl.innerHTML=items.map(itemId=>{
+      const item=round.items.find(i=>i.id===itemId);
+      const isCorrect=correctItems.includes(itemId);
+      if(isCorrect)correct++;
+      return `<div class="dz-item ${isCorrect?'di-correct':'di-wrong'}"><span>${item.text.substring(0,50)}${item.text.length>50?'...':''}</span><span>${isCorrect?'✓':'✗'}</span></div>`;
+    }).join('')||(items.length===0?'<div class="dz-empty">Select item → click here</div>':'');
+  });
+  document.querySelectorAll(`[id^="dp-${idx}-"]`).forEach(p=>p.style.pointerEvents='none');
+  document.querySelectorAll(`.drop-zone`).forEach(z=>z.style.pointerEvents='none');
+
+  const pct=Math.round((correct/total_items)*100);
+  const pts=Math.round((correct/total_items)*15);
+  score+=pts;results[idx].classifyPts=correct;results[idx].pts=pts;
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+
+  const fb=document.getElementById(`fb-${idx}`);
+  fb.className='feedback show '+(pct===100?'correct':pct>=70?'partial':'wrong-fb');
+  fb.innerHTML=`<div class="fb-lbl ${pct===100?'ok':pct>=70?'warn':'no'}">LOCKED IN — ${pct===100?'PERFECT CLASSIFICATION':'PARTIAL — SEE CORRECTIONS'} (${correct}/${total_items})</div>Items highlighted in red are in the wrong tier. Restricted = regulatory/high sensitivity. Confidential = sensitive business. Internal = employees only. Public = freely shareable.`;
+
+  document.getElementById(`qsec-${idx}`).style.display='block';
+  document.getElementById(`qsec-${idx}`).innerHTML=`<div style="background:var(--panel);border:1px solid var(--border2);padding:16px 18px;margin-top:12px;">
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;">// COMPLIANCE QUESTION (+10 pts)</div>
+    <div style="font-size:14px;line-height:1.7;margin-bottom:12px;">${round.q.text}</div>
+    <div class="choices" id="qch-${idx}">
+      ${round.q.choices.map(c=>`<div class="choice-btn" onclick="pickQ(this,'${c.l}',${idx})"><span class="cl">${c.l}</span><div class="ct">${c.t}</div></div>`).join('')}
+    </div>
+    <div class="lock-row"><button class="btn btn-acc" id="qlock-${idx}" disabled onclick="lockQ(${idx})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="qhint-${idx}">Choose an answer. You can change it until you lock in.</span></div>
+    <div class="feedback" id="qfb-${idx}"></div>
+  </div>`;
+}
+
+function pickQ(el,letter,idx){
+  if(qLocked[idx])return;
+  if(qSel[idx]&&qSel[idx]!==letter)_qchg[idx]=(_qchg[idx]||0)+1;
+  qSel[idx]=letter;
+  document.getElementById('qch-'+idx).querySelectorAll('.choice-btn').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('qlock-'+idx).disabled=false;
+  document.getElementById('qhint-'+idx).textContent='Selected: '+letter+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockQ(idx){
+  if(qLocked[idx]||!qSel[idx])return;
+  qLocked[idx]=true;
+  const q=ROUNDS[idx].q,letter=qSel[idx],ok=letter===q.answer;
+  document.querySelector('#qsec-'+idx+' .lock-row').style.display='none';
+  document.getElementById('qch-'+idx).querySelectorAll('.choice-btn').forEach(c=>{
+    const l=c.querySelector('.cl').textContent;
+    c.classList.remove('picked');c.classList.add('locked');
+    if(l===q.answer)c.classList.add('correct-ans');
+    if(l===letter){if(!ok)c.classList.add('wrong-ans');c.querySelector('.ct').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx].qCorrect=ok;results[idx].qChoice=letter;
+  if(ok){score+=10;results[idx].pts+=10;}
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  const fb=document.getElementById('qfb-'+idx);
+  fb.className='feedback show '+(ok?'correct':'wrong-fb');
+  fb.innerHTML=(ok?'<div class="fb-lbl ok">// LOCKED IN — CORRECT +10 pts</div>':'<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: '+q.answer+'</div>')+q.explain;
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*25))*100);
+  const el=document.getElementById('r-score');el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Data Classification Expert 🗂️','You correctly classified data across three industries and understood the compliance implications. Classification is the foundation of every data protection control.'],mid:['Good Instincts 🎯','Review the Restricted tier — PHI (HIPAA), PII tied to behavior (GDPR), cardholder data (PCI), and pre-announcement financials (SEC) all require the highest protection.'],low:['Keep Building 📚','Key rule: if a regulation applies to it (HIPAA, GDPR, PCI-DSS) or a breach would cause serious harm, it\'s Restricted. If it\'s sensitive business info but not regulated, it\'s Confidential.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=ROUNDS.map((r,i)=>{
+    const res=results[i]||{classifyPts:0,pts:0,qCorrect:false};
+    return `<div class="b-row"><div class="b-check">${res.qCorrect&&res.classifyPts===r.items.length?'✅':'⚠️'}</div><div class="b-text"><strong>${r.label.split('—')[1].trim()}</strong> — Classification: ${res.classifyPts}/${r.items.length} · Compliance Q: ${res.qCorrect?'✓':'✗'}</div><div class="b-pts">+${res.pts} pts</div></div>`;
+  }).join('');
+}
+function restart(){score=0;results=[];selectedItem={};zonePlacements={};cLocked=[];_chg=[];qSel=[];qLocked=[];_qchg=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:5,sim:'dclass',screenId:''+('s'+(total+1))+'',score:score,max:total*25,items:(function(){var o=[];ROUNDS.forEach(function(rd,i){var r=results[i]||{classifyPts:0,pts:0,qCorrect:false};var lb=rd.label.split('—')[1].trim();var n=rd.items.length;o.push({label:lb+' — classify data',result:r.classifyPts===n?'correct':(r.classifyPts>0?'partial':'incorrect'),pts:Math.round((r.classifyPts/n)*15),max:15,response:r.classifyPts+'/'+n+' correct. '+(r.placed||''),expected:rd.items.map(function(it){return it.id+'='+it.tier;}).join(', '),changes:_chg[i]||0});o.push({label:lb+' — compliance question',result:r.qCorrect?'correct':'incorrect',pts:r.qCorrect?10:0,max:10,response:r.qChoice||'',expected:rd.q.answer,changes:_qchg[i]||0});});return o;})()});
+};
+const _apRestart=restart;
+restart=function(){cLocked=[];_chg=[];qSel=[];qLocked=[];_qchg=[];APSim.start(5,'dclass');_apRestart();};
+APSim.start(5,'dclass');
+
+goTo(0);
+</script>
+</body>
+</html>

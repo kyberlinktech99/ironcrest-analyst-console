@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="2" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="pc">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | Physical Controls Classifier — AP Cybersecurity</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;--border:#1e2d4a;--border2:#2a3f6a;--P:#f97316;--T:#a855f7;--A2:#22c55e;--F:#ef4444;--danger:#ff4757;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--P) 2.5%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--P) 2.5%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--P);color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--P);}
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--P);box-shadow:0 0 8px var(--P);}
+.prog-step.done{background:var(--A2);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;white-space:nowrap;}
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--P);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.sec-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-P{background:var(--P);color:#fff;font-weight:700;}
+.btn-P:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--P) 40%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--P);border:1px solid var(--P);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--P) 8%,transparent);}
+.btn-G{background:var(--A2);color:#000;font-weight:700;}
+.btn-G:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--A2) 40%,transparent);transform:translateY(-1px);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.intro-center{text-align:center;padding:32px 20px 24px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px;color:var(--P);}
+.intro-desc{font-size:15px;color:var(--text2);max-width:480px;margin:0 auto 28px;line-height:1.65;}
+
+/* TYPE GRID — 2×2 classification */
+.type-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
+.type-card{padding:16px;border:2px solid var(--border);text-align:center;transition:all .2s;cursor:pointer;position:relative;overflow:hidden;}
+.type-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.type-card.PT::before{background:var(--P);}
+.type-card.TC::before{background:var(--T);}
+.type-card.AD::before{background:var(--A2);}
+.type-card.FN::before{background:var(--F);}
+.type-card.PT:hover,.type-card.PT.selected{border-color:var(--P);background:color-mix(in srgb,var(--P) 7%,transparent);}
+.type-card.TC:hover,.type-card.TC.selected{border-color:var(--T);background:color-mix(in srgb,var(--T) 7%,transparent);}
+.type-card.AD:hover,.type-card.AD.selected{border-color:var(--A2);background:color-mix(in srgb,var(--A2) 7%,transparent);}
+.type-card.FN:hover,.type-card.FN.selected{border-color:var(--F);background:color-mix(in srgb,var(--F) 7%,transparent);}
+.type-card.wrong{border-color:var(--danger)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.type-icon{font-size:28px;display:block;margin-bottom:8px;}
+.type-label{font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:.02em;margin-bottom:4px;}
+.type-card.PT .type-label{color:var(--P);}
+.type-card.TC .type-label{color:var(--T);}
+.type-card.AD .type-label{color:var(--A2);}
+.type-card.FN .type-label{color:var(--F);}
+.type-sub{font-size:11px;color:var(--text3);line-height:1.4;}
+
+/* scenario */
+.scenario-box{background:var(--panel);border:1px solid var(--border2);padding:20px;margin-bottom:18px;}
+.scenario-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;}
+.scenario-text{font-size:14px;line-height:1.7;color:var(--text);}
+.scenario-text strong{color:var(--P);}
+
+/* ref panel */
+.ref-panel{background:var(--bg3);border:1px solid var(--border);padding:14px 16px;margin-bottom:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.ref-item{text-align:center;}
+.ref-icon{font-size:18px;display:block;margin-bottom:3px;}
+.ref-word{font-size:11px;font-weight:600;margin-bottom:2px;}
+.ref-item.PT .ref-word{color:var(--P);}
+.ref-item.TC .ref-word{color:var(--T);}
+.ref-item.AD .ref-word{color:var(--A2);}
+.ref-item.FN .ref-word{color:var(--F);}
+.ref-def{font-size:10px;color:var(--text3);line-height:1.35;}
+
+/* feedback */
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--A2);background:color-mix(in srgb,var(--A2) 5%,transparent);}
+.feedback.wrong{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--A2);}
+.fb-lbl.no{color:var(--danger);}
+
+/* round tracker */
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:var(--A2);}
+.round-pip.active{background:var(--P);box-shadow:0 0 8px var(--P);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+
+/* results */
+.result-hero{text-align:center;padding:32px 0 24px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--A2);text-shadow:0 0 30px color-mix(in srgb,var(--A2) 40%,transparent);}
+.result-score.mid{color:var(--P);text-shadow:0 0 30px color-mix(in srgb,var(--P) 40%,transparent);}
+.result-score.low{color:var(--danger);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--P);flex-shrink:0;}
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--P);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+
+/* intro reference */
+.intro-ref{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:560px;margin:0 auto 28px;text-align:left;}
+.ir{padding:14px 16px;border:1px solid var(--border);background:var(--panel);}
+.ir-icon{font-size:20px;margin-bottom:6px;display:block;}
+.ir-name{font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:4px;}
+.ir.PT .ir-name{color:var(--P);}
+.ir.TC .ir-name{color:var(--T);}
+.ir.AD .ir-name{color:var(--A2);}
+.ir.FN .ir-name{color:var(--F);}
+.ir-def{font-size:11px;color:var(--text3);line-height:1.4;}
+
+@media(max-width:600px){.type-grid,.ref-panel,.intro-ref,.concept-grid{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div class="badge">Unit 2</div>
+  <div>
+    <div class="hdr-title">Physical Controls Classifier</div>
+    <div class="hdr-sub">UNIT 2 · SECURING SPACES · CLASSIFY CONTROLS BY TYPE & FUNCTION</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+
+<div class="prog">
+  <span class="prog-lbl">INTRO</span>
+  <div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">R1</span>
+  <div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">R2</span>
+  <div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">R3</span>
+  <div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">R4</span>
+  <div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">R5</span>
+  <div class="prog-step" id="p5"></div>
+  <span class="prog-lbl">RESULTS</span>
+  <div class="prog-step" id="p6"></div>
+</div>
+
+<!-- INTRO -->
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🏢</span>
+    <div class="intro-title">Physical Controls Classifier</div>
+    <div class="intro-desc">Five real-world security controls. Your job: classify each one by type AND function. Security pros need to know the difference — a camera and a lock both protect a space, but in completely different ways.</div>
+    <div class="intro-ref">
+      <div class="ir PT"><span class="ir-icon">🏗️</span><div class="ir-name">PHYSICAL</div><div class="ir-def">Tangible barriers that restrict physical access — locks, fences, walls, mantraps</div></div>
+      <div class="ir TC"><span class="ir-icon">⚙️</span><div class="ir-name">TECHNICAL</div><div class="ir-def">Technology-based controls — keycard readers, biometric scanners, badge systems</div></div>
+      <div class="ir AD"><span class="ir-icon">📋</span><div class="ir-name">ADMINISTRATIVE</div><div class="ir-def">Policies, procedures, and training that govern behavior — visitor logs, clean desk policy</div></div>
+      <div class="ir FN"><span class="ir-icon">🔍</span><div class="ir-name">DETECTIVE</div><div class="ir-def">Controls that identify and record incidents after they occur — cameras, audit logs, motion sensors</div></div>
+    </div>
+    <button class="btn btn-P" onclick="goTo(1)">▶ BEGIN LAB</button>
+  </div>
+</div>
+
+<!-- ROUNDS 1-5 -->
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+<div class="screen" id="s5"></div>
+
+<!-- RESULTS -->
+<div class="screen" id="s6">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">PHYSICAL CONTROLS</div><div class="concept-def">Prevent unauthorized physical access — locks, fences, mantraps, security guards. First line of defense for any facility.</div></div>
+    <div class="concept-card"><div class="concept-term">TECHNICAL CONTROLS</div><div class="concept-def">Use technology to enforce access policy — keycard readers, biometrics, badge systems. Can be logged automatically.</div></div>
+    <div class="concept-card"><div class="concept-term">ADMINISTRATIVE CONTROLS</div><div class="concept-def">Policies and procedures that guide human behavior — visitor policies, clean desk rules, security awareness training.</div></div>
+    <div class="concept-card"><div class="concept-term">DETECTIVE CONTROLS</div><div class="concept-def">Identify and record incidents — cameras, motion sensors, audit logs. Don't prevent attacks but enable investigation.</div></div>
+    <div class="concept-card"><div class="concept-term">PREVENTIVE VS DETECTIVE</div><div class="concept-def">Preventive controls stop incidents from occurring. Detective controls identify incidents after the fact. Both are necessary — prevention fails, detection catches it.</div></div>
+    <div class="concept-card"><div class="concept-term">LAYERED CONTROLS</div><div class="concept-def">Most real security controls span multiple categories. A mantrap is both physical (barrier) AND technical (badge reader). The AP exam tests control TYPE and FUNCTION separately.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ RUN AGAIN</button>
+    <button class="btn btn-G" onclick="window.location.href='sim2_hub.html'">← UNIT 2 HUB</button>
+  </div>
+</div>
+
+</div>
+<script src="apsim_record.js"></script>
+<script>
+const SCENARIOS = [
+  {
+    label:"CONTROL 01 — MANTRAP",
+    text:"A data center installs a <strong>security vestibule (mantrap)</strong> at its main entrance — a small enclosed area with two doors. The outer door must close and lock before the inner door can open. Only one person can enter at a time, and both doors have RFID keycard readers.",
+    answer:"PT",
+    answerLabel:"Physical + Technical",
+    explanation:"A mantrap is a <strong>physical</strong> control (it's a tangible barrier that prevents tailgating through physical design) AND a <strong>technical</strong> control (the RFID readers use technology to enforce access). It's also <em>preventive</em> — it stops unauthorized access before it happens.",
+    trap:"Cameras would make this detective. A mantrap without electronics (just two manual doors) would be purely physical. The RFID element adds the technical layer."
+  },
+  {
+    label:"CONTROL 02 — SECURITY CAMERA",
+    text:"A hospital installs <strong>HD security cameras</strong> at all entrances, server rooms, and medication storage areas. Footage is retained for 90 days and reviewed by security staff when incidents are reported. The cameras are visible and marked with signage.",
+    answer:"FN",
+    answerLabel:"Detective (Physical)",
+    explanation:"Security cameras are <strong>detective controls</strong> — they record what happens and enable investigation after an incident. The visible signage may deter some behavior (making it partly preventive), but the primary function is recording. Cameras don't stop someone from entering — they document it.",
+    trap:"Cameras are often mistaken for preventive controls because their presence may deter behavior. But deterrence is a side effect — classification is based on primary function. A camera's primary function is detection and recording."
+  },
+  {
+    label:"CONTROL 03 — VISITOR POLICY",
+    text:"A law firm implements a <strong>visitor access policy</strong>: all visitors must sign in at reception, show government ID, be escorted by an employee at all times, wear a bright red visitor badge, and sign out when leaving. Employees who violate the escort policy receive a written warning.",
+    answer:"AD",
+    answerLabel:"Administrative",
+    explanation:"This is an <strong>administrative control</strong> — it governs behavior through policy and procedure rather than technology or physical barriers. Visitor policies, acceptable use policies, clean desk rules, and security training all fall into this category. The badge is a physical element but the governing mechanism is the policy.",
+    trap:"The visitor badge has a physical component, but what enforces the policy is human procedure, not a lock or scanner. Administrative controls rely on human compliance — which is both their strength (flexibility) and weakness (humans don't always follow rules)."
+  },
+  {
+    label:"CONTROL 04 — BIOMETRIC SCANNER",
+    text:"A pharmaceutical company replaces its keycard entry system with a <strong>fingerprint biometric scanner</strong> for access to the research lab. The system logs every access attempt — successful and failed — with a timestamp and employee ID. Failed attempts after three tries trigger a security alert.",
+    answer:"TC",
+    answerLabel:"Technical (Preventive + Detective)",
+    explanation:"A biometric scanner is a <strong>technical control</strong> — it uses technology (fingerprint recognition) to enforce access policy. It's also <em>preventive</em> (prevents unauthorized entry) AND <em>detective</em> (logs all access attempts). This dual function is common in technical controls — they often do both simultaneously.",
+    trap:"Unlike a physical lock (which anyone with the key can use), biometric controls authenticate identity — a key technical distinction. Also note: logging makes this partly detective, but the PRIMARY classification is technical preventive control."
+  },
+  {
+    label:"CONTROL 05 — CLEAN DESK POLICY",
+    text:"A financial services company enforces a <strong>clean desk policy</strong>: all employees must lock away sensitive documents in locked drawers at end of day, shut down or lock their computers, and remove any written passwords or sticky notes from workstations. Quarterly walkthroughs audit compliance.",
+    answer:"AD",
+    answerLabel:"Administrative (Preventive)",
+    explanation:"A clean desk policy is an <strong>administrative control</strong> — it sets behavioral expectations through policy. The quarterly audit has a detective element, but the primary mechanism is the policy itself. This control directly reduces the risk of physical information disclosure — someone walking through could see sensitive documents or written credentials.",
+    trap:"The locked drawers are a physical element, but the control is the POLICY requiring them — not the drawers themselves. If the policy didn't exist, even with drawers available, employees wouldn't use them. The administrative control drives the physical action."
+  }
+];
+
+const TYPE_LABELS = {PT:'Physical + Technical',TC:'Technical',AD:'Administrative',FN:'Detective'};
+let score=0,results=[],total=SCENARIOS.length;
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<=total+1;i++){
+    const el=document.getElementById('p'+i);
+    if(!el)continue;
+    el.classList.remove('active','done');
+    if(i<n)el.classList.add('done');
+    else if(i===n)el.classList.add('active');
+  }
+  window.scrollTo(0,0);
+  if(n>=1&&n<=total) buildRound(n-1);
+  if(n===total+1) buildResults();
+}
+
+function buildRound(idx){
+  const sc=SCENARIOS[idx];
+  const sid='s'+(idx+1);
+  document.getElementById(sid).innerHTML=`
+    <div class="sec-lbl">// ROUND ${idx+1} OF ${total}</div>
+    <div class="sec-title">Classify this security control</div>
+    <div class="round-bar">
+      ${Array.from({length:total},(_,i)=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}"></div>`).join('')}
+      <span class="round-lbl">Round ${idx+1}/${total}</span>
+    </div>
+    <div class="ref-panel">
+      <div class="ref-item PT"><span class="ref-icon">🏗️</span><div class="ref-word">Physical</div><div class="ref-def">Tangible barriers</div></div>
+      <div class="ref-item TC"><span class="ref-icon">⚙️</span><div class="ref-word">Technical</div><div class="ref-def">Technology-enforced</div></div>
+      <div class="ref-item AD"><span class="ref-icon">📋</span><div class="ref-word">Administrative</div><div class="ref-def">Policy-driven</div></div>
+      <div class="ref-item FN"><span class="ref-icon">🔍</span><div class="ref-word">Detective</div><div class="ref-def">Records & identifies</div></div>
+    </div>
+    <div class="scenario-box">
+      <div class="scenario-label">${sc.label}</div>
+      <div class="scenario-text">${sc.text}</div>
+    </div>
+    <div class="type-grid">
+      <div class="type-card PT" data-choice="PT" onclick="pick(this,\'PT\',${idx})">
+        <span class="type-icon">🏗️</span>
+        <div class="type-label">Physical / Technical</div>
+        <div class="type-sub">Tangible barrier + technology access control</div>
+      </div>
+      <div class="type-card TC" data-choice="TC" onclick="pick(this,\'TC\',${idx})">
+        <span class="type-icon">⚙️</span>
+        <div class="type-label">Technical</div>
+        <div class="type-sub">Technology-based access enforcement</div>
+      </div>
+      <div class="type-card AD" data-choice="AD" onclick="pick(this,\'AD\',${idx})">
+        <span class="type-icon">📋</span>
+        <div class="type-label">Administrative</div>
+        <div class="type-sub">Policy, procedure, or training</div>
+      </div>
+      <div class="type-card FN" data-choice="FN" onclick="pick(this,\'FN\',${idx})">
+        <span class="type-icon">🔍</span>
+        <div class="type-label">Detective</div>
+        <div class="type-sub">Records and identifies incidents</div>
+      </div>
+    </div>
+    <div class="lock-row">
+      <button class="btn btn-P" id="lock-${idx}" disabled onclick="lockIn(${idx})">🔒 Lock in answer</button>
+      <span class="lock-hint" id="hint-${idx}">Choose an answer, then lock it in. You get one attempt, and the correct answer and reasoning appear only after you lock in.</span>
+    </div>
+    <div class="feedback" id="fb-${idx}"></div>
+    <div class="nav">
+      <div></div>
+      <button class="btn btn-P" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===total-1?'SEE RESULTS →':'NEXT CONTROL →'}</button>
+    </div>`;
+}
+
+let sel=[],locked=[],_chg=[];
+function pick(el,choice,idx){
+  if(locked[idx])return;
+  if(sel[idx]&&sel[idx]!==choice)_chg[idx]=(_chg[idx]||0)+1;
+  sel[idx]=choice;
+  el.parentElement.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('lock-'+idx).disabled=false;
+  document.getElementById('hint-'+idx).textContent='Selected: '+TYPE_LABELS[choice]+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockIn(idx){
+  if(locked[idx]||!sel[idx])return;
+  locked[idx]=true;
+  const sc=SCENARIOS[idx],choice=sel[idx],ok=choice===sc.answer;
+  const cards=document.querySelectorAll('#s'+(idx+1)+' .type-card');
+  cards.forEach(c=>c.style.pointerEvents='none');
+  document.querySelector('#s'+(idx+1)+' .lock-row').style.display='none';
+  const fb=document.getElementById('fb-'+idx);
+  results[idx]={correct:ok,choice};
+  if(ok){
+    score+=20;
+    document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+    fb.className='feedback show correct';
+    fb.innerHTML=`<div class="fb-lbl ok">// LOCKED IN — CORRECT: ${sc.answerLabel.toUpperCase()}</div>${sc.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 Common trap: ${sc.trap}</em>`;
+  } else {
+    cards.forEach(c=>{
+      if(c.dataset.choice===choice){c.classList.remove('selected');c.classList.add('wrong');}
+      if(c.dataset.choice===sc.answer)c.classList.add('selected','reveal');
+    });
+    fb.className='feedback show wrong';
+    fb.innerHTML=`<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: ${sc.answerLabel.toUpperCase()}</div>You chose <strong>${TYPE_LABELS[choice]}</strong>. ${sc.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 Common trap: ${sc.trap}</em>`;
+  }
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct=Math.round((score/(total*20))*100);
+  const el=document.getElementById('r-score');
+  el.textContent=pct+'%';
+  el.className='result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers={high:['Security Controls Expert 🏢','You correctly classified controls by both type and function. This distinction is tested directly on the AP exam.'],mid:['Solid Foundation 🎯','You know the basics — review the preventive vs. detective distinction and when controls span multiple categories.'],low:['Keep Building 📚','Focus on the difference between physical, technical, and administrative controls — and remember: cameras detect, locks prevent.']};
+  const t=pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent=tiers[t][0];
+  document.getElementById('r-sub').textContent=tiers[t][1];
+  document.getElementById('r-breakdown').innerHTML=SCENARIOS.map((sc,i)=>{
+    const r=results[i]||{correct:false};
+    return `<div class="b-row"><div class="b-check">${r.correct?'✅':'❌'}</div><div class="b-text"><strong>${sc.label.split('—')[1].trim()}</strong> → <strong>${sc.answerLabel}</strong>${r.correct?'':' (you chose '+TYPE_LABELS[r.choice]+')'}</div><div class="b-pts">${r.correct?'+20':'+0'} pts</div></div>`;
+  }).join('');
+}
+
+function restart(){score=0;results=[];document.getElementById('score-disp').textContent='SCORE: 0 pts';goTo(0);}
+/* ---- Student record hook (apsim_record.js) ---- */
+const _u2results=buildResults;
+buildResults=function(){_u2results();
+APSim.finish({unit:2,sim:'pc',screenId:'s6',score:score,max:total*20,items:SCENARIOS.map(function(sc,i){var r=results[i]||{correct:false};return {label:sc.label.split('—')[1].trim(),result:r.correct?'correct':'incorrect',pts:r.correct?20:0,max:20,response:r.choice?TYPE_LABELS[r.choice]:'',expected:sc.answerLabel,changes:_chg[i]||0};})});
+};
+const _u2restart=restart;
+restart=function(){sel=[];locked=[];_chg=[];APSim.start(2,'pc');_u2restart();};
+APSim.start(2,'pc');
+
+goTo(0);
+</script>
+</body>
+</html>

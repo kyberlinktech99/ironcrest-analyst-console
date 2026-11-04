@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html data-ironcrest-unit="1" data-ironcrest-audience="student" lang="en" data-theme="dark" data-page="sim_cia">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironcrest | CIA Triad Lab — AP Cybersecurity</title>
+<style>
+:root {
+  --bg:#0a0e1a;--bg2:#0f1525;--bg3:#151d35;--panel:#111827;--panel2:#1a2340;
+  --border:#1e2d4a;--border2:#2a3f6a;
+  --C:#00d4ff;--I:#00ff9d;--A:#ffd166;
+  --danger:#ff4757;--text:#e2eaf8;--text2:#8a9bc4;--text3:#4a5a82;
+  --mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--cyan) 3%,transparent)1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--cyan) 3%,transparent)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+
+/* header */
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.badge{background:var(--C);color:var(--on-acc);font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:.15em;}
+.hdr-title{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;margin-top:2px;}
+.score-disp{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--C);}
+
+/* progress */
+.prog{display:flex;gap:6px;margin-bottom:26px;align-items:center;}
+.prog-step{flex:1;height:3px;background:var(--border);transition:background .4s;}
+.prog-step.active{background:var(--C);box-shadow:0 0 8px var(--C);}
+.prog-step.done{background:var(--I);}
+.prog-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;white-space:nowrap;}
+
+/* screens */
+.screen{display:none;animation:fadeIn .4s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* typography */
+.sec-lbl{font-family:var(--mono);font-size:10px;color:var(--C);letter-spacing:.2em;margin-bottom:6px;}
+.sec-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.sec-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px;}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-C{background:var(--C);color:var(--on-acc);font-weight:700;}
+.btn-C:hover{filter:brightness(1.15);box-shadow:0 0 20px color-mix(in srgb,var(--cyan) 35%,transparent);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--C);border:1px solid var(--C);}
+.btn-ghost:hover{background:color-mix(in srgb,var(--cyan) 8%,transparent);}
+.btn-I{background:var(--I);color:var(--on-acc);font-weight:700;}
+.btn-I:hover{filter:brightness(1.1);box-shadow:0 0 20px color-mix(in srgb,var(--green) 35%,transparent);transform:translateY(-1px);}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+
+/* INTRO */
+.intro-center{text-align:center;padding:32px 20px 24px;}
+.big-icon{font-size:60px;display:block;margin-bottom:18px;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--display);font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:10px;}
+.intro-title .c{color:var(--C);}
+.intro-title .i{color:var(--I);}
+.intro-title .a{color:var(--A);}
+.intro-desc{font-size:15px;color:var(--text2);max-width:480px;margin:0 auto 28px;line-height:1.65;}
+.pillar-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:560px;margin:0 auto 30px;}
+.pp{padding:16px 12px;text-align:center;border:1px solid;}
+.pp.c{border-color:var(--C);background:color-mix(in srgb,var(--cyan) 6%,transparent);}
+.pp.i{border-color:var(--I);background:color-mix(in srgb,var(--green) 6%,transparent);}
+.pp.a{border-color:var(--A);background:color-mix(in srgb,var(--amber) 6%,transparent);}
+.pp-letter{font-family:var(--mono);font-size:28px;font-weight:700;display:block;margin-bottom:4px;}
+.pp.c .pp-letter{color:var(--C);}
+.pp.i .pp-letter{color:var(--I);}
+.pp.a .pp-letter{color:var(--A);}
+.pp-word{font-size:11px;color:var(--text2);}
+
+/* SCENARIO CARDS */
+.scenario-box{background:var(--panel);border:1px solid var(--border2);padding:20px;margin-bottom:18px;}
+.scenario-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:8px;}
+.scenario-text{font-size:14px;line-height:1.7;color:var(--text);}
+.scenario-text strong{color:var(--A);}
+
+/* CIA choice grid */
+.cia-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.cia-card{padding:20px 16px;border:2px solid var(--border);cursor:pointer;text-align:center;transition:all .25s;position:relative;overflow:hidden;}
+.cia-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--border2);transition:background .3s;}
+.cia-card.c-opt{border-color:var(--border);}
+.cia-card.c-opt:hover,.cia-card.c-opt.selected{border-color:var(--C);background:color-mix(in srgb,var(--cyan) 6%,transparent);}
+.cia-card.c-opt:hover::before,.cia-card.c-opt.selected::before{background:var(--C);}
+.cia-card.i-opt:hover,.cia-card.i-opt.selected{border-color:var(--I);background:color-mix(in srgb,var(--green) 6%,transparent);}
+.cia-card.i-opt:hover::before,.cia-card.i-opt.selected::before{background:var(--I);}
+.cia-card.a-opt:hover,.cia-card.a-opt.selected{border-color:var(--A);background:color-mix(in srgb,var(--amber) 6%,transparent);}
+.cia-card.a-opt:hover::before,.cia-card.a-opt.selected::before{background:var(--A);}
+.cia-card.wrong{border-color:var(--danger)!important;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.cia-letter{font-family:var(--mono);font-size:32px;font-weight:700;margin-bottom:4px;}
+.c-opt .cia-letter{color:var(--C);}
+.i-opt .cia-letter{color:var(--I);}
+.a-opt .cia-letter{color:var(--A);}
+.cia-word{font-size:12px;color:var(--text2);margin-bottom:6px;}
+.cia-def{font-size:11px;color:var(--text3);line-height:1.45;}
+
+/* feedback */
+.feedback{padding:14px 16px;border:1px solid var(--border);font-size:13px;line-height:1.65;display:none;margin-top:12px;}
+.feedback.show{display:block;animation:fadeIn .3s;}
+.feedback.correct{border-color:var(--I);background:color-mix(in srgb,var(--green) 5%,transparent);}
+.feedback.wrong{border-color:var(--danger);background:color-mix(in srgb,var(--red) 5%,transparent);}
+.fb-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.15em;margin-bottom:6px;}
+.fb-lbl.ok{color:var(--I);}
+.fb-lbl.no{color:var(--danger);}
+
+/* round tracker */
+.round-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.round-pip{width:24px;height:6px;background:var(--border);transition:all .3s;}
+.round-pip.done{background:var(--I);}
+.round-pip.active{background:var(--C);box-shadow:0 0 8px var(--C);}
+.round-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);}
+
+/* REFERENCE PANEL */
+.ref-panel{background:var(--bg3);border:1px solid var(--border);padding:14px 16px;margin-bottom:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.ref-item{text-align:center;}
+.ref-letter{font-family:var(--mono);font-size:18px;font-weight:700;margin-bottom:2px;}
+.ref-item.c .ref-letter{color:var(--C);}
+.ref-item.i .ref-letter{color:var(--I);}
+.ref-item.a .ref-letter{color:var(--A);}
+.ref-word{font-size:11px;color:var(--text2);margin-bottom:2px;}
+.ref-def{font-size:10px;color:var(--text3);line-height:1.4;}
+
+/* RESULTS */
+.result-hero{text-align:center;padding:32px 0 24px;}
+.result-score{font-family:var(--mono);font-size:72px;font-weight:700;line-height:1;}
+.result-score.high{color:var(--I);text-shadow:0 0 30px color-mix(in srgb,var(--green) 40%,transparent);}
+.result-score.mid{color:var(--A);text-shadow:0 0 30px color-mix(in srgb,var(--amber) 40%,transparent);}
+.result-score.low{color:var(--danger);}
+.result-lbl{font-family:var(--display);font-size:20px;font-weight:700;margin:8px 0;}
+.result-sub{font-size:13px;color:var(--text2);max-width:440px;margin:0 auto 24px;line-height:1.6;}
+.breakdown{display:grid;gap:8px;margin-bottom:24px;}
+.b-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);}
+.b-check{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.b-text{font-size:12px;color:var(--text2);flex:1;line-height:1.5;}
+.b-text strong{color:var(--text);}
+.b-pts{font-family:var(--mono);font-size:12px;color:var(--C);flex-shrink:0;}
+
+/* concepts */
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px;}
+.concept-card{background:var(--panel);border:1px solid var(--border);padding:14px;}
+.concept-term{font-family:var(--mono);font-size:10px;color:var(--C);letter-spacing:.1em;margin-bottom:5px;}
+.concept-def{font-size:11px;color:var(--text2);line-height:1.5;}
+
+@media(max-width:600px){.cia-grid,.pillar-preview,.concept-grid{grid-template-columns:1fr;}.ref-panel{grid-template-columns:1fr;}}
+</style>
+<script src="apsim_theme.js"></script>
+<link rel="stylesheet" href="apsim_theme.css">
+<style>:root[data-theme]{--C:var(--cyan);--I:var(--green);--A:var(--amber);--danger:var(--red);}</style>
+<!--apsim-island-->
+<script src="ironcrest-brand.js" defer></script>
+<link rel="stylesheet" href="../training/ui.css"><script src="../training/state.js"></script><script src="../training/ui.js" defer></script></head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div class="badge">AP Cyber</div>
+  <div>
+    <div class="hdr-title">CIA Triad Lab</div>
+    <div class="hdr-sub">UNIT 1 · INTRO TO SECURITY · CLASSIFY BREACHES</div>
+  </div>
+  <div class="score-disp" id="score-disp">SCORE: 0 pts</div>
+</div>
+
+<div class="prog">
+  <span class="prog-lbl">INTRO</span>
+  <div class="prog-step active" id="p0"></div>
+  <span class="prog-lbl">ROUND 1</span>
+  <div class="prog-step" id="p1"></div>
+  <span class="prog-lbl">ROUND 2</span>
+  <div class="prog-step" id="p2"></div>
+  <span class="prog-lbl">ROUND 3</span>
+  <div class="prog-step" id="p3"></div>
+  <span class="prog-lbl">ROUND 4</span>
+  <div class="prog-step" id="p4"></div>
+  <span class="prog-lbl">RESULTS</span>
+  <div class="prog-step" id="p5"></div>
+</div>
+
+<!-- INTRO -->
+<div class="screen active" id="s0">
+  <div class="intro-center">
+    <span class="big-icon">🔐</span>
+    <div class="intro-title"><span class="c">C</span><span class="i">I</span><span class="a">A</span> Triad Lab</div>
+    <div class="intro-desc">Four real-world breaches. Your job: identify which pillar of the CIA Triad was primarily violated — and explain why. This is how security analysts think.</div>
+    <div class="pillar-preview">
+      <div class="pp c"><span class="pp-letter">C</span><div class="pp-word">Confidentiality</div></div>
+      <div class="pp i"><span class="pp-letter">I</span><div class="pp-word">Integrity</div></div>
+      <div class="pp a"><span class="pp-letter">A</span><div class="pp-word">Availability</div></div>
+    </div>
+    <button class="btn btn-C" onclick="goTo(1)">▶ BEGIN LAB</button>
+  </div>
+</div>
+
+<!-- ROUNDS 1-4 -->
+<div class="screen" id="s1"></div>
+<div class="screen" id="s2"></div>
+<div class="screen" id="s3"></div>
+<div class="screen" id="s4"></div>
+
+<!-- RESULTS -->
+<div class="screen" id="s5">
+  <div class="result-hero">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-lbl" id="r-lbl"></div>
+    <div class="result-sub" id="r-sub"></div>
+  </div>
+  <div class="breakdown" id="r-breakdown"></div>
+  <div class="sec-lbl">// KEY CONCEPTS</div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-term">CONFIDENTIALITY</div><div class="concept-def">Ensuring information is accessible only to those authorized to see it. Violated by unauthorized access, data leaks, credential theft.</div></div>
+    <div class="concept-card"><div class="concept-term">INTEGRITY</div><div class="concept-def">Ensuring data is accurate, complete, and hasn't been tampered with. Violated by unauthorized modification, corruption, or falsification.</div></div>
+    <div class="concept-card"><div class="concept-term">AVAILABILITY</div><div class="concept-def">Ensuring systems and data are accessible when needed. Violated by DDoS attacks, ransomware lockouts, hardware failures.</div></div>
+    <div class="concept-card"><div class="concept-term">CIA TRIAD</div><div class="concept-def">The foundational framework for information security. Most real breaches violate multiple pillars simultaneously.</div></div>
+    <div class="concept-card"><div class="concept-term">IMPACT ANALYSIS</div><div class="concept-def">Determining which pillar is MOST affected helps prioritize response. Not all violations are equal.</div></div>
+    <div class="concept-card"><div class="concept-term">DEFENSE GOAL</div><div class="concept-def">Every security control maps to protecting C, I, or A. Understanding which pillar you're defending helps select the right tool.</div></div>
+  </div>
+  <div class="nav" style="justify-content:center;gap:14px;">
+    <button class="btn btn-ghost" onclick="restart()">↺ RUN AGAIN</button>
+    <button class="btn btn-I" onclick="window.location.href='sim_hub.html'">← BACK TO HUB</button>
+  </div>
+</div>
+
+</div>
+<script src="apsim_record.js"></script>
+<script>
+const SCENARIOS = [
+  {
+    label:"SCENARIO 01 — HEALTHCARE",
+    text:"A hospital's electronic health records system is breached. An attacker exfiltrates the medical histories, diagnoses, and social security numbers of 200,000 patients. The records themselves are unaltered. Patients never knew their data was accessed until the hospital notified them weeks later.",
+    answer:"C",
+    explanation:"The attacker accessed data they were not authorized to see — a classic <strong>Confidentiality</strong> violation. The records weren't changed (no Integrity violation) and the system stayed online (no Availability violation). The harm is unauthorized access to private medical information.",
+    trap:"Availability seems wrong because the system kept running. Integrity is wrong because nothing was altered. The data was seen without permission — that's Confidentiality."
+  },
+  {
+    label:"SCENARIO 02 — FINANCIAL",
+    text:"An employee at a small accounting firm discovers that someone has been quietly modifying client financial records in their database over several months — changing account balances and transaction histories. The system never went offline. The changes went undetected because no audit logs were enabled.",
+    answer:"I",
+    explanation:"Data was silently altered without authorization — a textbook <strong>Integrity</strong> violation. The system was available and accessible (no Availability issue), and the attacker may have had some access already (partial Confidentiality). But the primary harm is that the data can no longer be trusted to be accurate.",
+    trap:"Confidentiality might seem applicable, but the attacker's goal was modification, not exposure. The core issue is that the data's accuracy was compromised."
+  },
+  {
+    label:"SCENARIO 03 — GOVERNMENT",
+    text:"A ransomware attack hits a city government's network on a Monday morning. All files on city servers are encrypted and inaccessible. Emergency services can't access dispatch records, permit offices can't process applications, and city employees are locked out of their workstations. A ransom note demands $500,000.",
+    answer:"A",
+    explanation:"The city's systems are completely inaccessible — a severe <strong>Availability</strong> violation. Ransomware is one of the most common Availability attacks: it doesn't necessarily steal or alter data (though it may), its primary weapon is denial of access.",
+    trap:"Ransomware encrypts data, which might seem like an Integrity issue. But encryption for the purpose of denial is an Availability attack — the goal is to make the system unusable, not to falsify information."
+  },
+  {
+    label:"SCENARIO 04 — EDUCATION",
+    text:"A student at a university discovers a vulnerability in the registrar's web application and uses it to change their GPA from 2.1 to 3.9 in the student database. The university's servers remain fully operational. No other student records are accessed or viewed — only the attacker's own record is changed.",
+    answer:"I",
+    explanation:"The GPA was falsified without authorization — an <strong>Integrity</strong> violation. The system stayed up (no Availability issue) and no other records were viewed (minimal Confidentiality impact). The core harm is that the academic record no longer reflects reality.",
+    trap:"Because it's 'their own' record, students sometimes think Confidentiality applies — but Confidentiality is about unauthorized viewing. The attack here is unauthorized modification, which is Integrity."
+  }
+];
+
+let score = 0;
+let results = [];
+let currentRound = 0;
+let roundAnswered = false;
+
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  for(let i=0;i<6;i++){
+    const el=document.getElementById('p'+i);
+    el.classList.remove('active','done');
+    if(i<n)el.classList.add('done');
+    else if(i===n)el.classList.add('active');
+  }
+  window.scrollTo(0,0);
+  if(n>=1&&n<=4) buildRound(n-1);
+  if(n===5) buildResults();
+}
+
+function buildRound(idx){
+  const sc = SCENARIOS[idx];
+  const screenId = 's'+(idx+1);
+  const screen = document.getElementById(screenId);
+
+  screen.innerHTML = `
+    <div class="sec-lbl">// ROUND ${idx+1} OF 4</div>
+    <div class="sec-title">Which CIA pillar was violated?</div>
+    <div class="round-bar">
+      ${[0,1,2,3].map(i=>`<div class="round-pip ${i<idx?'done':i===idx?'active':''}" ></div>`).join('')}
+      <span class="round-lbl">Round ${idx+1}/4</span>
+    </div>
+
+    <div class="ref-panel">
+      <div class="ref-item c"><div class="ref-letter">C</div><div class="ref-word">Confidentiality</div><div class="ref-def">Only authorized users can access the data</div></div>
+      <div class="ref-item i"><div class="ref-letter">I</div><div class="ref-word">Integrity</div><div class="ref-def">Data is accurate and unaltered</div></div>
+      <div class="ref-item a"><div class="ref-letter">A</div><div class="ref-word">Availability</div><div class="ref-def">Systems accessible when needed</div></div>
+    </div>
+
+    <div class="scenario-box">
+      <div class="scenario-label">${sc.label}</div>
+      <div class="scenario-text">${sc.text}</div>
+    </div>
+
+    <div class="cia-grid">
+      <div class="cia-card c-opt" data-c="C" onclick="pick(this,'C',${idx})">
+        <div class="cia-letter">C</div>
+        <div class="cia-word">Confidentiality</div>
+        <div class="cia-def">Unauthorized access to private information</div>
+      </div>
+      <div class="cia-card i-opt" data-c="I" onclick="pick(this,'I',${idx})">
+        <div class="cia-letter">I</div>
+        <div class="cia-word">Integrity</div>
+        <div class="cia-def">Data was altered or falsified</div>
+      </div>
+      <div class="cia-card a-opt" data-c="A" onclick="pick(this,'A',${idx})">
+        <div class="cia-letter">A</div>
+        <div class="cia-word">Availability</div>
+        <div class="cia-def">System or data became inaccessible</div>
+      </div>
+    </div>
+
+    <div class="lock-row"><button class="btn btn-acc" id="lock-${idx}" disabled onclick="lockIn(${idx})">🔒 LOCK IN ANSWER</button><span class="lock-hint" id="hint-${idx}">Choose a pillar. You can change it until you lock in. Nothing is revealed before that.</span></div>
+
+    <div class="feedback" id="fb-${idx}"></div>
+
+    <div class="nav">
+      <div></div>
+      <button class="btn btn-C" id="next-${idx}" style="display:none" onclick="goTo(${idx+2})">${idx===3?'SEE RESULTS →':'NEXT SCENARIO →'}</button>
+    </div>
+  `;
+  roundAnswered = false;
+}
+
+const PNAME={C:'CONFIDENTIALITY',I:'INTEGRITY',A:'AVAILABILITY'};
+let sel=[],locked=[],_chg=[];
+function pick(el,choice,idx){
+  if(locked[idx])return;
+  if(sel[idx]&&sel[idx]!==choice)_chg[idx]=(_chg[idx]||0)+1;
+  sel[idx]=choice;
+  el.parentElement.querySelectorAll('.cia-card').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('lock-'+idx).disabled=false;
+  document.getElementById('hint-'+idx).textContent='Selected: '+PNAME[choice]+'. You can still change it. Nothing is revealed until you lock in.';
+}
+function lockIn(idx){
+  if(locked[idx]||!sel[idx])return;
+  locked[idx]=true;
+  const sc=SCENARIOS[idx],choice=sel[idx],ok=choice===sc.answer;
+  document.querySelector('#s'+(idx+1)+' .lock-row').style.display='none';
+  document.querySelectorAll('#s'+(idx+1)+' .cia-card').forEach(c=>{
+    c.style.pointerEvents='none';c.classList.remove('picked');
+    if(c.dataset.c===sc.answer)c.classList.add('selected');
+    if(c.dataset.c===choice){if(!ok)c.classList.add('wrong');c.querySelector('.cia-word').insertAdjacentHTML('beforeend','<span class="yours">YOUR ANSWER</span>');}
+  });
+  results[idx]={correct:ok,choice};
+  if(ok){score+=25;}
+  document.getElementById('score-disp').textContent='SCORE: '+score+' pts';
+  const fb=document.getElementById('fb-'+idx);
+  fb.className='feedback show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?`<div class="fb-lbl ok">// LOCKED IN — CORRECT: ${PNAME[choice]}</div>`:`<div class="fb-lbl no">// LOCKED IN — NOT QUITE. CORRECT ANSWER: ${PNAME[sc.answer]}</div>You chose <strong>${PNAME[choice]}</strong>. `)+`${sc.explanation}<br><br><em style="color:var(--text3);font-size:12px;">💡 Why not the others? ${sc.trap}</em>`;
+  document.getElementById('next-'+idx).style.display='inline-flex';
+}
+
+function buildResults(){
+  const pct = Math.round((score/100)*100);
+  const el = document.getElementById('r-score');
+  el.textContent = pct+'%';
+  el.className = 'result-score '+(pct>=80?'high':pct>=50?'mid':'low');
+  const tiers = {
+    high:['Security Analyst Mindset 🔐','You correctly mapped each breach to its CIA pillar. This is foundational thinking — keep building on it.'],
+    mid:['Good Foundation 🎯','You caught most of the violations. Review the tricky scenarios where multiple pillars seem to apply.'],
+    low:['Keep Practicing 📚','The CIA Triad takes repetition. Re-read the explanations and look for the primary harm in each scenario.']
+  };
+  const t = pct>=80?'high':pct>=50?'mid':'low';
+  document.getElementById('r-lbl').textContent = tiers[t][0];
+  document.getElementById('r-sub').textContent = tiers[t][1];
+
+  const names = ['C — Confidentiality','I — Integrity','A — Availability'];
+  const pillars = ['C','I','A'];
+  document.getElementById('r-breakdown').innerHTML = SCENARIOS.map((sc,i)=>{
+    const r = results[i]||{correct:false};
+    return `<div class="b-row">
+      <div class="b-check">${r.correct?'✅':'❌'}</div>
+      <div class="b-text"><strong>${sc.label.split('—')[1].trim()}</strong>: Answer was <strong>${pillars.includes(sc.answer)?sc.answer+' — '+['Confidentiality','Integrity','Availability'][pillars.indexOf(sc.answer)]:sc.answer}</strong>${r.correct?'':', you chose '+r.choice}</div>
+      <div class="b-pts">${r.correct?'+25':'+0'} pts</div>
+    </div>`;
+  }).join('');
+}
+
+function restart(){sel=[];locked=[];_chg=[];
+  score=0;results=[];
+  document.getElementById('score-disp').textContent='SCORE: 0 pts';
+  goTo(0);
+}
+
+
+/* ---- Student record hook (apsim_record.js) ---- */
+const _apBuild=buildResults;
+buildResults=function(){_apBuild();
+APSim.finish({unit:1,sim:'cia',screenId:'s5',score:score,max:100,items:SCENARIOS.map(function(sc,i){var r=results[i]||{correct:false};return {label:sc.label,result:r.correct?'correct':'incorrect',pts:r.correct?25:0,max:25,response:r.choice?PNAME[r.choice]:'',expected:PNAME[sc.answer],changes:_chg[i]||0};})});
+};
+const _apRestart=restart;
+restart=function(){sel=[];locked=[];_chg=[];APSim.start(1,'cia');_apRestart();};
+APSim.start(1,'cia');
+
+goTo(0);
+</script>
+</body>
+</html>
