@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ironcrest | Research Projects</title>
+<link rel="stylesheet" href="../academy/studio.css">
+<link rel="stylesheet" href="projects.css?v=20261115-btf1">
+</head>
+<body>
+<header><a href="../">← Analyst console</a><span>IRONCREST / RESEARCH PROJECTS</span><b>YEARLY PROJECT TRACK</b></header>
+<main>
+  <p class="eyebrow">BEYOND THE FLAG · 24 IDEAS · 8 DOMAINS · 3 LEVELS</p>
+  <h1>The flag is where your investigation starts.</h1>
+  <p class="lead">Choose a cybersecurity question you actually want answered, test it safely, and produce evidence you can explain. Your teacher sets the rules, deadlines and assessment. If anything here differs from what your teacher says, follow your teacher.</p>
+  <nav class="pj-jump" aria-label="On this page"><a href="#ladder">The four steps</a><a href="#safe">Stay safe and legal</a><a href="#choose">Choose an idea</a><a href="#ideas">Idea bank</a><a href="#own">Your own idea</a><a href="#kit">Project kit</a></nav>
+
+  <section id="ladder" aria-labelledby="ladderTitle">
+    <h2 id="ladderTitle">Climb all four steps</h2>
+    <ol class="pj-ladder">
+      <li><b>1 · Solve</b><span>Can I do it?</span></li>
+      <li><b>2 · Explain</b><span>Why did it work?</span></li>
+      <li><b>3 · Defend</b><span>How do I stop it?</span></li>
+      <li><b>4 · Create</b><span>What can I add?</span></li>
+    </ol>
+    <p class="muted">Stopping at step 1 is practice. Reaching step 4 is a project.</p>
+  </section>
+
+  <section id="safe" aria-labelledby="safeTitle">
+    <h2 id="safeTitle">One rule before every practical step</h2>
+    <div class="panel pj-rule"><p><b>Do I own this system, or do I have written permission to test it for this project?</b> If the answer is not a clear yes, stop and ask your teacher.</p><p class="muted">Testing a computer system without permission is a crime in most countries, even if you mean no harm and even if it is “just to see.” Permission to use a learning website is not permission to test anything else.</p></div>
+    <div class="pj-three">
+      <div class="panel ok"><h3>Always fine</h3><ul><li>Training platforms, following their rules</li><li>Your own virtual machines</li><li>Files your teacher gives you</li><li>Made-up data and dummy accounts</li></ul></div>
+      <div class="panel ask"><h3>Ask first</h3><ul><li>Installing tools on school devices</li><li>Capturing your own traffic at home</li><li>Surveys or tests with other people</li><li>Entering competitions or publishing</li></ul></div>
+      <div class="panel never"><h3>Never</h3><ul><li>School networks, systems or accounts</li><li>Anyone else’s accounts or devices</li><li>Scanning public websites</li><li>Phishing anyone, even as a test</li><li>Real passwords or personal data</li></ul></div>
+    </div>
+  </section>
+
+  <section id="choose" aria-labelledby="chooseTitle">
+    <h2 id="chooseTitle">How to choose your idea</h2>
+    <ol class="pj-steps">
+      <li><b>Browse.</b> Look through the idea bank. Notice which questions you actually want answered.</li>
+      <li><b>Try before you commit.</b> Spend an hour on the “Start here” resource for two ideas. Do they work on your device and network? Do you enjoy them?</li>
+      <li><b>Check the level.</b> Beginner ideas need no experience. Advanced ideas usually need programming or more setup. A focused beginner idea done well beats an ambitious one done badly.</li>
+      <li><b>Shortlist two.</b> Bring two ideas to your teacher and talk them through.</li>
+      <li><b>Propose and agree scope.</b> Write your proposal, and agree in writing what you will and will not test, before any practical work.</li>
+    </ol>
+  </section>
+
+  <section id="ideas" aria-labelledby="ideasTitle">
+    <h2 id="ideasTitle">Idea bank</h2>
+    <div class="pj-filters" role="group" aria-label="Filter ideas">
+      <label>Domain<select id="fDomain"><option value="">All domains</option></select></label>
+      <label>Level<select id="fLevel"><option value="">All levels</option><option value="1">Beginner</option><option value="2">Intermediate</option><option value="3">Advanced</option></select></label>
+      <label>Setup<select id="fSetup"><option value="">Any</option><option value="browser">Starts in a browser</option><option value="setup">Needs a VM, install or code</option></select></label>
+      <label>AP topic<select id="fAp"><option value="">Any topic</option></select></label>
+    </div>
+    <p class="muted" id="ideaCount" aria-live="polite"></p>
+    <div id="ideaList"></div>
+    <p class="muted pj-note">Setup labels and AP topic connections are Ironcrest suggestions. Chromebooks and school filters may block some sites; check with your teacher before you rely on one.</p>
+  </section>
+
+  <section id="own" aria-labelledby="ownTitle">
+    <h2 id="ownTitle">Not on the list? Propose your own idea</h2>
+    <div class="pj-two">
+      <div class="panel"><h3>A good proposal answers</h3><ol><li>What is my question or design goal, and why does it interest me?</li><li>What practical work will I do, and what evidence will it produce?</li><li>What will I make or discover that is my own?</li><li>Which resources, tools and accounts do I need? Do they work on my device?</li><li>Exactly what will I test, and do I own it or have permission?</li><li>Can I finish it in the time I have?</li></ol></div>
+      <div class="panel"><h3>Turn a topic into a question</h3><dl class="pj-dl"><dt>Passwords</dt><dd>Do the password rules of services students use match current NIST guidance?</dd><dt>Hacking websites</dt><dd>How does one OWASP Top 10 risk appear in a deliberately vulnerable app, and how should it be fixed?</dd><dt>AI security</dt><dd>How well do three defences protect my own chatbot from prompt injection?</dd><dt>Encryption</dt><dd>How much text is needed to break a substitution cipher with frequency analysis?</dd></dl></div>
+    </div>
+    <div class="panel"><h3>Keep an honest record</h3><ul><li>Write a dated entry after every working session: what you planned, did, found and will do next.</li><li>Record every hint, walkthrough, AI tool or person that helped. Using help is fine; hiding it is not.</li><li>A score, rank or badge is not evidence of understanding. Your explanation is.</li><li>Expect to demonstrate your method and answer questions about it at the end.</li></ul></div>
+  </section>
+
+  <section id="kit" aria-labelledby="kitTitle">
+    <h2 id="kitTitle">Project kit</h2>
+    <p class="muted">Your proposal saves in this browser only. Print it or download a copy to hand in; nothing is sent anywhere.</p>
+    <details open><summary><b>A · Project proposal</b></summary>
+      <form id="proposal" class="pj-form"></form>
+      <div class="actions"><button type="button" class="primary" id="propDownload">Download as text</button><button type="button" id="propCopy">Copy</button><button type="button" id="propPrint">Print</button><button type="button" class="quiet" id="propClear">Clear form</button><span id="propStatus" class="muted" aria-live="polite"></span></div>
+    </details>
+    <details><summary><b>B · Challenge log</b></summary><p>One row per challenge or lab. Record attempts that did not work as well as those that did.</p><div class="pj-table-wrap"><table class="pj-table"><thead><tr><th>Date</th><th>Challenge and link</th><th>Skill</th><th>Approach and evidence</th><th>Outcome</th><th>Help used</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div></details>
+    <details><summary><b>C · Progress journal entry</b></summary><p>Write a dated entry after each working session:</p><ul><li>Date and time spent</li><li>What I planned to do</li><li>What I actually did</li><li>What worked, and the evidence</li><li>What did not work, and why I think so</li><li>Sources, hints, AI or people that helped</li><li>Decisions or changes to my plan</li><li>Next step</li></ul><p><b>Prompts for richer entries:</b> What did I predict before I tested it? What would I need to see to be confident in this result? How would a defender use what I learned today?</p></details>
+    <details><summary><b>D · Scope agreement</b></summary><p>Completed and signed before any practical work begins. Review it if the project changes. Record: project title; platforms and labs; systems you own and will test; tools you will install, and where; data you will use (dummy, fictional, published samples); people involved and how consent is obtained; anything you will publish or share.</p><p><b>I agree that:</b></p><ol><li>I will only test systems I own or have written permission to test for this project.</li><li>I will not test school networks, systems or accounts, or other people’s accounts or devices.</li><li>I will not collect real passwords or personal data, or send phishing messages of any kind.</li><li>I will follow each platform’s rules and my school’s acceptable use and AI policies.</li><li>I will stop and ask my teacher if I am unsure whether something is allowed.</li></ol><p class="muted">Signed by student, teacher, and parent or guardian if required.</p></details>
+    <details><summary><b>E · How projects are assessed</b></summary><p class="muted">Suggested criteria. Your teacher may change them.</p><div class="pj-table-wrap"><table class="pj-table"><thead><tr><th>Criterion</th><th>Weight</th><th>What strong work demonstrates</th></tr></thead><tbody><tr><td>Focus</td><td>15%</td><td>A clear, manageable question or design goal, relevant research, and a meaningful connection to cybersecurity</td></tr><tr><td>Evidence</td><td>30%</td><td>Accurate practical work, reproducible methods, justified conclusions, critical analysis, and an identifiable original contribution</td></tr><tr><td>Writing</td><td>20%</td><td>Clear explanation, accurate technical vocabulary, organised findings, and correctly acknowledged sources</td></tr><tr><td>Process</td><td>20%</td><td>Planning, regular progress, use of feedback, documented decisions, timely submissions, and authentic work</td></tr><tr><td>Presentation and reflection</td><td>15%</td><td>Understanding shown through demonstration and answers to questions; thoughtful evaluation of the work and its limitations</td></tr></tbody></table></div></details>
+  </section>
+
+  <footer class="pj-credit">
+    <p><b>Credit.</b> This page is adapted from <a href="https://doi.org/10.5281/zenodo.23341872" target="_blank" rel="noopener noreferrer"><cite>Beyond the Flag: Yearly Cybersecurity Project Ideas for Secondary Students</cite></a> v1.0 by Abdullah Rehman (October 2026), licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Changes: reorganised as an interactive Ironcrest page, wording condensed, AP topic connections and setup labels added, proposal form made fillable. This page’s content (<code>projects/</code>) is shared under the same license. The original author has not reviewed or endorsed this adaptation.</p>
+    <p class="muted">AP® is a trademark registered by the College Board, which is not affiliated with, and does not endorse, this resource.</p>
+  </footer>
+</main>
+<script src="ideas.js?v=20261115-btf1"></script>
+<script src="projects.js?v=20261115-btf1"></script>
+</body>
+</html>

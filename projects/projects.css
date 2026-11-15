@@ -1,0 +1,61 @@
+/* Research projects page. Builds on ../academy/studio.css tokens. */
+section{margin:56px 0}
+.pj-jump{display:flex;flex-wrap:wrap;gap:8px 18px;margin:20px 0 8px;font-size:15px}
+.pj-ladder{list-style:none;padding:0;margin:18px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pj-ladder li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:4px}
+.pj-ladder li:nth-child(1){margin-top:42px}.pj-ladder li:nth-child(2){margin-top:28px}.pj-ladder li:nth-child(3){margin-top:14px}
+.pj-ladder li:last-child{border-color:var(--mint)}
+.pj-ladder b{color:var(--mint)}.pj-ladder span{color:var(--muted)}
+.pj-rule{border-left:4px solid var(--gold)}
+.pj-three{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.pj-three h3{margin-top:0}.pj-three ul{padding-left:20px;margin:0}
+.pj-three .ok{border-top:4px solid var(--mint)}.pj-three .ask{border-top:4px solid var(--gold)}.pj-three .never{border-top:4px solid #f08a8a}
+.pj-steps li{margin:8px 0}
+.pj-filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pj-filters label{margin:0;font-size:14px;color:var(--muted)}
+.pj-filters select{margin-top:4px}
+.pj-domain{margin:34px 0}
+.pj-domain h3{font-size:22px;margin-bottom:0}.pj-domain h3 span{color:var(--gold);font:600 14px ui-monospace,monospace;margin-right:6px}
+.pj-ideas{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+.pj-idea{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column}
+.pj-idea h4{font-size:19px;margin:10px 0 6px}.pj-idea p{margin:6px 0}
+.pj-idea-top{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px}
+.pj-id{font:700 13px ui-monospace,monospace;color:var(--gold);margin-right:4px}
+.pj-level,.pj-setup{border:1px solid var(--line);border-radius:999px;padding:2px 9px;letter-spacing:.5px}
+.lvl-1 .pj-level{color:var(--mint)}.lvl-2 .pj-level{color:var(--gold)}.lvl-3 .pj-level{color:#f0a5a5}
+.pj-setup.browser{color:var(--mint)}.pj-setup.setup{color:var(--muted)}
+.pj-start{font-size:15px;flex:1}
+.pj-idea-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:14px}
+.pj-idea-foot button{padding:8px 12px;font-size:14px}
+.pj-note{font-size:14px}
+.pj-two{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.pj-two h3,.panel h3{margin-top:0}
+.pj-dl dt{font-weight:700;color:var(--mint);margin-top:10px}.pj-dl dd{margin:2px 0 0}
+.pj-form{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px}
+.pj-form label:has(textarea){grid-column:1/-1}
+.pj-form input{width:100%;padding:12px;background:#07131c;color:#fff;border:1px solid #58717e;border-radius:6px;font:inherit}
+.pj-form textarea{min-height:80px}
+.pj-table-wrap{overflow-x:auto}
+.pj-table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+.pj-table th,.pj-table td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+.pj-table th{color:var(--gold);font-weight:600}
+.pj-table tbody tr:only-child td{height:44px}
+.pj-credit{border-top:1px solid var(--line);margin-top:60px;padding-top:20px;font-size:14px}
+.pj-credit p{max-width:none}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+@media (max-width:860px){
+  .pj-ladder,.pj-three,.pj-two,.pj-form{grid-template-columns:1fr}
+  .pj-ladder li{margin-top:0!important}
+  .pj-filters{grid-template-columns:1fr 1fr}
+  main{padding:28px 16px 70px}
+}
+@media print{
+  :root{--bg:#fff;--panel:#fff;--line:#999;--muted:#333;--mint:#0a5a44;--gold:#6b4a00}
+  body{background:#fff;color:#000;font-size:12pt}
+  header,.pj-jump,.pj-filters,.actions,.pj-idea-foot button,#ideaCount{display:none}
+  details{border:0}details>*{display:block}
+  .pj-form input,.pj-form textarea,.pj-form select{background:#fff;color:#000;border:1px solid #999}
+  body.print-proposal main>*:not(#kit){display:none}
+  body.print-proposal #kit details:not(:first-of-type){display:none}
+  a{color:#000}
+}
