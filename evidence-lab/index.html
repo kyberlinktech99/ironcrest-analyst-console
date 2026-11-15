@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ironcrest Evidence Lab</title>
+<style>
+:root{--bg:#0b1626;--panel:#111f33;--panel2:#16294182;--line:#223652;--text:#e6edf6;--muted:#9fb0c6;--teal:#2dd4bf;--amber:#f5b942;--bad:#ff8f8f;--good:#5ee6a8;--pin:#3b2f0e;--hl:#1c3b4f;--focus:#f5b942}
+[data-theme=light]{--bg:#f3f6fb;--panel:#fff;--panel2:#eef3f9;--line:#c9d5e4;--text:#0f1b2d;--muted:#4a5c75;--teal:#0f766e;--amber:#92400e;--bad:#b42318;--good:#067647;--pin:#fff3cf;--hl:#dff3f1;--focus:#92400e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+.mark{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.14em;font-size:15px}
+.mark i{width:22px;height:26px;background:linear-gradient(160deg,var(--teal),#14507a);clip-path:polygon(50% 0,100% 18%,100% 62%,50% 100%,0 62%,0 18%)}
+.mark small{font-weight:500;letter-spacing:.04em;color:var(--muted);font-size:13px;margin-left:4px}
+button,input,textarea{font:inherit;color:inherit}
+button{min-height:44px;padding:8px 16px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);cursor:pointer}
+button.primary{background:var(--teal);color:#04202a;border-color:var(--teal);font-weight:600}
+button:hover{border-color:var(--teal)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+input[type=text],textarea{width:100%;min-height:44px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg)}
+textarea{min-height:110px;resize:vertical}
+main{max-width:1380px;margin:0 auto;padding:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+h1{font-size:24px;margin:0 0 4px} h2{font-size:18px;margin:0 0 10px} h3{font-size:16px;margin:0}
+.muted{color:var(--muted)} .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-block;padding:2px 10px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--muted)}
+.chip.t{color:var(--teal);border-color:var(--teal)} .chip.a{color:var(--amber);border-color:var(--amber)}
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button[aria-selected=true]{background:var(--teal);color:#04202a;border-color:var(--teal);font-weight:600}
+.viewer{border:1px solid var(--line);border-radius:8px;max-height:520px;overflow:auto;background:var(--bg);font:13px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace}
+.ln{display:grid;grid-template-columns:52px 1fr;cursor:pointer;border-bottom:1px solid transparent}
+.ln:hover{background:var(--hl)} .ln span:first-child{color:var(--muted);text-align:right;padding:1px 10px 1px 0;user-select:none}
+.ln span:last-child{padding:1px 8px 1px 0;white-space:pre-wrap;word-break:break-all}
+.ln[aria-pressed=true]{background:var(--pin)} .ln[aria-pressed=true] span:first-child::after{content:" ★";color:var(--amber)}
+mark{background:var(--amber);color:#111;border-radius:2px}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:12px;background:var(--panel)}
+.q .meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.res{margin-top:8px;font-weight:600} .res.ok{color:var(--good)} .res.no{color:var(--bad)}
+.pins li{font:13px ui-monospace,Consolas,monospace;margin:4px 0;display:flex;gap:8px;align-items:flex-start}
+.pins button{min-height:32px;padding:2px 10px}
+.opt{display:flex;gap:10px;align-items:center;min-height:44px}
+.opt input{width:22px;height:22px}
+#status{position:sticky;bottom:0;margin-top:8px;padding:10px 14px;border-radius:8px;background:var(--panel);border:1px solid var(--line);min-height:44px}
+.gate{max-width:640px;margin:40px auto}
+.score{font-size:15px}
+</style>
+</head>
+<body>
+<header>
+  <div class="row"><a href="../" style="color:var(--teal)">← Analyst console</a><div class="mark"><i aria-hidden="true"></i>IRONCREST<small>Evidence Lab</small></div></div>
+  <div class="row"><button id="switch" hidden>Load a different code</button><button id="theme" aria-label="Switch light or dark theme">Light / dark</button></div>
+</header>
+<main id="app"></main>
+<div id="live" role="status" aria-live="polite" style="position:absolute;left:-9999px"></div>
+
+<script>
+(() => {
+'use strict';
+const NAME_SALT = 'ironcrest-evidence|';
+const $ = (s, r = document) => r.querySelector(s);
+const app = $('#app');
+let pack = null, code = '', state = null, activeSource = null;
+
+/* ---------- small helpers ---------- */
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const kid of kids.flat()) e.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+  return e;
+}
+function say(msg) { $('#live').textContent = msg; const s = $('#status'); if (s) s.textContent = msg; }
+const normCode = c => c.toUpperCase().replace(/[^A-Z0-9]/g, '');
+async function sha256Hex(str) {
+  if (!(window.crypto && crypto.subtle)) throw new Error('This page must be opened over https (or localhost) to check answers.');
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+/* must match normalize() in evidence_engine.py */
+function normalizeAnswer(type, value) {
+  const v = String(value).trim();
+  if (type === 'number') return /^-?\d+(\.0+)?$/.test(v) ? String(parseInt(v, 10)) : v.toLowerCase().replace(/\s+/g, ' ');
+  if (type === 'choice') return v;
+  return v.toLowerCase().replace(/\s+/g, ' ');
+}
+const storeKey = () => `ironcrest-evidence:${pack.scenario}:${code}`;
+function save() { try { localStorage.setItem(storeKey(), JSON.stringify(state)); } catch (e) { /* storage may be unavailable */ } }
+function restore() { try { const s = localStorage.getItem(storeKey()); if (s) return JSON.parse(s); } catch (e) {} return null; }
+
+/* ---------- theme ---------- */
+try { const t = localStorage.getItem('ironcrest-evidence:theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+$('#theme').addEventListener('click', () => {
+  const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem('ironcrest-evidence:theme', t); } catch (e) {}
+});
+$('#switch').addEventListener('click', () => { pack = null; showGate(); });
+
+/* ---------- gate ---------- */
+function showGate(msg) {
+  $('#switch').hidden = true;
+  const input = h('input', { type: 'text', id: 'code', autocomplete: 'off', spellcheck: 'false', placeholder: 'IC-XXXXX-XXXXX' });
+  const file = h('input', { type: 'file', accept: '.json', id: 'packfile', onchange: onFile });
+  app.replaceChildren(h('div', { class: 'gate card' },
+    h('h1', {}, 'Evidence Lab'),
+    h('p', { class: 'muted' }, 'Enter the access code your teacher gave you. Your case file will load on this page.'),
+    h('label', { for: 'code' }, 'Access code'), input,
+    h('div', { class: 'row', style: 'margin-top:12px' }, h('button', { class: 'primary', onclick: () => loadByCode(input.value) }, 'Open my case')),
+    h('p', { id: 'gatemsg', role: 'alert', style: 'min-height:24px;color:var(--bad)' }, msg || ''),
+    h('details', {}, h('summary', {}, 'No internet, or the code does not work?'),
+      h('p', { class: 'muted' }, 'Ask your teacher for your case file (a .json file), then choose it here.'), h('label', { for: 'packfile' }, 'Case file'), file)));
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') loadByCode(input.value); });
+  input.focus();
+}
+async function loadByCode(raw) {
+  const c = normCode(raw || '');
+  if (c.length < 8) return showGate('That code looks too short. Check it and try again.');
+  try {
+    const name = (await sha256Hex(NAME_SALT + c)).slice(0, 24) + '.json';
+    const r = await fetch('packs/' + name, { cache: 'no-store' });
+    if (!r.ok) return showGate('Code not found. Check each character, or ask your teacher.');
+    start(await r.json(), c);
+  } catch (e) { showGate(e.message || 'Could not load the case.'); }
+}
+function onFile(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  f.text().then(t => {
+    const p = JSON.parse(t);
+    if (!p || !Array.isArray(p.sources) || !p.sources.length || !Array.isArray(p.questions) || !p.check) throw new Error('bad pack');
+    const m = f.name.match(/[A-Z0-9]{8,}/i);
+    start(p, normCode(m ? m[0] : 'OFFLINE'));
+  }).catch(() => showGate('That file is not a valid case file.'));
+}
+
+/* ---------- case ---------- */
+function start(p, c) {
+  pack = p; code = c;
+  state = restore() || { started: new Date().toISOString(), answers: {}, pins: [] };
+  activeSource = pack.sources[pack.sources.length - 1].id;
+  $('#switch').hidden = false;
+  render();
+}
+function render() {
+  const pts = pack.questions.reduce((a, q) => a + q.points, 0);
+  app.replaceChildren(
+    h('div', { class: 'card' },
+      h('div', { class: 'row' }, h('span', { class: 'chip t' }, 'Case ' + pack.scenario), ...pack.los.map(l => h('span', { class: 'chip' }, 'LO ' + l))),
+      h('h1', {}, pack.title), h('p', {}, pack.brief),
+      h('p', { class: 'muted' }, `${pack.questions.length} questions, ${pts} points. Click a log line to pin it as evidence (★). Locked-in answers cannot be changed.`)),
+    h('div', { class: 'grid' },
+      h('section', { 'aria-label': 'Evidence' }, h('div', { class: 'card', id: 'evidence' }), h('div', { class: 'card', id: 'pins' })),
+      h('section', { 'aria-label': 'Questions' }, h('div', { id: 'qs' }), h('div', { class: 'card', id: 'export' }))),
+    h('div', { id: 'status', role: 'status' }, 'Ready.'));
+  renderEvidence(); renderPins(); renderQuestions(); renderExport();
+}
+function renderEvidence() {
+  const box = $('#evidence');
+  const src = pack.sources.find(s => s.id === activeSource);
+  const lines = src.content.split('\n');
+  const filter = h('input', { type: 'text', id: 'filter', placeholder: 'Filter lines (like grep), e.g. Failed password', 'aria-label': 'Filter lines' });
+  const rx = h('input', { type: 'checkbox', id: 'rx' });
+  const count = h('span', { class: 'muted', id: 'count' });
+  const viewer = h('div', { class: 'viewer', id: 'viewer', tabindex: '0', 'aria-label': src.name });
+  const tabs = h('div', { class: 'tabs', role: 'tablist' }, ...pack.sources.map(s =>
+    h('button', { role: 'tab', 'aria-selected': String(s.id === activeSource), onclick: () => { activeSource = s.id; renderEvidence(); } }, s.name)));
+  box.replaceChildren(h('h2', {}, 'Evidence'), tabs,
+    h('div', { class: 'row', style: 'margin-bottom:8px' }, h('div', { style: 'flex:1;min-width:220px' }, filter),
+      h('label', { class: 'opt', style: 'gap:6px' }, rx, 'regex'), count), viewer);
+  const draw = () => {
+    const q = filter.value; let test = () => true, err = '';
+    if (q) {
+      if (rx.checked) { try { const r = new RegExp(q, 'i'); test = l => r.test(l); } catch (e) { err = 'Not a valid pattern'; } }
+      else { const ql = q.toLowerCase(); test = l => l.toLowerCase().includes(ql); }
+    }
+    const frag = document.createDocumentFragment(); let shown = 0;
+    lines.forEach((text, i) => {
+      if (!test(text)) return; shown++;
+      const n = i + 1, pinned = state.pins.some(p => p.source === src.id && p.line === n);
+      const row = h('div', { class: 'ln', role: 'button', tabindex: '0', 'aria-pressed': String(pinned), 'aria-label': `Line ${n}. ${pinned ? 'Pinned' : 'Not pinned'}. ${text}` },
+        h('span', {}, String(n)), h('span', {}));
+      const tgt = row.lastChild;
+      if (q && !rx.checked && !err) {
+        const low = text.toLowerCase(), ql = q.toLowerCase(); let pos = 0, at;
+        while ((at = low.indexOf(ql, pos)) !== -1) { tgt.append(text.slice(pos, at), h('mark', {}, text.slice(at, at + q.length))); pos = at + q.length; }
+        tgt.append(text.slice(pos));
+      } else tgt.textContent = text;
+      const toggle = () => { togglePin(src.id, n, text); draw(); };
+      row.addEventListener('click', toggle);
+      row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+      frag.append(row);
+    });
+    viewer.replaceChildren(frag);
+    count.textContent = err || `Showing ${shown} of ${lines.length} lines`;
+  };
+  filter.addEventListener('input', draw); rx.addEventListener('change', draw); draw();
+}
+function togglePin(source, line, text) {
+  const i = state.pins.findIndex(p => p.source === source && p.line === line);
+  if (i >= 0) state.pins.splice(i, 1); else state.pins.push({ source, line, text });
+  state.pins.sort((a, b) => a.source.localeCompare(b.source) || a.line - b.line);
+  save(); renderPins(); say(i >= 0 ? `Unpinned line ${line}` : `Pinned line ${line}`);
+}
+function renderPins() {
+  const box = $('#pins');
+  box.replaceChildren(h('h2', {}, `Pinned evidence (${state.pins.length})`),
+    state.pins.length ? h('ul', { class: 'pins', style: 'list-style:none;padding:0;margin:0' }, ...state.pins.map(p =>
+      h('li', {}, h('button', { 'aria-label': `Remove pin ${p.source} line ${p.line}`, onclick: () => { togglePin(p.source, p.line, p.text); renderEvidence(); } }, 'Remove'),
+        h('span', {}, `${p.source}:${p.line}  ${p.text}`))))
+      : h('p', { class: 'muted' }, 'Nothing pinned yet. Cite your pinned lines in your written answers (for example "auth.log line 212").'));
+}
+
+/* ---------- questions ---------- */
+function renderQuestions() {
+  const root = $('#qs');
+  root.replaceChildren(...pack.questions.map(q => {
+    const a = state.answers[q.id] || {};
+    const meta = h('div', { class: 'meta' }, h('span', { class: 'chip t' }, 'Part ' + q.part), h('span', { class: 'chip' }, q.verb),
+      h('span', { class: 'chip' }, 'LO ' + q.lo), h('span', { class: 'chip a' }, q.points + (q.points === 1 ? ' pt' : ' pts')));
+    const card = h('div', { class: 'q', id: 'q-' + q.id }, meta, h('p', {}, q.prompt));
+    if (q.type === 'text') {
+      const ta = h('textarea', { id: 'in-' + q.id, 'aria-label': 'Part ' + q.part + ' answer' }); ta.value = a.value || '';
+      const wc = h('div', { class: 'muted' }, ''); const upd = () => { const n = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0; wc.textContent = n + ' words'; };
+      ta.addEventListener('input', () => { state.answers[q.id] = { value: ta.value, locked: false }; save(); upd(); updateScore(); }); upd();
+      card.append(ta, wc); return card;
+    }
+    if (a.locked) {
+      card.append(h('div', {}, 'Your answer: ', h('strong', {}, q.type === 'choice' ? q.options[+a.value] : a.value)),
+        h('div', { class: 'res ' + (a.clientCheck === 'correct' ? 'ok' : 'no') }, a.clientCheck === 'correct' ? '✓ Correct' : '✗ Not correct'));
+      return card;
+    }
+    let getVal;
+    if (q.type === 'choice') {
+      const name = 'c-' + q.id;
+      const opts = q.options.map((o, i) => h('label', { class: 'opt' }, h('input', { type: 'radio', name, value: String(i), ...(a.value === String(i) ? { checked: true } : {}) }), o));
+      card.append(...opts);
+      getVal = () => { const r = card.querySelector('input:checked'); return r ? r.value : ''; };
+      card.addEventListener('change', () => { state.answers[q.id] = { value: getVal(), locked: false }; save(); });
+    } else {
+      const inp = h('input', { type: 'text', id: 'in-' + q.id, autocomplete: 'off', spellcheck: 'false', placeholder: q.placeholder || '', 'aria-label': 'Part ' + q.part + ' answer' });
+      inp.value = a.value || ''; card.append(inp);
+      getVal = () => inp.value.trim();
+      inp.addEventListener('input', () => { state.answers[q.id] = { value: inp.value, locked: false }; save(); });
+    }
+    let armed = false;
+    const btn = h('button', { class: 'primary', style: 'margin-top:8px', onclick: async () => {
+      const v = getVal();
+      if (v === '') { say('Enter an answer first.'); return; }
+      if (!armed) { armed = true; btn.textContent = 'Press again to lock in (one attempt)'; say('Press the button again to lock in this answer. You cannot change it afterwards.'); return; }
+      try {
+        const hash = await sha256Hex(`${pack.salt}|${q.id}|${normalizeAnswer(q.type, v)}`);
+        state.answers[q.id] = { value: String(v), locked: true, at: new Date().toISOString(), clientCheck: hash === pack.check[q.id] ? 'correct' : 'incorrect' };
+        save(); renderQuestions(); updateScore(); say('Answer locked in for Part ' + q.part + '.');
+      } catch (e) { say(e.message); }
+    } }, 'Lock in answer');
+    card.append(btn); return card;
+  }));
+  updateScore();
+}
+function updateScore() {
+  const box = $('#export'); if (!box) return;
+  let got = 0, max = 0, locked = 0, written = 0, wtotal = 0;
+  for (const q of pack.questions) {
+    const a = state.answers[q.id] || {};
+    if (q.type === 'text') { wtotal++; if ((a.value || '').trim()) written++; }
+    else { max += q.points; if (a.locked) { locked++; if (a.clientCheck === 'correct') got += q.points; } }
+  }
+  const s = $('#scoreline'); if (s) s.textContent = `Checked answers: ${got} / ${max} points (${locked} locked in). Written parts started: ${written} of ${wtotal}.`;
+}
+function renderExport() {
+  $('#export').replaceChildren(h('h2', {}, 'Hand in'), h('p', { id: 'scoreline', class: 'score' }, ''),
+    h('p', { class: 'muted' }, 'Your teacher scores the written parts. Download your file and upload it where your teacher tells you.'),
+    h('div', { class: 'row' }, h('button', { class: 'primary', onclick: download }, 'Download my answers'), h('button', { onclick: copySummary }, 'Copy a text summary')));
+  updateScore();
+}
+function submission() {
+  return { format: 'ironcrest-evidence-submission', version: 1, scenario: pack.scenario, code, started: state.started, submitted: new Date().toISOString(),
+    answers: state.answers, pins: state.pins };
+}
+function download() {
+  const blob = new Blob([JSON.stringify(submission(), null, 2)], { type: 'application/json' });
+  const a = h('a', { href: URL.createObjectURL(blob), download: `evidence_${pack.scenario}_${code}.json` });
+  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  say('Downloaded. Upload that file where your teacher asked.');
+}
+function copySummary() {
+  const s = submission(); const lines = [`Ironcrest Evidence Lab ${s.scenario}  code ${s.code}`];
+  for (const q of pack.questions) { const a = s.answers[q.id] || {}; lines.push(`Part ${q.part}: ${q.type === 'choice' && a.value !== undefined && a.value !== '' ? q.options[+a.value] : (a.value || '(blank)')}`); }
+  lines.push('Pinned: ' + (s.pins.map(p => `${p.source}:${p.line}`).join(', ') || 'none'));
+  (navigator.clipboard ? navigator.clipboard.writeText(lines.join('\n')) : Promise.reject()).then(() => say('Summary copied.'), () => say('Could not copy. Use Download instead.'));
+}
+
+showGate();
+})();
+</script>
+</body>
+</html>
