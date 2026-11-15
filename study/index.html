@@ -75,4 +75,4 @@ byId("shareReview").addEventListener("click",function(){var link=shareURL();if(n
 function loadURL(){var p=new URLSearchParams(location.search);if(p.has("topics")){var ids=p.get("topics").split(",");document.querySelectorAll(".review-topic").forEach(function(el){el.checked=ids.indexOf(el.value)>=0});byId("reviewActors").checked=p.get("actors")==="1";var inc=(p.get("include")||"concepts,vocab,flash,questions").split(",");document.querySelectorAll(".include").forEach(function(el){el.checked=inc.indexOf(el.value)>=0});byId("includeAnswers").checked=p.get("answers")==="1";setTab("builder");generate()}else if(location.hash==="#builder")setTab("builder")}
 renderFlash();renderPractice();loadURL();
 })();
-</script></body></html>
+</script><script src="../js/site.js?v=20261115-ia1"></script></body></html>

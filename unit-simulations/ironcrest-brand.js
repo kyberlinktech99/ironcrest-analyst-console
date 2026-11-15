@@ -8,4 +8,5 @@ const main=document.querySelector('.wrap')||document.querySelector('main');if(ma
 if(!document.title.includes('Ironcrest'))document.title='Ironcrest | '+document.title.replace(/ — AP Cybersecurity$/,'');
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+if(!document.querySelector('script[src*="js/site.js"]')&&document.documentElement.dataset.ironcrestAudience!=='instructor'){const sn=document.createElement('script');sn.src='../js/site.js?v=20261115-ia1';document.head.append(sn)}
 })();

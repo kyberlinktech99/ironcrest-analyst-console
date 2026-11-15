@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ironcrest | Trusted Resources</title>
+<link rel="stylesheet" href="../academy/studio.css">
+<style>
+section{margin:44px 0}
+.rs-jump{display:flex;flex-wrap:wrap;gap:8px 18px;margin:18px 0}
+.rs-unit-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:6px}
+.rs-unit-head h2{margin:0}
+.rs-list{list-style:none;padding:0;margin:14px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.rs-list li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.rs-list h3{margin:4px 0 6px;font-size:18px}
+.rs-list p{margin:0;color:var(--muted)}
+.rs-org{font-size:12px;letter-spacing:1px;color:var(--gold)}
+.rs-current{color:var(--gold);font-size:13px;letter-spacing:1px}
+@media(max-width:700px){main{padding:28px 16px 70px}}
+</style>
+</head>
+<body>
+<header><a href="../">← Analyst console</a><span>IRONCREST / TRUSTED RESOURCES</span><b>OUTSIDE LINKS</b></header>
+<main>
+  <p class="eyebrow">AP CYBERSECURITY · UNITS 1–5</p>
+  <h1>Trusted resources</h1>
+  <p class="lead">Hand-picked from government agencies, standards bodies and established security education sites. Use them to check a definition, see a real-world example, or go deeper on a topic.</p>
+  <div class="panel"><p><b>Before you click:</b> these sites are outside Ironcrest and open in a new tab. They are real-world references, not evidence for the fictional Ironcrest cases. Never enter personal information or passwords on a site to “test” it. If your school network blocks a link, tell your teacher.</p></div>
+  <nav class="rs-jump" aria-label="Jump to unit" id="jump"></nav>
+  <div id="lists"></div>
+  <p class="muted">Links checked 15 Nov 2026. Report a broken link to your teacher.</p>
+</main>
+<script src="../js/links.js?v=20261115-ia1"></script>
+<script src="../js/site.js?v=20261115-ia1"></script>
+<script>
+(() => {
+  'use strict';
+  const L = window.IRONCREST_LINKS, S = window.IRONCREST_SITE;
+  const E = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const item = r => `<li><span class="rs-org">${E(r.org)}${r.topics ? ' · TOPIC ' + r.topics.map(E).join(', ') : ''}</span><h3><a href="${E(r.url)}" target="_blank" rel="noopener noreferrer">${E(r.title)} ↗</a></h3><p>${E(r.why)}</p></li>`;
+  const groups = [['all', 'Every unit', null], ...[1, 2, 3, 4, 5].map(n => [String(n), `Unit ${n} · ${S.units[n].title}`, n])];
+  document.querySelector('#jump').innerHTML = groups.map(([k, label]) => `<a href="#u-${k}">${E(label.split(' · ')[0])}</a>`).join('');
+  document.querySelector('#lists').innerHTML = groups.map(([k, label, n]) => `<section id="u-${k}" aria-labelledby="h-${k}"><div class="rs-unit-head"><h2 id="h-${k}">${E(label)}</h2>${n ? `<span>${n === S.currentUnit ? '<span class="rs-current">THIS UNIT · </span>' : ''}<a href="${S.unitUrl(n)}">Open Unit ${n} →</a></span>` : ''}</div><ul class="rs-list">${L[k].map(item).join('')}</ul></section>`).join('');
+})();
+</script>
+</body>
+</html>

@@ -56,4 +56,4 @@ el('alias').value=state.alias||'';el('alias').addEventListener('input',e=>{state
 renderQueue();if(state.step==='casesStage')renderCase();if(state.step==='reflectStage')renderReflection();if(state.step==='reportStage'){el('reportDisplay').textContent=makeReport();el('printText').textContent=makeReport();el('scoreline').textContent=`Automated decision check: ${cases.filter((c,i)=>state.choices[i]===c.answer).length}/4 aligned with the recommended responses.`}switchStep(state.step in {intro:1,queueStage:1,casesStage:1,reflectStage:1,reportStage:1}?state.step:'intro');
 })();
 </script>
-</body></html>
+<script src="../js/site.js?v=20261115-ia1"></script></body></html>
